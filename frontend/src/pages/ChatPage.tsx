@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useChat } from '../hooks/useChat'
+import { useToast } from '../hooks/useToast'
 import MessageBubble from '../components/chat/MessageBubble'
 import TypingIndicator from '../components/chat/TypingIndicator'
 import ChatInput from '../components/chat/ChatInput'
@@ -20,6 +21,7 @@ export default function ChatPage() {
   const { preview, setPreview } = useFrameStore()
   const resetChat = useChatStore((s) => s.reset)
   const navigate = useNavigate()
+  const { showToast } = useToast()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   // 메시지 추가 시 자동 스크롤
@@ -41,9 +43,9 @@ export default function ChatPage() {
       const elapsed = Date.now() - startTime
       const remaining = Math.max(0, 2200 - elapsed)
       await new Promise((resolve) => setTimeout(resolve, remaining))
-    } catch (e) {
-      console.error(e)
+    } catch {
       setDevelopingOpen(false)
+      showToast('현상에 실패했어요. 다시 시도해줘요.')
       return
     }
 
@@ -60,8 +62,8 @@ export default function ChatPage() {
       resetChat()
       setActiveTab('roll')
       navigate('/home')
-    } catch (e) {
-      console.error(e)
+    } catch {
+      showToast('저장에 실패했어요. 다시 시도해줘요.')
     }
   }
 

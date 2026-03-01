@@ -6,6 +6,8 @@ import com.reel.chat.entity.MessageRole;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -13,10 +15,9 @@ import java.time.Duration;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
+@Slf4j
 public class AnthropicClient {
 
-    private static final String ANTHROPIC_VERSION = "2023-06-01";
     private static final String CHAT_SYSTEM_PROMPT = """
             당신은 사용자의 하루를 채팅으로 들어주는 따뜻한 AI 일기 친구입니다.
             규칙:
@@ -27,7 +28,14 @@ public class AnthropicClient {
             - 반말로 편하게 이야기하세요.
             """;
 
+    private final WebClient webClient;
     private final AnthropicProperties properties;
+
+    public AnthropicClient(@Qualifier("anthropicWebClient") WebClient webClient,
+                           AnthropicProperties properties) {
+        this.webClient = webClient;
+        this.properties = properties;
+    }
 
     /**
      * 채팅 응답 생성.
@@ -85,7 +93,7 @@ public class AnthropicClient {
 
     private String call(ChatRequest request) {
         try {
-            ChatResponse response = buildWebClient()
+            ChatResponse response = webClient
                     .post()
                     .bodyValue(request)
                     .retrieve()
@@ -106,17 +114,9 @@ public class AnthropicClient {
         } catch (ReelException e) {
             throw e;
         } catch (Exception e) {
+            log.error("Anthropic API call failed", e);
             throw new ReelException(ErrorCode.AI_RESPONSE_ERROR);
         }
-    }
-
-    private WebClient buildWebClient() {
-        return WebClient.builder()
-                .baseUrl(properties.getApiUrl())
-                .defaultHeader("x-api-key", properties.getApiKey())
-                .defaultHeader("anthropic-version", ANTHROPIC_VERSION)
-                .defaultHeader("content-type", "application/json")
-                .build();
     }
 
     // ── 내부 DTO ────────────────────────────────────

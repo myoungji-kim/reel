@@ -51,6 +51,8 @@ npm run dev
 
 ## 필요한 환경변수
 
+### 백엔드
+
 | 변수명 | 설명 |
 |--------|------|
 | `DB_NAME` | PostgreSQL 데이터베이스 이름 |
@@ -63,7 +65,7 @@ npm run dev
 | `KAKAO_CLIENT_ID` | Kakao REST API 키 |
 | `KAKAO_CLIENT_SECRET` | Kakao 클라이언트 시크릿 |
 
-### 프로덕션 추가 변수
+### 백엔드 (프로덕션 추가)
 
 | 변수명 | 설명 |
 |--------|------|
@@ -72,6 +74,12 @@ npm run dev
 | `REDIS_HOST` | Redis 호스트 |
 | `REDIS_PORT` | Redis 포트 (기본 6379) |
 | `FRONTEND_BASE_URL` | 프론트엔드 배포 URL (CORS 허용) |
+
+### 프론트엔드
+
+| 변수명 | 설명 |
+|--------|------|
+| `VITE_API_BASE_URL` | 백엔드 API 베이스 URL (기본 `http://localhost:8080`) |
 
 ---
 

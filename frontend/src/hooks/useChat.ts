@@ -1,10 +1,12 @@
 import { useCallback, useEffect } from 'react'
 import { getTodaySession, sendMessage as sendMessageApi } from '../api/chatApi'
 import { useChatStore } from '../stores/chatStore'
+import { useToast } from './useToast'
 import type { ChatMessage } from '../types/chat'
 
 export function useChat() {
   const store = useChatStore()
+  const { showToast } = useToast()
 
   // 진입 시 오늘 세션 초기화
   useEffect(() => {
@@ -14,7 +16,7 @@ export function useChat() {
       .then(({ data }) => {
         store.setSession(data.data.sessionId, data.data.messages, data.data.developed)
       })
-      .catch(console.error)
+      .catch(() => showToast('세션을 불러오지 못했어요.'))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendMessage = useCallback(
@@ -35,13 +37,13 @@ export function useChat() {
       try {
         const { data } = await sendMessageApi(store.sessionId, content)
         store.addMessage(data.data)
-      } catch (e) {
-        console.error(e)
+      } catch {
+        showToast('메시지 전송에 실패했어요.')
       } finally {
         store.setTyping(false)
       }
     },
-    [store],
+    [store, showToast],
   )
 
   return {

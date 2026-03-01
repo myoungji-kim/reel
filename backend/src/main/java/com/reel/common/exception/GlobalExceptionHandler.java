@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientException;
+
+import java.util.concurrent.TimeoutException;
 
 @RestControllerAdvice
 @Slf4j
@@ -28,11 +31,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ApiResponse.error(message));
     }
 
+    @ExceptionHandler({WebClientException.class, TimeoutException.class})
+    public ResponseEntity<ApiResponse<Void>> handleWebClientException(Exception e) {
+        log.error("External API call failed", e);
+        return ResponseEntity
+                .status(ErrorCode.AI_RESPONSE_ERROR.getStatus())
+                .body(ApiResponse.error(ErrorCode.AI_RESPONSE_ERROR.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
         log.error("Unhandled exception", e);
         return ResponseEntity
-                .status(ErrorCode.INTERNAL_ERROR.getStatus())
-                .body(ApiResponse.error(ErrorCode.INTERNAL_ERROR.getMessage()));
+                .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
+                .body(ApiResponse.error(ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
     }
 }

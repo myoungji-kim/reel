@@ -3,6 +3,7 @@ import { useAuthStore } from './stores/authStore'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import AuthCallbackPage from './pages/AuthCallbackPage'
+import Toast from './components/Toast'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
@@ -25,6 +26,7 @@ export default function App() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <Toast />
     </BrowserRouter>
   )
 }

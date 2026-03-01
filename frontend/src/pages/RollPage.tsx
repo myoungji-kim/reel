@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getFrames } from '../api/frameApi'
 import { useFrameStore } from '../stores/frameStore'
 import { useUIStore } from '../stores/uiStore'
+import { useToast } from '../hooks/useToast'
 import FilmFrame from '../components/frame/FilmFrame'
 import FrameOverlay from '../components/frame/FrameOverlay'
 import MonthDivider from '../components/frame/MonthDivider'
@@ -28,13 +29,14 @@ function groupByMonth(frames: Frame[]): Map<string, Frame[]> {
 export default function RollPage() {
   const { frames, setFrames } = useFrameStore()
   const { isFrameDetailOpen, setFrameDetailOpen } = useUIStore()
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(true)
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
 
   useEffect(() => {
     getFrames(0, 20)
       .then(({ data }) => setFrames(data.data.content))
-      .catch(console.error)
+      .catch(() => showToast('목록을 불러오지 못했어요.'))
       .finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
