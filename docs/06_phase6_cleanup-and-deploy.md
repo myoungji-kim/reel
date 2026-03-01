@@ -78,3 +78,14 @@ Phase 1~5가 완료된 상태야. 이번이 마지막 단계야.
 1. 전체 구현 완료 요약 (Phase별)
 2. 로컬 실행 커맨드
 3. 추가로 고려하면 좋을 사항 (배포, 모니터링, 테스트 등)
+
+마지막으로 아래 커밋 메시지로 커밋해줘:
+```
+chore: cleanup and production readiness
+
+- ErrorCode / GlobalExceptionHandler 완성
+- React Query 글로벌 에러 핸들러 추가
+- 로딩 UX 통일 (스켈레톤, 인디케이터)
+- any 타입 제거 및 console.log 정리
+- README 최종 업데이트
+```

@@ -107,4 +107,14 @@ CREATE TABLE chat_messages (
 
 ---
 
-완료 후 "Phase 4 완료. 확인 후 05_phase5_develop-frame.md 를 전달해줘." 라고 말해줘.
+완료 후 아래 커밋 메시지로 커밋해줘:
+```
+feat: add chat and Anthropic AI integration
+
+- ChatSession / ChatMessage 엔티티 및 API 구현
+- AnthropicClient (채팅 응답 생성)
+- 채팅 UI 컴포넌트 분리 (MessageBubble, TypingIndicator, ChatInput, DevelopBanner)
+- TopBar, FilmBar 컴포넌트 분리
+- Zustand chatStore 구현
+```
+커밋 완료 후 "Phase 4 완료. 확인 후 05_phase5_develop-frame.md 를 전달해줘." 라고 말해줘.

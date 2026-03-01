@@ -90,4 +90,15 @@ CREATE TABLE users (
 
 ---
 
-완료 후 "Phase 3 완료. 확인 후 04_phase4_chat-ai.md 를 전달해줘." 라고 말해줘.
+완료 후 아래 커밋 메시지로 커밋해줘:
+```
+feat: add OAuth2 social login and JWT authentication
+
+- Google/Kakao OAuth2 로그인 구현
+- JWT Access/Refresh Token 발급 및 검증
+- Refresh Token Rotation (Redis)
+- Spring Security 설정 (STATELESS, CORS)
+- 프론트 로그인 페이지 및 Axios 인터셉터 구현
+- ApiResponse, GlobalExceptionHandler, ErrorCode 추가
+```
+커밋 완료 후 "Phase 3 완료. 확인 후 04_phase4_chat-ai.md 를 전달해줘." 라고 말해줘.

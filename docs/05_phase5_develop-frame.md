@@ -117,4 +117,14 @@ CREATE TABLE frames (
 
 ---
 
-완료 후 "Phase 5 완료. 확인 후 06_phase6_cleanup-and-deploy.md 를 전달해줘." 라고 말해줘.
+완료 후 아래 커밋 메시지로 커밋해줘:
+```
+feat: add develop and frame features
+
+- Frame 엔티티 및 API 구현
+- DevelopService (AI 일기 현상)
+- 현상 오버레이 UI 컴포넌트 분리 (DevelopingOverlay, PreviewOverlay)
+- 필름 롤 컴포넌트 분리 (FilmFrame, FrameOverlay, MonthDivider)
+- RollPage 구현 및 현상 플로우 연결
+```
+커밋 완료 후 "Phase 5 완료. 확인 후 06_phase6_cleanup-and-deploy.md 를 전달해줘." 라고 말해줘.
