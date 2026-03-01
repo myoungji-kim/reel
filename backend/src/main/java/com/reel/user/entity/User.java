@@ -1,24 +1,31 @@
 package com.reel.user.entity;
 
+import com.reel.auth.oauth2.OAuthUserInfo;
+import com.reel.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import java.time.OffsetDateTime;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
     name = "users",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "provider_id"})
+    uniqueConstraints = @UniqueConstraint(columnNames = {"oauth_id", "provider"})
 )
-public class User {
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
-    private String provider;
+    @Column(name = "oauth_id", nullable = false, length = 255)
+    private String oauthId;
 
-    @Column(name = "provider_id", nullable = false, length = 100)
-    private String providerId;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private OAuthProvider provider;
 
     @Column(length = 255)
     private String email;
@@ -26,13 +33,22 @@ public class User {
     @Column(length = 100)
     private String nickname;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    @Column(name = "profile_img", length = 500)
+    private String profileImg;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = OffsetDateTime.now();
+    public static User of(OAuthProvider provider, OAuthUserInfo info) {
+        User user = new User();
+        user.oauthId = info.getProviderId();
+        user.provider = provider;
+        user.email = info.getEmail();
+        user.nickname = info.getNickname();
+        user.profileImg = info.getProfileImg();
+        return user;
     }
 
-    // TODO: Phase 3 — 생성자, getter, builder 추가
+    public void update(String nickname, String email, String profileImg) {
+        this.nickname = nickname;
+        this.email = email;
+        this.profileImg = profileImg;
+    }
 }

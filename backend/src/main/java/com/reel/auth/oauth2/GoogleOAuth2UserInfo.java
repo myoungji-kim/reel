@@ -2,7 +2,7 @@ package com.reel.auth.oauth2;
 
 import java.util.Map;
 
-public class GoogleOAuth2UserInfo {
+public class GoogleOAuth2UserInfo implements OAuthUserInfo {
 
     private final Map<String, Object> attributes;
 
@@ -10,5 +10,23 @@ public class GoogleOAuth2UserInfo {
         this.attributes = attributes;
     }
 
-    // TODO: Phase 3 — getId, getEmail, getNickname
+    @Override
+    public String getProviderId() {
+        return (String) attributes.get("sub");
+    }
+
+    @Override
+    public String getEmail() {
+        return (String) attributes.get("email");
+    }
+
+    @Override
+    public String getNickname() {
+        return (String) attributes.get("name");
+    }
+
+    @Override
+    public String getProfileImg() {
+        return (String) attributes.get("picture");
+    }
 }

@@ -1,13 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     java
     id("org.springframework.boot") version "3.3.0"
     id("io.spring.dependency-management") version "1.1.5"
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.spring") version "1.9.24"
-    kotlin("plugin.jpa") version "1.9.24"
-    id("com.ewerk.gradle.plugins.querydsl") version "1.0.10"
 }
 
 group = "com.reel"
@@ -15,6 +9,7 @@ version = "0.0.1-SNAPSHOT"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -39,7 +34,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
-    // JPA
+    // JPA + Auditing
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     // QueryDSL
@@ -54,16 +49,12 @@ dependencies {
     // PostgreSQL
     runtimeOnly("org.postgresql:postgresql")
 
-    // JWT
+    // JWT (jjwt 0.12.x)
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
-    // Kotlin
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    // HTTP Client (Anthropic API 호출용)
+    // WebFlux (Anthropic API WebClient)
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     // Lombok
@@ -75,13 +66,8 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
 }
 
-// QueryDSL generated source
-val querydslDir = "$buildDir/generated/querydsl"
-
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
+// QueryDSL 생성 소스 경로
+val querydslDir = layout.buildDirectory.dir("generated/sources/annotationProcessor/java/main")
 
 sourceSets {
     main {
@@ -91,17 +77,8 @@ sourceSets {
     }
 }
 
-configurations {
-    named("querydsl") {
-        extendsFrom(configurations.compileClasspath.get())
-    }
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs += "-Xjsr305=strict"
-        jvmTarget = "21"
-    }
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("-parameters")
 }
 
 tasks.withType<Test> {
