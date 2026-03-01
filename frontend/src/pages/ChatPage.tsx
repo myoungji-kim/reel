@@ -1,21 +1,75 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useChat } from '../hooks/useChat'
 import MessageBubble from '../components/chat/MessageBubble'
 import TypingIndicator from '../components/chat/TypingIndicator'
 import ChatInput from '../components/chat/ChatInput'
 import DevelopBanner from '../components/chat/DevelopBanner'
+import DevelopingOverlay from '../components/overlays/DevelopingOverlay'
+import PreviewOverlay from '../components/overlays/PreviewOverlay'
 import { formatChatDate } from '../utils/dateFormat'
 import { useUIStore } from '../stores/uiStore'
+import { useFrameStore } from '../stores/frameStore'
+import { useChatStore } from '../stores/chatStore'
+import { developPreview, saveFrame } from '../api/frameApi'
 
 export default function ChatPage() {
   const { messages, isTyping, userMsgCount, developed, sendMessage, sessionId } = useChat()
-  const { setDevelopingOpen } = useUIStore()
+  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab } =
+    useUIStore()
+  const { preview, setPreview } = useFrameStore()
+  const resetChat = useChatStore((s) => s.reset)
+  const navigate = useNavigate()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   // 메시지 추가 시 자동 스크롤
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
+
+  // 현상 시작
+  const handleDevelop = async () => {
+    if (!sessionId) return
+    setDevelopingOpen(true)
+    const startTime = Date.now()
+
+    try {
+      const { data } = await developPreview(sessionId)
+      setPreview(data.data)
+
+      // 최소 2.2초 대기 (진행바 완료)
+      const elapsed = Date.now() - startTime
+      const remaining = Math.max(0, 2200 - elapsed)
+      await new Promise((resolve) => setTimeout(resolve, remaining))
+    } catch (e) {
+      console.error(e)
+      setDevelopingOpen(false)
+      return
+    }
+
+    setDevelopingOpen(false)
+    setPreviewOpen(true)
+  }
+
+  // 최종 저장
+  const handleSave = async (frameId: number, title: string, content: string) => {
+    try {
+      await saveFrame(frameId, title, content)
+      setPreviewOpen(false)
+      setPreview(null)
+      resetChat()
+      setActiveTab('roll')
+      navigate('/home')
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  // 미리보기 취소
+  const handleCancelPreview = () => {
+    setPreviewOpen(false)
+    setPreview(null)
+  }
 
   // 현상 완료된 세션
   if (developed) {
@@ -38,30 +92,43 @@ export default function ChatPage() {
   }
 
   return (
-    <div style={styles.view}>
-      {/* 헤더 */}
-      <div style={styles.header}>
-        <span style={styles.date}>{formatChatDate(new Date())}</span>
-        <span style={styles.count}>{userMsgCount} lines</span>
+    <>
+      <div style={styles.view}>
+        {/* 헤더 */}
+        <div style={styles.header}>
+          <span style={styles.date}>{formatChatDate(new Date())}</span>
+          <span style={styles.count}>{userMsgCount} lines</span>
+        </div>
+
+        {/* 메시지 목록 */}
+        <div style={styles.messages}>
+          {messages.map((msg) => (
+            <MessageBubble key={msg.id} message={msg} />
+          ))}
+          {isTyping && <TypingIndicator />}
+          <div ref={bottomRef} />
+        </div>
+
+        {/* 현상 배너 (userMsgCount >= 3) */}
+        {userMsgCount >= 3 && sessionId !== null && (
+          <DevelopBanner onDevelop={handleDevelop} />
+        )}
+
+        {/* 입력창 */}
+        <ChatInput onSend={sendMessage} disabled={isTyping} />
       </div>
 
-      {/* 메시지 목록 */}
-      <div style={styles.messages}>
-        {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} />
-        ))}
-        {isTyping && <TypingIndicator />}
-        <div ref={bottomRef} />
-      </div>
+      {/* 현상 오버레이 */}
+      <DevelopingOverlay isOpen={isDevelopingOpen} />
 
-      {/* 현상 배너 (userMsgCount >= 3) */}
-      {userMsgCount >= 3 && sessionId !== null && (
-        <DevelopBanner onDevelop={() => setDevelopingOpen(true)} />
-      )}
-
-      {/* 입력창 */}
-      <ChatInput onSend={sendMessage} disabled={isTyping} />
-    </div>
+      {/* 미리보기 오버레이 */}
+      <PreviewOverlay
+        isOpen={isPreviewOpen}
+        preview={preview}
+        onSave={handleSave}
+        onCancel={handleCancelPreview}
+      />
+    </>
   )
 }
 
