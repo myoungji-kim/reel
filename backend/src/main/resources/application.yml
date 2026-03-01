@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: reel
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+
+jwt:
+  access-token-expiry-ms: 1800000    # 30분
+  refresh-token-expiry-ms: 1209600000 # 14일
+
+anthropic:
+  model: claude-sonnet-4-20250514
+  max-tokens: 1000
+  api-url: https://api.anthropic.com/v1/messages
+
+logging:
+  level:
+    com.reel: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

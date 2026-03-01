@@ -1,0 +1,14 @@
+:root {
+  --bg: #131008;
+  --bg-mid: #1a1510;
+  --bg-card: #1e1a0f;
+  --border: #2e2518;
+  --border-light: #3d3220;
+  --amber: #d4822a;
+  --amber-light: #e8a94a;
+  --amber-pale: #f0c878;
+  --cream: #f2e8d0;
+  --cream-dim: #c8b898;
+  --cream-muted: #8a7a60;
+  --fade-green: #7a9e8a;
+}

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>REEL — 인생의 릴필름</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=VT323&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+          --bg: #131008;
+          --bg-mid: #1a1510;
+          --bg-card: #1e1a0f;
+          --border: #2e2518;
+          --border-light: #3d3220;
+          --amber: #d4822a;
+          --amber-light: #e8a94a;
+          --amber-pale: #f0c878;
+          --cream: #f2e8d0;
+          --cream-dim: #c8b898;
+          --cream-muted: #8a7a60;
+          --fade-green: #7a9e8a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+          background: var(--bg);
+          font-family: 'Noto Sans KR', sans-serif;
+          color: var(--cream);
+        }
+        body::after {
+          content: '';
+          position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+          mix-blend-mode: overlay; opacity: 0.5;
+        }
+
+        .root {
+          max-width: 440px; margin: 0 auto;
+          height: 100vh; display: flex; flex-direction: column;
+          position: relative; overflow: hidden;
+        }
+
+        .topbar {
+          flex-shrink: 0;
+          background: var(--bg);
+          border-bottom: 1px solid var(--border);
+        }
+        .topbar-inner {
+          display: flex; align-items: center;
+          padding: 14px 20px 0;
+        }
+        .logo {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 26px; color: var(--amber-pale);
+          letter-spacing: 0.08em; margin-right: 16px;
+          line-height: 1;
+        }
+        .tabs { display: flex; flex: 1; }
+        .tab {
+          padding: 8px 16px 12px;
+          background: transparent; border: none; cursor: pointer;
+          font-family: 'Space Mono', monospace; font-size: 10px;
+          letter-spacing: 0.08em; color: var(--cream-muted);
+          border-bottom: 2px solid transparent;
+          transition: all 0.2s; white-space: nowrap;
+        }
+        .tab.active { color: var(--amber-light); border-bottom-color: var(--amber); }
+
+        .film-bar {
+          height: 16px; background: var(--bg);
+          border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; overflow: hidden;
+        }
+        .film-holes-anim {
+          display: flex; gap: 0;
+          animation: filmScroll 40s linear infinite;
+          white-space: nowrap;
+        }
+        @keyframes filmScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        .fh {
+          width: 12px; height: 8px; border-radius: 1px;
+          background: var(--bg-mid); border: 1px solid var(--border-light);
+          margin: 0 6px; display: inline-block; flex-shrink: 0;
+        }
+
+        .view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+        .view.active { display: flex; }
+
+        /* ── 채팅 뷰 ── */
+        .chat-header {
+          flex-shrink: 0;
+          padding: 12px 20px;
+          border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; justify-content: space-between;
+        }
+        .chat-date { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--amber); letter-spacing: 0.1em; }
+        .chat-frame-count { font-family: 'VT323', monospace; font-size: 18px; color: var(--cream-muted); }
+
+        .chat-messages {
+          flex: 1; overflow-y: auto; padding: 16px 16px 8px;
+          display: flex; flex-direction: column; gap: 10px;
+          scroll-behavior: smooth;
+        }
+        .chat-messages::-webkit-scrollbar { width: 3px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+        .msg { display: flex; gap: 8px; max-width: 85%; }
+        .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+        .msg.ai { align-self: flex-start; }
+
+        .msg-avatar {
+          width: 28px; height: 28px; border-radius: 50%;
+          flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+          font-size: 13px; margin-top: 2px;
+        }
+        .msg.ai .msg-avatar {
+          background: linear-gradient(135deg, var(--amber), #8a5a1a);
+          font-family: 'VT323', monospace; color: var(--bg);
+          font-size: 11px; letter-spacing: 0;
+        }
+
+        .msg-bubble {
+          padding: 10px 14px; border-radius: 16px;
+          font-size: 14px; line-height: 1.65; font-weight: 300;
+        }
+        .msg.user .msg-bubble {
+          background: rgba(212,130,42,0.15);
+          border: 1px solid rgba(212,130,42,0.25);
+          color: var(--cream); border-radius: 16px 4px 16px 16px;
+        }
+        .msg.ai .msg-bubble {
+          background: var(--bg-card);
+          border: 1px solid var(--border-light);
+          color: var(--cream-dim); border-radius: 4px 16px 16px 16px;
+        }
+        .msg-time {
+          font-family: 'Space Mono', monospace; font-size: 9px;
+          color: var(--cream-muted); margin-top: 4px;
+          align-self: flex-end;
+        }
+
+        .develop-banner {
+          flex-shrink: 0;
+          margin: 8px 16px;
+          padding: 12px 16px;
+          background: rgba(212,130,42,0.07);
+          border: 1px dashed rgba(212,130,42,0.3);
+          border-radius: 8px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 12px; cursor: pointer;
+          transition: background 0.2s;
+          animation: bannerFade 0.4s ease;
+        }
+        @keyframes bannerFade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+        .develop-banner:hover { background: rgba(212,130,42,0.12); }
+        .develop-banner-text { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+        .develop-banner-text strong { color: var(--amber-light); font-weight: 500; display: block; margin-bottom: 2px; }
+        .develop-btn-pill {
+          flex-shrink: 0;
+          padding: 8px 14px; border: none; cursor: pointer;
+          background: linear-gradient(135deg, var(--amber-light), var(--amber));
+          color: var(--bg); font-family: 'Space Mono', monospace;
+          font-size: 10px; letter-spacing: 0.05em;
+          border-radius: 20px; white-space: nowrap;
+          box-shadow: 0 2px 8px rgba(212,130,42,0.3);
+        }
+
+        .typing-indicator { display: flex; gap: 4px; padding: 10px 14px; align-items: center; }
+        .typing-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: var(--amber); opacity: 0.4;
+        }
+        .typing-dot:nth-child(1) { animation: typingBounce 1.2s ease-in-out infinite 0s; }
+        .typing-dot:nth-child(2) { animation: typingBounce 1.2s ease-in-out infinite 0.2s; }
+        .typing-dot:nth-child(3) { animation: typingBounce 1.2s ease-in-out infinite 0.4s; }
+        @keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.4} 30%{transform:translateY(-5px);opacity:1} }
+
+        .chat-input-area {
+          flex-shrink: 0;
+          padding: 10px 12px 16px;
+          border-top: 1px solid var(--border);
+          background: var(--bg);
+        }
+        .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+        .chat-input {
+          flex: 1; background: var(--bg-card);
+          border: 1px solid var(--border-light);
+          border-radius: 20px; padding: 10px 16px;
+          color: var(--cream); font-family: 'Noto Sans KR', sans-serif;
+          font-size: 14px; font-weight: 300; resize: none;
+          max-height: 100px; line-height: 1.5;
+          outline: none; transition: border-color 0.2s;
+        }
+        .chat-input:focus { border-color: rgba(212,130,42,0.4); }
+        .chat-input::placeholder { color: var(--cream-muted); }
+        .send-btn {
+          width: 40px; height: 40px; border-radius: 50%;
+          background: linear-gradient(135deg, var(--amber-light), var(--amber));
+          border: none; cursor: pointer; color: var(--bg);
+          font-size: 16px; display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; transition: opacity 0.2s, transform 0.1s;
+          box-shadow: 0 2px 8px rgba(212,130,42,0.35);
+        }
+        .send-btn:active { transform: scale(0.92); }
+        .send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* ── 필름 롤 뷰 ── */
+        .roll-list { flex: 1; overflow-y: auto; padding: 12px 16px 80px; }
+        .roll-list::-webkit-scrollbar { width: 3px; }
+        .roll-list::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+        .month-divider {
+          display: flex; align-items: center; gap: 10px;
+          margin: 16px 0 12px;
+        }
+        .month-divider-text { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--amber); letter-spacing: 0.1em; }
+        .month-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(212,130,42,0.25), transparent); }
+        .month-divider-count { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--cream-muted); }
+
+        .film-frame {
+          position: relative; margin-bottom: 14px; cursor: pointer;
+          transition: transform 0.15s;
+        }
+        .film-frame:active { transform: scale(0.98); }
+        .film-outer {
+          background: #0f0c08; border: 1.5px solid var(--border);
+          border-radius: 3px; display: flex; overflow: hidden;
+        }
+        .perfs {
+          width: 18px; flex-shrink: 0; background: #0a0806;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: space-around;
+          padding: 8px 0; border-right: 1px solid var(--border);
+        }
+        .perfs.right { border-right: none; border-left: 1px solid var(--border); }
+        .perf { width: 9px; height: 6px; border-radius: 1px; background: var(--bg); border: 1px solid #2e2518; }
+
+        .frame-body {
+          flex: 1; padding: 14px 16px;
+          background: linear-gradient(135deg, #1e1a0f, #161209);
+          position: relative;
+        }
+        .frame-num {
+          position: absolute; top: 10px; right: 12px;
+          font-family: 'VT323', monospace; font-size: 18px;
+          color: var(--amber); opacity: 0.35;
+        }
+        .frame-date-label {
+          font-family: 'Space Mono', monospace; font-size: 10px;
+          color: var(--amber-light); opacity: 0.65; letter-spacing: 0.06em;
+          margin-bottom: 6px;
+        }
+        .frame-title { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--cream); font-weight: 400; line-height: 1.4; margin-bottom: 6px; }
+        .frame-preview {
+          font-size: 12px; color: var(--cream-muted); line-height: 1.7; font-weight: 300;
+          display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .frame-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+        .frame-mood { font-size: 12px; color: var(--cream-muted); display: flex; align-items: center; gap: 5px; }
+        .frame-status {
+          font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+          padding: 2px 7px; border-radius: 2px;
+        }
+        .frame-status.done { color: var(--fade-green); border: 1px solid rgba(122,158,138,0.3); }
+        .frame-status.pending { color: var(--amber-light); border: 1px solid rgba(212,130,42,0.25); animation: flicker 2s ease-in-out infinite; }
+        @keyframes flicker { 0%,100%{opacity:0.55} 50%{opacity:1} }
+
+        /* ── 상세 오버레이 ── */
+        .overlay {
+          position: fixed; inset: 0; z-index: 200;
+          background: rgba(10,8,5,0.97);
+          display: flex; align-items: flex-end; justify-content: center;
+          opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        .overlay.open { opacity: 1; pointer-events: all; }
+        .overlay-sheet {
+          width: 100%; max-width: 440px;
+          background: var(--bg-mid); border: 1.5px solid var(--border);
+          border-bottom: none; border-radius: 16px 16px 0 0;
+          padding: 24px 24px 48px; max-height: 85vh; overflow-y: auto;
+          transform: translateY(60px); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+          position: relative;
+        }
+        .overlay.open .overlay-sheet { transform: translateY(0); }
+        .overlay-handle { width: 36px; height: 3px; background: var(--border-light); border-radius: 2px; margin: 0 auto 20px; }
+        .overlay-frame-top {
+          height: 18px; background: var(--bg);
+          border: 1px solid var(--border); border-radius: 2px;
+          display: flex; align-items: center; overflow: hidden;
+          margin-bottom: 20px; padding: 0 6px; gap: 6px;
+        }
+        .overlay-perf { width: 10px; height: 7px; border-radius: 1px; background: var(--bg-mid); border: 1px solid var(--border); flex-shrink: 0; }
+        .overlay-num { font-family: 'VT323', monospace; font-size: 18px; color: var(--amber); margin-left: auto; opacity: 0.6; }
+        .overlay-title { font-family: 'Noto Serif KR', serif; font-size: 20px; color: var(--cream); margin-bottom: 4px; }
+        .overlay-date { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--amber-light); opacity: 0.6; margin-bottom: 16px; }
+        .overlay-content {
+          font-family: 'Noto Serif KR', serif; font-size: 14px;
+          color: var(--cream-dim); line-height: 2; font-weight: 300;
+          white-space: pre-wrap; border-top: 1px solid var(--border); padding-top: 16px;
+        }
+        .overlay-close {
+          position: absolute; top: 20px; right: 20px;
+          background: transparent; border: 1px solid var(--border-light);
+          color: var(--cream-muted); width: 28px; height: 28px;
+          border-radius: 3px; cursor: pointer; font-size: 12px;
+          display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── 현상 중 오버레이 ── */
+        .developing-overlay {
+          position: fixed; inset: 0; z-index: 300;
+          background: var(--bg);
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center; gap: 20px;
+          opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .developing-overlay.open { opacity: 1; pointer-events: all; }
+        .dev-film-strip { display: flex; gap: 3px; }
+        .dev-frame {
+          width: 32px; height: 42px; border: 1.5px solid var(--border);
+          border-radius: 2px; background: var(--bg-mid);
+          animation: devFlash 0.5s ease-in-out infinite;
+        }
+        .dev-frame:nth-child(1){animation-delay:0s}
+        .dev-frame:nth-child(2){animation-delay:0.1s}
+        .dev-frame:nth-child(3){animation-delay:0.2s}
+        .dev-frame:nth-child(4){animation-delay:0.3s}
+        .dev-frame:nth-child(5){animation-delay:0.4s}
+        @keyframes devFlash { 0%,100%{opacity:0.2;background:var(--bg-mid)} 50%{opacity:1;background:rgba(212,130,42,0.15)} }
+        .dev-text {
+          font-family: 'Space Mono', monospace; font-size: 12px;
+          color: var(--amber); letter-spacing: 0.1em;
+          animation: devBlink 1s ease-in-out infinite;
+        }
+        @keyframes devBlink { 0%,100%{opacity:0.5} 50%{opacity:1} }
+        .dev-subtext { font-size: 12px; color: var(--cream-muted); font-weight: 300; }
+        .dev-progress {
+          width: 160px; height: 2px; background: var(--border);
+          border-radius: 1px; overflow: hidden;
+        }
+        .dev-progress-bar {
+          height: 100%; width: 0%;
+          background: linear-gradient(90deg, var(--amber), var(--amber-pale));
+          border-radius: 1px;
+          transition: width 0.3s ease;
+        }
+
+        /* ── 미리보기 오버레이 ── */
+        .preview-overlay {
+          position: fixed; inset: 0; z-index: 400;
+          background: rgba(10,8,5,0.97);
+          display: flex; align-items: flex-end; justify-content: center;
+          opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        .preview-overlay.open { opacity: 1; pointer-events: all; }
+        .preview-sheet {
+          width: 100%; max-width: 440px;
+          background: var(--bg-mid);
+          border: 1.5px solid var(--border);
+          border-bottom: none; border-radius: 20px 20px 0 0;
+          display: flex; flex-direction: column;
+          max-height: 92vh;
+          transform: translateY(60px);
+          transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .preview-overlay.open .preview-sheet { transform: translateY(0); }
+        .preview-header {
+          flex-shrink: 0; padding: 16px 20px 12px;
+          border-bottom: 1px solid var(--border);
+        }
+        .preview-handle { width: 36px; height: 3px; background: var(--border-light); border-radius: 2px; margin: 0 auto 16px; }
+        .preview-filmstrip {
+          height: 18px; background: var(--bg);
+          border: 1px solid var(--border); border-radius: 2px;
+          display: flex; align-items: center; overflow: hidden;
+          padding: 0 6px; gap: 5px; margin-bottom: 14px;
+        }
+        .preview-perf { width: 9px; height: 6px; border-radius: 1px; background: var(--bg-mid); border: 1px solid var(--border); flex-shrink: 0; }
+        .preview-label-row { display: flex; align-items: center; justify-content: space-between; }
+        .preview-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--amber); letter-spacing: 0.12em; opacity: 0.8; }
+        .preview-edit-hint { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--cream-muted); letter-spacing: 0.06em; display: flex; align-items: center; gap: 4px; }
+        .edit-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--amber); opacity: 0.5; animation: devBlink 1.5s ease-in-out infinite; }
+        .preview-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+        .preview-body::-webkit-scrollbar { width: 3px; }
+        .preview-body::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+        .field-tag { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--cream-muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+        .preview-title-input {
+          width: 100%; background: rgba(255,255,255,0.03);
+          border: 1px solid var(--border-light); border-radius: 8px;
+          padding: 12px 14px; color: var(--cream);
+          font-family: 'Noto Serif KR', serif;
+          font-size: 17px; font-weight: 400;
+          outline: none; margin-bottom: 14px;
+          transition: border-color 0.2s; line-height: 1.4;
+        }
+        .preview-title-input:focus { border-color: rgba(212,130,42,0.4); }
+        .preview-content-input {
+          width: 100%; background: rgba(255,255,255,0.02);
+          border: 1px solid var(--border); border-radius: 8px;
+          padding: 14px; color: var(--cream-dim);
+          font-family: 'Noto Serif KR', serif;
+          font-size: 14px; font-weight: 300;
+          line-height: 2; resize: none;
+          outline: none; min-height: 200px;
+          transition: border-color 0.2s;
+        }
+        .preview-content-input:focus { border-color: rgba(212,130,42,0.3); }
+        .preview-footer {
+          flex-shrink: 0; padding: 12px 20px 28px;
+          border-top: 1px solid var(--border);
+          display: flex; gap: 10px;
+        }
+        .btn-cancel {
+          flex: 1; padding: 13px; background: transparent;
+          border: 1px solid var(--border-light); border-radius: 10px; cursor: pointer;
+          color: var(--cream-muted); font-family: 'Space Mono', monospace;
+          font-size: 11px; letter-spacing: 0.06em; transition: all 0.2s;
+        }
+        .btn-save {
+          flex: 2; padding: 13px;
+          background: linear-gradient(135deg, var(--amber-light), var(--amber));
+          border: none; border-radius: 10px; cursor: pointer;
+          color: var(--bg); font-family: 'Space Mono', monospace;
+          font-size: 11px; letter-spacing: 0.06em; font-weight: 700;
+          box-shadow: 0 3px 12px rgba(212,130,42,0.35);
+          display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+
+        /* 새 프레임 삽입 애니메이션 */
+        @keyframes frameSlideIn {
+          from { opacity: 0; transform: translateY(-12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .frame-new { animation: frameSlideIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+    </style>
+</head>
+<body>
+<div class="root">
+
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="logo">REEL</div>
+            <div class="tabs">
+                <button class="tab active" onclick="switchView('chat',this)">◈ 오늘의 현장</button>
+                <button class="tab" onclick="switchView('roll',this)">◆ 필름 롤</button>
+            </div>
+        </div>
+    </div>
+    <div class="film-bar"><div class="film-holes-anim" id="filmAnim"></div></div>
+
+    <!-- 채팅 뷰 -->
+    <div class="view active" id="view-chat">
+        <div class="chat-header">
+            <div class="chat-date" id="chatDateLabel"></div>
+            <div class="chat-frame-count" id="chatMsgCount">0 lines</div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="msg ai">
+                <div class="msg-avatar">AI</div>
+                <div>
+                    <div class="msg-bubble">오늘 하루 어땠어요? 🎞️<br>생각나는 거 뭐든 얘기해줘요. 나중에 일기로 현상해드릴게요.</div>
+                    <div class="msg-time" id="welcomeTime"></div>
+                </div>
+            </div>
+        </div>
+        <div class="develop-banner" id="developBanner" style="display:none" onclick="startDevelop()">
+            <div class="develop-banner-text">
+                <strong>◈ 오늘 일기로 현상하기</strong>
+                대화 내용을 AI가 필름 한 장으로 정리해드릴게요
+            </div>
+            <button class="develop-btn-pill">현상하기 →</button>
+        </div>
+        <div class="chat-input-area">
+            <div class="chat-input-row">
+        <textarea class="chat-input" id="chatInput" rows="1"
+                  placeholder="오늘 있었던 일, 기분... 뭐든요"
+                  oninput="autoResize(this);checkInput()"
+                  onkeydown="handleEnter(event)"></textarea>
+                <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 필름 롤 뷰 -->
+    <div class="view" id="view-roll">
+        <div class="roll-list" id="rollList">
+            <div class="month-divider">
+                <div class="month-divider-text" id="monthLabel"></div>
+                <div class="month-divider-line"></div>
+                <div class="month-divider-count" id="frameCount">1 frame</div>
+            </div>
+            <div class="film-frame" onclick="openFrame(0)">
+                <div class="film-outer">
+                    <div class="perfs"><div class="perf"></div><div class="perf"></div><div class="perf"></div></div>
+                    <div class="frame-body">
+                        <div class="frame-num">♦01</div>
+                        <div class="frame-date-label" id="sampleDateLabel"></div>
+                        <div class="frame-title">오랜 친구를 다시 만난 날</div>
+                        <div class="frame-preview">고등학교 때 친했던 지현이를 5년 만에 만났다. 카페에서 3시간을 이야기했는데 시간이 너무 빨리 갔다.</div>
+                        <div class="frame-footer">
+                            <div class="frame-mood">😊 행복</div>
+                            <span class="frame-status done">◆ DEVELOPED</span>
+                        </div>
+                    </div>
+                    <div class="perfs right"><div class="perf"></div><div class="perf"></div><div class="perf"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 상세 오버레이 -->
+<div class="overlay" id="frameOverlay" onclick="closeOverlay(event)">
+    <div class="overlay-sheet" onclick="event.stopPropagation()">
+        <div class="overlay-handle"></div>
+        <button class="overlay-close" onclick="closeOverlay()">✕</button>
+        <div class="overlay-frame-top" id="overlayPerfs"></div>
+        <div class="overlay-title" id="overlayTitle"></div>
+        <div class="overlay-date" id="overlayDate"></div>
+        <div class="overlay-content" id="overlayContent"></div>
+    </div>
+</div>
+
+<!-- 현상 중 오버레이 -->
+<div class="developing-overlay" id="developingOverlay">
+    <div class="dev-film-strip">
+        <div class="dev-frame"></div><div class="dev-frame"></div>
+        <div class="dev-frame"></div><div class="dev-frame"></div>
+        <div class="dev-frame"></div>
+    </div>
+    <div class="dev-text">// DEVELOPING...</div>
+    <div class="dev-subtext">AI가 오늘 하루를 현상하는 중이에요</div>
+    <div class="dev-progress"><div class="dev-progress-bar" id="devProgressBar"></div></div>
+</div>
+
+<!-- 미리보기 오버레이 -->
+<div class="preview-overlay" id="previewOverlay">
+    <div class="preview-sheet">
+        <div class="preview-header">
+            <div class="preview-handle"></div>
+            <div class="preview-filmstrip" id="previewFilmstrip"></div>
+            <div class="preview-label-row">
+                <div class="preview-eyebrow">◈ 현상 미리보기</div>
+                <div class="preview-edit-hint"><div class="edit-dot"></div>직접 수정 가능해요</div>
+            </div>
+        </div>
+        <div class="preview-body">
+            <div class="field-tag">제목</div>
+            <input class="preview-title-input" id="previewTitle" type="text" />
+            <div class="field-tag" style="margin-top:4px">본문</div>
+            <textarea class="preview-content-input" id="previewContent"></textarea>
+        </div>
+        <div class="preview-footer">
+            <button class="btn-cancel" onclick="closePreview()">✕ 취소</button>
+            <button class="btn-save" onclick="saveFrame()">◆ 이대로 현상하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── 필름홀 초기화
+    const fa = document.getElementById('filmAnim');
+    let fhHtml = '';
+    for(let i=0;i<50;i++) fhHtml += '<div class="fh"></div>';
+    fa.innerHTML = fhHtml + fhHtml;
+
+    // ── 날짜
+    const now = new Date();
+    const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} — ${days[now.getDay()]}`;
+    const monthStr = `${months[now.getMonth()]} ${now.getFullYear()}`;
+    document.getElementById('chatDateLabel').textContent = dateStr;
+    document.getElementById('sampleDateLabel').textContent = dateStr;
+    document.getElementById('monthLabel').textContent = monthStr;
+
+    function getTime() {
+      return `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }
+    document.getElementById('welcomeTime').textContent = getTime();
+
+    // ── 상태
+    let messages = [];
+    let isAITyping = false;
+    let userMsgCount = 0;
+
+    const frames = [{
+      num:'♦01', title:'오랜 친구를 다시 만난 날',
+      date: dateStr + ' — SATURDAY', mood:'😊 행복',
+      content:`고등학교 때 가장 친했던 지현이를 5년 만에 만났다.\n\n카페에서 3시간을 이야기했는데 시간이 너무 빨리 갔다. 서로 근황을 나누다보니 벌써 그렇게 시간이 지났다는 게 실감이 안 났다.\n\n각자 다른 삶을 살고 있지만, 만나면 바로 어제 본 것처럼 편한 사람. 그런 친구가 있다는 게 참 다행이다.\n\n— AI가 현상한 오늘의 한 컷`,
+      done: true
+    }];
+
+    // ── 탭 전환
+    function switchView(name, el) {
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      el.classList.add('active');
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      document.getElementById('view-'+name).classList.add('active');
+    }
+
+    // ── 입력
+    function autoResize(el) {
+      el.style.height='auto';
+      el.style.height=Math.min(el.scrollHeight,100)+'px';
+    }
+    function checkInput() {
+      document.getElementById('sendBtn').disabled = !document.getElementById('chatInput').value.trim();
+    }
+    function handleEnter(e) {
+      if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); if(!document.getElementById('sendBtn').disabled) sendMessage(); }
+    }
+
+    // ── 메시지 DOM
+    function appendMsg(role, text, time) {
+      const wrap = document.getElementById('chatMessages');
+      const isUser = role==='user';
+      const div = document.createElement('div');
+      div.className=`msg ${role}`;
+      if(isUser){
+        div.innerHTML=`<div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time" style="text-align:right">${time}</div></div>`;
+      } else {
+        div.innerHTML=`<div class="msg-avatar">AI</div><div><div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div></div>`;
+      }
+      wrap.appendChild(div);
+      wrap.scrollTop=wrap.scrollHeight;
+    }
+
+    function showTyping() {
+      const wrap = document.getElementById('chatMessages');
+      const el = document.createElement('div');
+      el.className='msg ai'; el.id='typingEl';
+      el.innerHTML=`<div class="msg-avatar">AI</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+      wrap.appendChild(el);
+      wrap.scrollTop=wrap.scrollHeight;
+    }
+    function hideTyping() { const el=document.getElementById('typingEl'); if(el) el.remove(); }
+
+    // ── AI 응답
+    async function getAIReply(userText) {
+      const history = messages.map(m=>({ role: m.role==='user'?'user':'assistant', content: m.text }));
+      history.push({role:'user', content:userText});
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            model:'claude-sonnet-4-20250514',
+            max_tokens:1000,
+            system:`당신은 사용자의 하루를 채팅으로 들어주는 따뜻한 AI 일기 친구입니다.
+    규칙:
+    - 짧고 자연스럽게 대화하세요. 2-3문장 이내로.
+    - 공감하고, 더 이야기하도록 유도하는 질문을 1개만 던지세요.
+    - 이모지는 1개까지만 사용하세요.
+    - 강요하지 말고 편안하게 대화하세요.
+    - 반말로 편하게 이야기하세요.`,
+            messages:history
+          })
+        });
+        const data = await res.json();
+        return data.content?.[0]?.text || '그렇군요. 더 얘기해줄래요?';
+      } catch {
+        const f=['그랬구나. 그때 기분이 어땠어?','오, 그 순간 어떤 생각이 들었어?','그 사람이랑 어떤 이야기를 나눴어?','그게 요즘 많이 생각나?','더 얘기해줘, 듣고 싶어 🎞️'];
+        return f[Math.floor(Math.random()*f.length)];
+      }
+    }
+
+    // ── 메시지 전송
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if(!text||isAITyping) return;
+      isAITyping=true; userMsgCount++;
+      const t = getTime();
+      messages.push({role:'user',text});
+      appendMsg('user',text,t);
+      input.value=''; input.style.height='auto';
+      document.getElementById('sendBtn').disabled=true;
+      document.getElementById('chatMsgCount').textContent=`${userMsgCount} lines`;
+      if(userMsgCount>=3) document.getElementById('developBanner').style.display='flex';
+      showTyping();
+      await new Promise(r=>setTimeout(r,900+Math.random()*600));
+      hideTyping();
+      const reply = await getAIReply(text);
+      messages.push({role:'ai',text:reply});
+      appendMsg('ai',reply,getTime());
+      isAITyping=false;
+    }
+
+    // ── 현상 진행바 애니메이션
+    function animateProgress(duration, cb) {
+      const bar = document.getElementById('devProgressBar');
+      const start = Date.now();
+      function step() {
+        const p = Math.min((Date.now()-start)/duration, 1);
+        bar.style.width = (p*100)+'%';
+        if(p<1) requestAnimationFrame(step); else cb && cb();
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ── 현상 시작
+    async function startDevelop() {
+      const devOverlay = document.getElementById('developingOverlay');
+      devOverlay.classList.add('open');
+      document.getElementById('devProgressBar').style.width='0%';
+
+      const conversation = messages.map(m=>`${m.role==='user'?'나':'AI'}: ${m.text}`).join('\n');
+      let title='오늘의 하루', content='';
+
+      // 진행바 & API 동시 진행
+      animateProgress(2200);
+
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            model:'claude-sonnet-4-20250514',
+            max_tokens:1000,
+            system:`채팅 대화를 분석해서 JSON 형태로만 응답하세요.
+    형식: {"title":"한 줄 제목","content":"일기 내용 (3-5문단, 감성적으로 정리)"}
+    - 제목은 오늘 하루를 가장 잘 나타내는 짧은 문장
+    - 내용은 사용자 입장에서 1인칭으로, 자연스러운 일기 문체로
+    - JSON만 출력하세요`,
+            messages:[{role:'user',content:`다음 대화를 일기로 정리해주세요:\n\n${conversation}`}]
+          })
+        });
+        const data = await res.json();
+        const raw = data.content?.[0]?.text||'{}';
+        const clean = raw.replace(/```json|```/g,'').trim();
+        const parsed = JSON.parse(clean);
+        title = parsed.title||title;
+        content = parsed.content||conversation;
+      } catch {
+        title='오늘의 기록';
+        content = messages.filter(m=>m.role==='user').map(m=>m.text).join('\n\n');
+      }
+
+      await new Promise(r=>setTimeout(r,2200));
+      document.getElementById('devProgressBar').style.width='100%';
+      await new Promise(r=>setTimeout(r,200));
+      devOverlay.classList.remove('open');
+
+      document.getElementById('previewTitle').value=title;
+      document.getElementById('previewContent').value=content;
+
+      let perfsHtml='';
+      for(let i=0;i<18;i++) perfsHtml+='<div class="preview-perf"></div>';
+      document.getElementById('previewFilmstrip').innerHTML=perfsHtml;
+
+      document.getElementById('previewOverlay').classList.add('open');
+    }
+
+    function closePreview() { document.getElementById('previewOverlay').classList.remove('open'); }
+
+    // ── 저장
+    function saveFrame() {
+      const title   = document.getElementById('previewTitle').value.trim()||'오늘의 기록';
+      const content = document.getElementById('previewContent').value.trim();
+      closePreview();
+
+      const frameNum = frames.length+1;
+      const newFrame = {
+        num:`♦${String(frameNum).padStart(2,'0')}`,
+        title, date:dateStr, mood:'😊',
+        content:`${content}\n\n— AI가 현상한 오늘의 한 컷`,
+        done:true
+      };
+      frames.unshift(newFrame);
+
+      const rollList = document.getElementById('rollList');
+      const frameEl  = document.createElement('div');
+      frameEl.className='film-frame frame-new';
+      frameEl.onclick = ()=>openFrame(0);
+      frameEl.innerHTML=`
+        <div class="film-outer">
+          <div class="perfs"><div class="perf"></div><div class="perf"></div><div class="perf"></div></div>
+          <div class="frame-body">
+            <div class="frame-num">${newFrame.num}</div>
+            <div class="frame-date-label">${dateStr}</div>
+            <div class="frame-title">${title}</div>
+            <div class="frame-preview">${content.split('\n')[0]}</div>
+            <div class="frame-footer">
+              <div class="frame-mood">😊</div>
+              <span class="frame-status done">◆ DEVELOPED</span>
+            </div>
+          </div>
+          <div class="perfs right"><div class="perf"></div><div class="perf"></div><div class="perf"></div></div>
+        </div>`;
+
+      rollList.querySelector('.month-divider').after(frameEl);
+      const countEl = document.getElementById('frameCount');
+      countEl.textContent=`${frames.length} frames`;
+
+      // 채팅 초기화
+      messages=[]; userMsgCount=0;
+      document.getElementById('chatMessages').innerHTML=`
+        <div class="msg ai">
+          <div class="msg-avatar">AI</div>
+          <div>
+            <div class="msg-bubble">현상 완료! 🎞️ 오늘 일기가 필름 롤에 저장됐어요.<br>내일 또 이야기해줘요.</div>
+            <div class="msg-time">${getTime()}</div>
+          </div>
+        </div>`;
+      document.getElementById('developBanner').style.display='none';
+      document.getElementById('chatMsgCount').textContent='0 lines';
+
+      setTimeout(()=>{
+        document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+        document.getElementById('view-roll').classList.add('active');
+      },200);
+    }
+
+    // ── 프레임 상세
+    function openFrame(i) {
+      const f=frames[i];
+      let perfsHtml='';
+      for(let j=0;j<12;j++) perfsHtml+='<div class="overlay-perf"></div>';
+      document.getElementById('overlayPerfs').innerHTML=perfsHtml+`<div class="overlay-num">${f.num}</div>`;
+      document.getElementById('overlayTitle').textContent=f.title;
+      document.getElementById('overlayDate').textContent=f.date;
+      document.getElementById('overlayContent').textContent=f.content;
+      document.getElementById('frameOverlay').classList.add('open');
+    }
+    function closeOverlay(e) {
+      if(!e||e.target===document.getElementById('frameOverlay'))
+        document.getElementById('frameOverlay').classList.remove('open');
+    }
+</script>
+</body>
+</html>
