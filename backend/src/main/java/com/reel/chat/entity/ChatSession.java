@@ -2,14 +2,20 @@ package com.reel.chat.entity;
 
 import com.reel.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(
     name = "chat_sessions",
     uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "date"})
 )
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatSession {
 
     @Id
@@ -23,13 +29,25 @@ public class ChatSession {
     @Column(nullable = false)
     private LocalDate date;
 
+    @Column(nullable = false)
+    private boolean developed = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
-    private OffsetDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = OffsetDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
-    // TODO: Phase 4 — 생성자, getter, builder 추가
+    public static ChatSession of(User user, LocalDate date) {
+        ChatSession session = new ChatSession();
+        session.user = user;
+        session.date = date;
+        return session;
+    }
+
+    public void markDeveloped() {
+        this.developed = true;
+    }
 }

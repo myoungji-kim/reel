@@ -1,14 +1,15 @@
+export type MessageRole = 'USER' | 'AI'
+
 export interface ChatMessage {
   id: number
-  role: 'user' | 'assistant'
+  role: MessageRole
   content: string
   createdAt: string
 }
 
-export interface TodaySessionResponse {
+export interface ChatSession {
   sessionId: number
   date: string
+  developed: boolean
   messages: ChatMessage[]
 }
-
-export type ChatMessageResponse = ChatMessage

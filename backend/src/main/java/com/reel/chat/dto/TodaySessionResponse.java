@@ -6,5 +6,6 @@ import java.util.List;
 public record TodaySessionResponse(
         Long sessionId,
         LocalDate date,
+        boolean developed,
         List<ChatMessageResponse> messages
 ) {}

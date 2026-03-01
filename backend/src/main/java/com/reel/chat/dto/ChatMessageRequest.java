@@ -1,7 +1,7 @@
 package com.reel.chat.dto;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record ChatMessageRequest(
-        String content
-) {
-    // TODO: Phase 4 — @NotBlank validation 추가
-}
+        @NotBlank String content
+) {}
