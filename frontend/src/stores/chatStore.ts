@@ -7,6 +7,7 @@ interface ChatStore {
   userMsgCount: number
   isTyping: boolean
   developed: boolean
+  newMsgSinceDevelop: number
 
   setSession: (sessionId: number, messages: ChatMessage[], developed: boolean) => void
   addMessage: (message: ChatMessage) => void
@@ -14,6 +15,8 @@ interface ChatStore {
   clearFailed: (id: number) => void
   setTyping: (typing: boolean) => void
   incrementCount: () => void
+  incrementNewMsgSinceDevelop: () => void
+  resetNewMsgSinceDevelop: () => void
   reset: () => void
 }
 
@@ -23,6 +26,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   userMsgCount: 0,
   isTyping: false,
   developed: false,
+  newMsgSinceDevelop: 0,
 
   setSession: (sessionId, messages, developed) =>
     set({
@@ -30,6 +34,7 @@ export const useChatStore = create<ChatStore>((set) => ({
       messages,
       developed,
       userMsgCount: messages.filter((m) => m.role === 'USER').length,
+      newMsgSinceDevelop: 0,
     }),
 
   addMessage: (message) =>
@@ -49,6 +54,18 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   incrementCount: () => set((state) => ({ userMsgCount: state.userMsgCount + 1 })),
 
+  incrementNewMsgSinceDevelop: () =>
+    set((state) => ({ newMsgSinceDevelop: state.newMsgSinceDevelop + 1 })),
+
+  resetNewMsgSinceDevelop: () => set({ newMsgSinceDevelop: 0 }),
+
   reset: () =>
-    set({ sessionId: null, messages: [], userMsgCount: 0, isTyping: false, developed: false }),
+    set({
+      sessionId: null,
+      messages: [],
+      userMsgCount: 0,
+      isTyping: false,
+      developed: false,
+      newMsgSinceDevelop: 0,
+    }),
 }))

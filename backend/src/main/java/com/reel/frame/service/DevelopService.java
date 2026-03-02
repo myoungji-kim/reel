@@ -41,9 +41,6 @@ public class DevelopService {
         if (!session.getUser().getId().equals(userId)) {
             throw new ReelException(ErrorCode.UNAUTHORIZED);
         }
-        if (session.isDeveloped()) {
-            throw new ReelException(ErrorCode.ALREADY_DEVELOPED);
-        }
 
         List<ChatMessage> history = messageRepository.findBySessionIdOrderByCreatedAtAsc(sessionId);
         String jsonText = anthropicClient.develop(history);
@@ -57,6 +54,13 @@ public class DevelopService {
             if (title == null || content == null) throw new IllegalArgumentException("missing fields");
         } catch (Exception e) {
             throw new ReelException(ErrorCode.AI_PARSE_ERROR);
+        }
+
+        // 재현상: 이미 현상된 세션은 기존 프레임을 재사용
+        if (session.isDeveloped()) {
+            Frame existingFrame = frameRepository.findBySessionId(sessionId)
+                    .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
+            return new DevelopPreviewResponse(existingFrame.getId(), title, content);
         }
 
         User user = userRepository.findById(userId)

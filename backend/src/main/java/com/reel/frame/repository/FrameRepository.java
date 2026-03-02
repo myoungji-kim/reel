@@ -17,4 +17,6 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
     // session 즉시 로딩 — FrameService.save에서 N+1 방지
     @EntityGraph(attributePaths = {"session"})
     Optional<Frame> findByIdAndUserId(Long id, Long userId);
+
+    Optional<Frame> findBySessionId(Long sessionId);
 }

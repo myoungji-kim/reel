@@ -31,6 +31,7 @@ export function useChat() {
       }
       store.addMessage(userMsg)
       store.incrementCount()
+      if (store.developed) store.incrementNewMsgSinceDevelop()
       store.setTyping(true)
 
       try {
@@ -70,6 +71,8 @@ export function useChat() {
     isTyping: store.isTyping,
     userMsgCount: store.userMsgCount,
     developed: store.developed,
+    newMsgSinceDevelop: store.newMsgSinceDevelop,
+    resetNewMsgSinceDevelop: store.resetNewMsgSinceDevelop,
     sendMessage,
     retryMessage,
   }

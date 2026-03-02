@@ -6,6 +6,7 @@ import MessageBubble from '../components/chat/MessageBubble'
 import TypingIndicator from '../components/chat/TypingIndicator'
 import ChatInput from '../components/chat/ChatInput'
 import DevelopBanner from '../components/chat/DevelopBanner'
+import RedevelopBanner from '../components/chat/RedevelopBanner'
 import DevelopingOverlay from '../components/overlays/DevelopingOverlay'
 import PreviewOverlay from '../components/overlays/PreviewOverlay'
 import { formatChatDate } from '../utils/dateFormat'
@@ -15,10 +16,13 @@ import { useChatStore } from '../stores/chatStore'
 import { developPreview, saveFrame } from '../api/frameApi'
 
 export default function ChatPage() {
-  const { messages, isTyping, userMsgCount, developed, sendMessage, retryMessage, sessionId } = useChat()
+  const {
+    messages, isTyping, userMsgCount, developed, newMsgSinceDevelop,
+    sendMessage, retryMessage, resetNewMsgSinceDevelop, sessionId,
+  } = useChat()
   const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab } =
     useUIStore()
-  const { preview, setPreview } = useFrameStore()
+  const { preview, setPreview, updateFrame } = useFrameStore()
   const resetChat = useChatStore((s) => s.reset)
   const navigate = useNavigate()
   const { showToast } = useToast()
@@ -55,13 +59,22 @@ export default function ChatPage() {
 
   // 최종 저장
   const handleSave = async (frameId: number, title: string, content: string) => {
+    const isRedevelop = developed
     try {
       await saveFrame(frameId, title, content)
       setPreviewOpen(false)
       setPreview(null)
-      resetChat()
-      setActiveTab('roll')
-      navigate('/home')
+      if (isRedevelop) {
+        // 재현상: 기존 프레임 업데이트, 채팅 페이지 유지
+        updateFrame(frameId, title, content)
+        resetNewMsgSinceDevelop()
+        showToast('일기가 업데이트됐어요.')
+      } else {
+        // 첫 현상: 채팅 초기화 후 필름 롤로 이동
+        resetChat()
+        setActiveTab('roll')
+        navigate('/home')
+      }
     } catch {
       showToast('저장에 실패했어요. 다시 시도해줘요.')
     }
@@ -73,33 +86,17 @@ export default function ChatPage() {
     setPreview(null)
   }
 
-  // 현상 완료된 세션
-  if (developed) {
-    return (
-      <div style={styles.view}>
-        <div style={styles.header}>
-          <span style={styles.date}>{formatChatDate(new Date())}</span>
-        </div>
-        <div style={styles.developedWrap}>
-          <p style={styles.developedText}>
-            현상 완료! 🎞️
-            <br />
-            오늘 일기가 필름 롤에 저장됐어요.
-            <br />
-            내일 또 이야기해줘요.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
       <div style={styles.view}>
         {/* 헤더 */}
         <div style={styles.header}>
           <span style={styles.date}>{formatChatDate(new Date())}</span>
-          <span style={styles.count}>{userMsgCount} lines</span>
+          {developed ? (
+            <span style={styles.developedBadge}>◈ 현상 완료</span>
+          ) : (
+            <span style={styles.count}>{userMsgCount} lines</span>
+          )}
         </div>
 
         {/* 메시지 목록 */}
@@ -115,9 +112,12 @@ export default function ChatPage() {
           <div ref={bottomRef} />
         </div>
 
-        {/* 현상 배너 (userMsgCount >= 3) */}
-        {userMsgCount >= 3 && sessionId !== null && (
+        {/* 현상 배너 */}
+        {!developed && userMsgCount >= 3 && sessionId !== null && (
           <DevelopBanner onDevelop={handleDevelop} />
+        )}
+        {developed && newMsgSinceDevelop >= 1 && sessionId !== null && (
+          <RedevelopBanner onRedevelop={handleDevelop} />
         )}
 
         {/* 입력창 */}
@@ -164,6 +164,16 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 18,
     color: 'var(--cream-muted)',
   },
+  developedBadge: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--amber)',
+    border: '1px solid rgba(212,130,42,0.3)',
+    borderRadius: 3,
+    padding: '3px 8px',
+    letterSpacing: '0.05em',
+    opacity: 0.8,
+  },
   messages: {
     flex: 1,
     overflowY: 'auto',
@@ -172,20 +182,5 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     gap: 10,
     scrollBehavior: 'smooth',
-  },
-  developedWrap: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  developedText: {
-    fontFamily: "'Noto Serif KR', serif",
-    fontSize: 15,
-    color: 'var(--cream-dim)',
-    fontWeight: 300,
-    lineHeight: 2,
-    textAlign: 'center',
   },
 }
