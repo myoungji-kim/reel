@@ -77,10 +77,22 @@ KAKAO_CLIENT_SECRET=<Kakao Client Secret>
 
 ### 3. 백엔드 실행
 
+**방법 A: Gradle**
+
 ```bash
 cd backend
 ./gradlew bootRun --args='--spring.profiles.active=local'
 ```
+
+**방법 B: IntelliJ IDEA GUI 실행**
+
+IntelliJ에서 `ReelApplication`을 직접 실행할 경우 `.env` 파일이 자동으로 로드되지 않습니다.
+[EnvFile 플러그인](https://plugins.jetbrains.com/plugin/7861-envfile)을 설치한 후 아래와 같이 설정하세요:
+
+1. 상단 실행 버튼 옆 드롭다운 → **Edit Configurations...**
+2. `ReelApplication` 선택
+3. **EnvFile 탭** → `+` 버튼 클릭 → `backend/.env` 파일 선택
+4. **Enable EnvFile** 체크 후 저장
 
 `http://localhost:8080` 에서 실행됩니다.
 
