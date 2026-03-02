@@ -8,6 +8,8 @@ interface Props {
 }
 
 const PERF_COUNT = 3
+const THUMB_VISIBLE = 3
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
 function Perfs({ right = false }: { right?: boolean }) {
   return (
@@ -32,6 +34,10 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
     )
   }
 
+  const photos = frame.photos ?? []
+  const visiblePhotos = photos.slice(0, THUMB_VISIBLE)
+  const extraCount = photos.length - THUMB_VISIBLE
+
   return (
     <div style={styles.frame} onClick={onClick}>
       <div style={styles.outer}>
@@ -41,6 +47,23 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
           <div style={styles.dateLabel}>{formatChatDate(new Date(frame.date))}</div>
           <div style={styles.title}>{frame.title}</div>
           <div style={styles.preview}>{frame.content}</div>
+
+          {photos.length > 0 && (
+            <div style={styles.photoStrip}>
+              {visiblePhotos.map((photo) => (
+                <img
+                  key={photo.id}
+                  src={`${API_BASE}${photo.url}`}
+                  alt="photo"
+                  style={styles.stripThumb}
+                />
+              ))}
+              {extraCount > 0 && (
+                <div style={styles.extraBadge}>+{extraCount}</div>
+              )}
+            </div>
+          )}
+
           <div style={styles.footer}>
             <div style={styles.mood}>{frame.mood ?? ''}</div>
             <span style={{ ...styles.status, ...styles.statusDone }}>◆ DEVELOPED</span>
@@ -128,6 +151,35 @@ const styles: Record<string, React.CSSProperties> = {
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
+  },
+  photoStrip: {
+    display: 'flex',
+    gap: 4,
+    marginTop: 8,
+    marginBottom: 2,
+    alignItems: 'center',
+  },
+  stripThumb: {
+    width: 44,
+    height: 34,
+    objectFit: 'cover',
+    borderRadius: 2,
+    border: '1px solid var(--border)',
+    flexShrink: 0,
+  },
+  extraBadge: {
+    width: 44,
+    height: 34,
+    borderRadius: 2,
+    border: '1px solid var(--border)',
+    background: 'rgba(255,255,255,0.04)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--cream-muted)',
+    flexShrink: 0,
   },
   footer: {
     display: 'flex',

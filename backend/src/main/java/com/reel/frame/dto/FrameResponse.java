@@ -4,6 +4,7 @@ import com.reel.frame.entity.Frame;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record FrameResponse(
         Long id,
@@ -12,9 +13,13 @@ public record FrameResponse(
         String content,
         String mood,
         LocalDate date,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        List<PhotoResponse> photos
 ) {
     public static FrameResponse from(Frame frame) {
+        List<PhotoResponse> photos = frame.getPhotos().stream()
+                .map(p -> new PhotoResponse(p.getId(), p.getUrl(), p.getOrderNum()))
+                .toList();
         return new FrameResponse(
                 frame.getId(),
                 frame.getFrameNum(),
@@ -22,7 +27,8 @@ public record FrameResponse(
                 frame.getContent(),
                 frame.getMood(),
                 frame.getDate(),
-                frame.getCreatedAt()
+                frame.getCreatedAt(),
+                photos
         );
     }
 }

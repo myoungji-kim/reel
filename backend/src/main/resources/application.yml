@@ -3,6 +3,10 @@ spring:
     active: local
   application:
     name: reel
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 26MB
   jpa:
     hibernate:
       ddl-auto: validate
@@ -25,6 +29,9 @@ anthropic:
   model: llama-3.3-70b-versatile
   max-tokens: 1000
   api-url: https://api.groq.com/openai/v1
+
+upload:
+  path: uploads
 
 logging:
   level:

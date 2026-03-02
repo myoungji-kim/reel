@@ -1,3 +1,9 @@
+export interface Photo {
+  id: number
+  url: string
+  orderNum: number
+}
+
 export interface Frame {
   id: number
   frameNum: number
@@ -6,6 +12,7 @@ export interface Frame {
   mood: string | null
   date: string
   createdAt: string
+  photos: Photo[]
 }
 
 export interface DevelopPreview {

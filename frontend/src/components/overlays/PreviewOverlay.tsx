@@ -1,18 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { DevelopPreview } from '../../types/frame'
 
 interface Props {
   isOpen: boolean
   preview: DevelopPreview | null
-  onSave: (frameId: number, title: string, content: string) => void
+  onSave: (frameId: number, title: string, content: string, photos: File[]) => void
   onCancel: () => void
 }
 
 const PERF_COUNT = 14
+const MAX_PHOTOS = 5
 
 export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Props) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [photos, setPhotos] = useState<File[]>([])
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (preview) {
@@ -21,9 +25,36 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
     }
   }, [preview])
 
+  // cleanup object URLs on unmount or when photos change
+  useEffect(() => {
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [previewUrls])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+
+    const remaining = MAX_PHOTOS - photos.length
+    const toAdd = files.slice(0, remaining)
+
+    const newUrls = toAdd.map((f) => URL.createObjectURL(f))
+    setPhotos((prev) => [...prev, ...toAdd])
+    setPreviewUrls((prev) => [...prev, ...newUrls])
+    // reset input so same file can be re-selected
+    e.target.value = ''
+  }
+
+  const removePhoto = (index: number) => {
+    URL.revokeObjectURL(previewUrls[index])
+    setPhotos((prev) => prev.filter((_, i) => i !== index))
+    setPreviewUrls((prev) => prev.filter((_, i) => i !== index))
+  }
+
   const handleSave = () => {
     if (!preview) return
-    onSave(preview.frameId, title, content)
+    onSave(preview.frameId, title, content, photos)
   }
 
   return (
@@ -43,7 +74,6 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
         {/* 헤더 */}
         <div style={styles.header}>
           <div style={styles.handle} />
-          {/* 미니 필름스트립 */}
           <div style={styles.filmstrip}>
             {Array.from({ length: PERF_COUNT }, (_, i) => (
               <div key={i} style={styles.perf} />
@@ -71,6 +101,35 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
             style={styles.contentInput}
             value={content}
             onChange={(e) => setContent(e.target.value)}
+          />
+
+          {/* 사진 섹션 */}
+          <div style={{ ...styles.fieldTag, marginTop: 16 }}>
+            사진 ({photos.length}/{MAX_PHOTOS})
+          </div>
+          <div style={styles.photoGrid}>
+            {previewUrls.map((url, i) => (
+              <div key={i} style={styles.photoThumb}>
+                <img src={url} alt={`photo-${i}`} style={styles.thumbImg} />
+                <button style={styles.removeBtn} onClick={() => removePhoto(i)}>
+                  ✕
+                </button>
+              </div>
+            ))}
+            {photos.length < MAX_PHOTOS && (
+              <button style={styles.addBtn} onClick={() => fileInputRef.current?.click()}>
+                <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
+                <span style={{ fontSize: 9, marginTop: 2 }}>추가</span>
+              </button>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
           />
         </div>
 
@@ -170,7 +229,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '50%',
     background: 'var(--amber)',
     opacity: 0.5,
-    // devBlink 애니메이션은 index.css에 정의됨
     animation: 'devBlink 1.5s ease-in-out infinite',
     display: 'inline-block',
   },
@@ -217,6 +275,55 @@ const styles: Record<string, React.CSSProperties> = {
     outline: 'none',
     minHeight: 200,
     boxSizing: 'border-box',
+  },
+  photoGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  photoThumb: {
+    position: 'relative',
+    width: 72,
+    height: 56,
+    borderRadius: 4,
+    overflow: 'hidden',
+    border: '1px solid var(--border)',
+  },
+  thumbImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  removeBtn: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    background: 'rgba(10,8,5,0.8)',
+    border: 'none',
+    color: 'var(--cream)',
+    fontSize: 8,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+  },
+  addBtn: {
+    width: 72,
+    height: 56,
+    borderRadius: 4,
+    border: '1px dashed var(--border-light)',
+    background: 'rgba(255,255,255,0.02)',
+    color: 'var(--cream-muted)',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: "'Space Mono', monospace",
   },
   footer: {
     flexShrink: 0,

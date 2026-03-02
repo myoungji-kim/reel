@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "frames")
@@ -45,6 +47,10 @@ public class Frame {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "frame", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderNum ASC")
+    private List<FramePhoto> photos = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {

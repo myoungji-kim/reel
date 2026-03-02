@@ -14,6 +14,7 @@ import { useUIStore } from '../stores/uiStore'
 import { useFrameStore } from '../stores/frameStore'
 import { useChatStore } from '../stores/chatStore'
 import { developPreview, saveFrame } from '../api/frameApi'
+import { uploadPhotos } from '../api/photoApi'
 
 export default function ChatPage() {
   const {
@@ -58,10 +59,13 @@ export default function ChatPage() {
   }
 
   // 최종 저장
-  const handleSave = async (frameId: number, title: string, content: string) => {
+  const handleSave = async (frameId: number, title: string, content: string, photos: File[]) => {
     const isRedevelop = developed
     try {
       await saveFrame(frameId, title, content)
+      if (photos.length > 0) {
+        await uploadPhotos(frameId, photos)
+      }
       setPreviewOpen(false)
       setPreview(null)
       if (isRedevelop) {

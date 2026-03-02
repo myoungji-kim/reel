@@ -12,10 +12,10 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
 
     long countByUserId(Long userId);
 
+    @EntityGraph(attributePaths = {"photos"})
     Page<Frame> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    // session 즉시 로딩 — FrameService.save에서 N+1 방지
-    @EntityGraph(attributePaths = {"session"})
+    @EntityGraph(attributePaths = {"session", "photos"})
     Optional<Frame> findByIdAndUserId(Long id, Long userId);
 
     Optional<Frame> findBySessionId(Long sessionId);

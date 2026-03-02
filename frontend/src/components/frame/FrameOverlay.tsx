@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
-import type { Frame } from '../../types/frame'
+import { useState, useEffect, useRef } from 'react'
+import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
-import { saveFrame } from '../../api/frameApi'
+import { saveFrame, getFrame } from '../../api/frameApi'
+import { uploadPhotos, deletePhoto } from '../../api/photoApi'
 import { useFrameStore } from '../../stores/frameStore'
 import { useToast } from '../../hooks/useToast'
 
@@ -12,22 +13,69 @@ interface Props {
 }
 
 const PERF_COUNT = 8
+const MAX_PHOTOS = 5
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
 export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [localPhotos, setLocalPhotos] = useState<Photo[]>([])
   const [isSaving, setIsSaving] = useState(false)
+
+  // 편집 모드 사진 상태
+  const [pendingAdd, setPendingAdd] = useState<File[]>([])
+  const [pendingAddUrls, setPendingAddUrls] = useState<string[]>([])
+  const [pendingDelete, setPendingDelete] = useState<number[]>([])
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const updateFrame = useFrameStore((s) => s.updateFrame)
+  const updateFramePhotos = useFrameStore((s) => s.updateFramePhotos)
   const { showToast } = useToast()
 
   useEffect(() => {
     if (frame) {
       setTitle(frame.title)
       setContent(frame.content)
+      setLocalPhotos(frame.photos ?? [])
     }
     setIsEditing(false)
+    setPendingAdd([])
+    setPendingAddUrls([])
+    setPendingDelete([])
   }, [frame])
+
+  // cleanup object URLs
+  useEffect(() => {
+    return () => {
+      pendingAddUrls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [pendingAddUrls])
+
+  const visibleExisting = localPhotos.filter((p) => !pendingDelete.includes(p.id))
+  const totalCount = visibleExisting.length + pendingAdd.length
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+    const remaining = MAX_PHOTOS - totalCount
+    const toAdd = files.slice(0, remaining)
+    const newUrls = toAdd.map((f) => URL.createObjectURL(f))
+    setPendingAdd((prev) => [...prev, ...toAdd])
+    setPendingAddUrls((prev) => [...prev, ...newUrls])
+    e.target.value = ''
+  }
+
+  const removeExisting = (photoId: number) => {
+    setPendingDelete((prev) => [...prev, photoId])
+  }
+
+  const removePending = (index: number) => {
+    URL.revokeObjectURL(pendingAddUrls[index])
+    setPendingAdd((prev) => prev.filter((_, i) => i !== index))
+    setPendingAddUrls((prev) => prev.filter((_, i) => i !== index))
+  }
 
   const handleSave = async () => {
     if (!frame || !title.trim() || !content.trim()) return
@@ -35,6 +83,21 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     try {
       await saveFrame(frame.id, title.trim(), content.trim())
       updateFrame(frame.id, title.trim(), content.trim())
+
+      // 사진 업로드/삭제 병렬 처리
+      await Promise.all([
+        pendingAdd.length > 0 ? uploadPhotos(frame.id, pendingAdd) : Promise.resolve(),
+        ...pendingDelete.map((photoId) => deletePhoto(frame.id, photoId)),
+      ])
+
+      // 최신 photos 상태 서버에서 재조회
+      const { data } = await getFrame(frame.id)
+      updateFramePhotos(frame.id, data.data.photos)
+      setLocalPhotos(data.data.photos)
+
+      setPendingAdd([])
+      setPendingAddUrls([])
+      setPendingDelete([])
       setIsEditing(false)
       showToast('수정됐어요.')
     } catch {
@@ -48,7 +111,12 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     if (frame) {
       setTitle(frame.title)
       setContent(frame.content)
+      setLocalPhotos(frame.photos ?? [])
     }
+    pendingAddUrls.forEach((url) => URL.revokeObjectURL(url))
+    setPendingAdd([])
+    setPendingAddUrls([])
+    setPendingDelete([])
     setIsEditing(false)
   }
 
@@ -123,6 +191,64 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
               />
             ) : (
               <div style={styles.content}>{content}</div>
+            )}
+
+            {/* 사진 섹션 */}
+            {isEditing ? (
+              <div style={styles.photoSection}>
+                <div style={styles.photoLabel}>
+                  사진 ({totalCount}/{MAX_PHOTOS})
+                </div>
+                <div style={styles.photoGrid}>
+                  {visibleExisting.map((photo) => (
+                    <div key={photo.id} style={styles.photoThumb}>
+                      <img
+                        src={`${API_BASE}${photo.url}`}
+                        alt="photo"
+                        style={styles.thumbImg}
+                      />
+                      <button style={styles.removeBtn} onClick={() => removeExisting(photo.id)}>
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  {pendingAddUrls.map((url, i) => (
+                    <div key={`new-${i}`} style={styles.photoThumb}>
+                      <img src={url} alt={`new-${i}`} style={styles.thumbImg} />
+                      <button style={styles.removeBtn} onClick={() => removePending(i)}>
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  {totalCount < MAX_PHOTOS && (
+                    <button style={styles.addBtn} onClick={() => fileInputRef.current?.click()}>
+                      <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
+                      <span style={{ fontSize: 9, marginTop: 2 }}>추가</span>
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style={{ display: 'none' }}
+                  onChange={handleFileChange}
+                />
+              </div>
+            ) : (
+              localPhotos.length > 0 && (
+                <div style={styles.photoStrip}>
+                  {localPhotos.map((photo) => (
+                    <img
+                      key={photo.id}
+                      src={`${API_BASE}${photo.url}`}
+                      alt="photo"
+                      style={styles.stripImg}
+                    />
+                  ))}
+                </div>
+              )
             )}
           </>
         )}
@@ -296,5 +422,83 @@ const styles: Record<string, React.CSSProperties> = {
     boxSizing: 'border-box',
     borderTop: '1px solid var(--border)',
     paddingTop: 16,
+  },
+  photoSection: {
+    marginTop: 20,
+    borderTop: '1px solid var(--border)',
+    paddingTop: 16,
+  },
+  photoLabel: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
+  photoGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  photoThumb: {
+    position: 'relative',
+    width: 72,
+    height: 56,
+    borderRadius: 4,
+    overflow: 'hidden',
+    border: '1px solid var(--border)',
+  },
+  thumbImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  removeBtn: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 18,
+    height: 18,
+    borderRadius: '50%',
+    background: 'rgba(10,8,5,0.8)',
+    border: 'none',
+    color: 'var(--cream)',
+    fontSize: 8,
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 0,
+  },
+  addBtn: {
+    width: 72,
+    height: 56,
+    borderRadius: 4,
+    border: '1px dashed var(--border-light)',
+    background: 'rgba(255,255,255,0.02)',
+    color: 'var(--cream-muted)',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontFamily: "'Space Mono', monospace",
+  },
+  photoStrip: {
+    display: 'flex',
+    gap: 6,
+    marginTop: 16,
+    overflowX: 'auto',
+    borderTop: '1px solid var(--border)',
+    paddingTop: 12,
+  },
+  stripImg: {
+    width: 72,
+    height: 56,
+    objectFit: 'cover',
+    borderRadius: 3,
+    border: '1px solid var(--border)',
+    flexShrink: 0,
   },
 }
