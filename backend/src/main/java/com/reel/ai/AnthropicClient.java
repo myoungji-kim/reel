@@ -1,17 +1,16 @@
 package com.reel.ai;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.reel.chat.entity.ChatMessage;
 import com.reel.chat.entity.MessageRole;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -37,41 +36,32 @@ public class AnthropicClient {
         this.properties = properties;
     }
 
-    /**
-     * 채팅 응답 생성.
-     *
-     * @param history 세션의 전체 메시지 목록 (현재 유저 메시지 포함)
-     * @return AI 응답 텍스트
-     */
     public String chat(List<ChatMessage> history) {
-        List<Message> messages = history.stream()
-                .map(m -> new Message(
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message("system", CHAT_SYSTEM_PROMPT));
+
+        // 첫 번째 user 메시지부터 포함
+        int firstUserIdx = 0;
+        for (int i = 0; i < history.size(); i++) {
+            if (history.get(i).getRole() == MessageRole.USER) {
+                firstUserIdx = i;
+                break;
+            }
+        }
+        history.subList(firstUserIdx, history.size()).forEach(m ->
+                messages.add(new Message(
                         m.getRole() == MessageRole.USER ? "user" : "assistant",
                         m.getContent()
                 ))
-                .toList();
-
-        ChatRequest request = new ChatRequest(
-                properties.getModel(),
-                properties.getMaxTokens(),
-                CHAT_SYSTEM_PROMPT,
-                messages
         );
 
-        return call(request);
+        return call(new ChatRequest(properties.getModel(), messages, properties.getMaxTokens()));
     }
 
-    /**
-     * 일기 현상 — 대화 내용을 JSON {"title":"...","content":"..."} 형태로 반환.
-     */
     public String develop(List<ChatMessage> history) {
         String conversation = history.stream()
                 .map(m -> (m.getRole() == MessageRole.USER ? "나" : "AI") + ": " + m.getContent())
                 .reduce("", (a, b) -> a + "\n" + b);
-
-        List<Message> messages = List.of(
-                new Message("user", "다음 대화를 일기로 정리해주세요:\n\n" + conversation)
-        );
 
         String systemPrompt = """
                 채팅 대화를 분석해서 JSON 형태로만 응답하세요.
@@ -81,56 +71,53 @@ public class AnthropicClient {
                 - JSON만 출력하세요
                 """;
 
-        ChatRequest request = new ChatRequest(
-                properties.getModel(),
-                properties.getMaxTokens(),
-                systemPrompt,
-                messages
+        List<Message> messages = List.of(
+                new Message("system", systemPrompt),
+                new Message("user", "다음 대화를 일기로 정리해주세요:\n\n" + conversation)
         );
 
-        return call(request);
+        return call(new ChatRequest(properties.getModel(), messages, properties.getMaxTokens()));
     }
 
     private String call(ChatRequest request) {
         try {
             ChatResponse response = webClient
                     .post()
+                    .uri("/chat/completions")
                     .bodyValue(request)
                     .retrieve()
                     .onStatus(
                             status -> status.isError(),
                             res -> res.bodyToMono(String.class)
-                                    .map(body -> new ReelException(ErrorCode.AI_RESPONSE_ERROR))
+                                    .map(body -> {
+                                        log.error("Groq API error response: {}", body);
+                                        return new ReelException(ErrorCode.AI_RESPONSE_ERROR);
+                                    })
                     )
                     .bodyToMono(ChatResponse.class)
                     .timeout(Duration.ofSeconds(30))
                     .block();
 
-            if (response == null || response.content() == null || response.content().isEmpty()) {
+            if (response == null || response.choices() == null || response.choices().isEmpty()) {
                 throw new ReelException(ErrorCode.AI_RESPONSE_ERROR);
             }
-            return response.content().get(0).text();
+            return response.choices().get(0).message().content();
 
         } catch (ReelException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Anthropic API call failed", e);
+            log.error("Groq API call failed", e);
             throw new ReelException(ErrorCode.AI_RESPONSE_ERROR);
         }
     }
 
     // ── 내부 DTO ────────────────────────────────────
 
-    record ChatRequest(
-            String model,
-            @JsonProperty("max_tokens") int maxTokens,
-            String system,
-            List<Message> messages
-    ) {}
+    record ChatRequest(String model, List<Message> messages, int max_tokens) {}
 
     record Message(String role, String content) {}
 
-    record ChatResponse(List<ContentBlock> content) {
-        record ContentBlock(String type, String text) {}
-    }
+    record ChatResponse(List<Choice> choices) {}
+
+    record Choice(Message message) {}
 }

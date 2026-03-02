@@ -15,8 +15,6 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AiConfig {
 
-    private static final String ANTHROPIC_VERSION = "2023-06-01";
-
     private final AnthropicProperties properties;
 
     @Bean("anthropicWebClient")
@@ -28,8 +26,7 @@ public class AiConfig {
         return WebClient.builder()
                 .baseUrl(properties.getApiUrl())
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .defaultHeader("x-api-key", properties.getApiKey())
-                .defaultHeader("anthropic-version", ANTHROPIC_VERSION)
+                .defaultHeader("Authorization", "Bearer " + properties.getApiKey())
                 .defaultHeader("content-type", "application/json")
                 .build();
     }

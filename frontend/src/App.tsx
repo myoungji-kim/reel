@@ -28,7 +28,7 @@ export default function App() {
         null,
         { withCredentials: true },
       )
-      .then(({ data }) => setAuth(data.data.access_token))
+      .then(({ data }) => setAuth(data.data.accessToken))
       .catch(() => {})
       .finally(() => setInitializing(false))
   }, [setAuth])
