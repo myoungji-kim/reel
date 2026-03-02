@@ -5,6 +5,7 @@ export interface ChatMessage {
   role: MessageRole
   content: string
   createdAt: string
+  failed?: boolean
 }
 
 export interface ChatSession {

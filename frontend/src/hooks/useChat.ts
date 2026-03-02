@@ -23,7 +23,6 @@ export function useChat() {
     async (content: string) => {
       if (!store.sessionId || store.isTyping) return
 
-      // 유저 메시지 낙관적 업데이트
       const userMsg: ChatMessage = {
         id: Date.now(),
         role: 'USER',
@@ -38,12 +37,31 @@ export function useChat() {
         const { data } = await sendMessageApi(store.sessionId, content)
         store.addMessage(data.data)
       } catch {
-        showToast('메시지 전송에 실패했어요.')
+        store.markFailed(userMsg.id)
       } finally {
         store.setTyping(false)
       }
     },
-    [store, showToast],
+    [store],
+  )
+
+  const retryMessage = useCallback(
+    async (message: ChatMessage) => {
+      if (!store.sessionId || store.isTyping) return
+
+      store.clearFailed(message.id)
+      store.setTyping(true)
+
+      try {
+        const { data } = await sendMessageApi(store.sessionId, message.content)
+        store.addMessage(data.data)
+      } catch {
+        store.markFailed(message.id)
+      } finally {
+        store.setTyping(false)
+      }
+    },
+    [store],
   )
 
   return {
@@ -53,5 +71,6 @@ export function useChat() {
     userMsgCount: store.userMsgCount,
     developed: store.developed,
     sendMessage,
+    retryMessage,
   }
 }

@@ -3,9 +3,10 @@ import { formatTime } from '../../utils/dateFormat'
 
 interface Props {
   message: ChatMessage
+  onRetry?: () => void
 }
 
-export default function MessageBubble({ message }: Props) {
+export default function MessageBubble({ message, onRetry }: Props) {
   const isUser = message.role === 'USER'
   const time = formatTime(new Date(message.createdAt))
 
@@ -13,7 +14,7 @@ export default function MessageBubble({ message }: Props) {
     return (
       <div style={styles.msgUser}>
         <div>
-          <div style={styles.bubbleUser}>
+          <div style={message.failed ? { ...styles.bubbleUser, ...styles.bubbleFailed } : styles.bubbleUser}>
             {message.content.split('\n').map((line, i) => (
               <span key={i}>
                 {line}
@@ -21,7 +22,14 @@ export default function MessageBubble({ message }: Props) {
               </span>
             ))}
           </div>
-          <div style={{ ...styles.time, textAlign: 'right' }}>{time}</div>
+          {message.failed ? (
+            <div style={styles.failedRow}>
+              <button style={styles.retryBtn} onClick={onRetry} title="재시도">↺</button>
+              <span style={styles.failedText}>✕ 전송 실패</span>
+            </div>
+          ) : (
+            <div style={{ ...styles.time, textAlign: 'right' }}>{time}</div>
+          )}
         </div>
       </div>
     )
@@ -46,6 +54,31 @@ export default function MessageBubble({ message }: Props) {
 }
 
 const styles: Record<string, React.CSSProperties> = {
+  bubbleFailed: {
+    background: 'rgba(180,40,40,0.12)',
+    border: '1px solid rgba(180,40,40,0.35)',
+  },
+  failedRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 6,
+    marginTop: 4,
+  },
+  failedText: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'rgba(200,60,60,0.85)',
+  },
+  retryBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: 13,
+    color: 'var(--cream-muted)',
+    padding: 0,
+    lineHeight: 1,
+  },
   msgUser: {
     display: 'flex',
     gap: 8,

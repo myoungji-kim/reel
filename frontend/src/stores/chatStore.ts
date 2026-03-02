@@ -10,6 +10,8 @@ interface ChatStore {
 
   setSession: (sessionId: number, messages: ChatMessage[], developed: boolean) => void
   addMessage: (message: ChatMessage) => void
+  markFailed: (id: number) => void
+  clearFailed: (id: number) => void
   setTyping: (typing: boolean) => void
   incrementCount: () => void
   reset: () => void
@@ -32,6 +34,16 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   addMessage: (message) =>
     set((state) => ({ messages: [...state.messages, message] })),
+
+  markFailed: (id) =>
+    set((state) => ({
+      messages: state.messages.map((m) => (m.id === id ? { ...m, failed: true } : m)),
+    })),
+
+  clearFailed: (id) =>
+    set((state) => ({
+      messages: state.messages.map((m) => (m.id === id ? { ...m, failed: false } : m)),
+    })),
 
   setTyping: (typing) => set({ isTyping: typing }),
 

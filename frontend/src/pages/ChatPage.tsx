@@ -15,7 +15,7 @@ import { useChatStore } from '../stores/chatStore'
 import { developPreview, saveFrame } from '../api/frameApi'
 
 export default function ChatPage() {
-  const { messages, isTyping, userMsgCount, developed, sendMessage, sessionId } = useChat()
+  const { messages, isTyping, userMsgCount, developed, sendMessage, retryMessage, sessionId } = useChat()
   const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab } =
     useUIStore()
   const { preview, setPreview } = useFrameStore()
@@ -105,7 +105,11 @@ export default function ChatPage() {
         {/* 메시지 목록 */}
         <div style={styles.messages}>
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} />
+            <MessageBubble
+              key={msg.id}
+              message={msg}
+              onRetry={msg.failed ? () => retryMessage(msg) : undefined}
+            />
           ))}
           {isTyping && <TypingIndicator />}
           <div ref={bottomRef} />
