@@ -97,8 +97,9 @@ public class FrameService {
     public RollStatsResponse getRollStats(Long userId) {
         int totalFrames = (int) frameRepository.countByUserId(userId);
         int progressRaw = totalFrames % 24;
+        // 24의 배수이면 새 롤이 시작된 상태 (ROLL 02, 0/24)
         if (progressRaw == 0 && totalFrames > 0) {
-            return new RollStatsResponse(totalFrames / 24, 24, 24, totalFrames);
+            return new RollStatsResponse((totalFrames / 24) + 1, 0, 24, totalFrames);
         }
         return new RollStatsResponse((totalFrames / 24) + 1, progressRaw, 24, totalFrames);
     }
