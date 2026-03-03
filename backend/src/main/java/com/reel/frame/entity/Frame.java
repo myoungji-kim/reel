@@ -46,6 +46,9 @@ public class Frame {
     @Enumerated(EnumType.STRING)
     private FrameType frameType = FrameType.DEVELOPED;
 
+    @Column(name = "is_archived", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isArchived = false;
+
     @Column(nullable = false)
     private LocalDate date;
 
@@ -101,4 +104,7 @@ public class Frame {
         this.content = content;
         this.mood = mood;
     }
+
+    public void archive() { this.isArchived = true; }
+    public void unarchive() { this.isArchived = false; }
 }

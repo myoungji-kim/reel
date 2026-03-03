@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -81,6 +82,31 @@ public class FrameController {
             @Valid @RequestBody SaveFrameRequest request) {
 
         return ResponseEntity.ok(ApiResponse.ok(frameService.save(userId, frameId, request)));
+    }
+
+    @GetMapping("/archived")
+    public ResponseEntity<ApiResponse<List<FrameResponse>>> getArchivedFrames(
+            @AuthenticationPrincipal Long userId) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.getArchivedFrames(userId)));
+    }
+
+    @PatchMapping("/{frameId}/archive")
+    public ResponseEntity<ApiResponse<Map<String, Long>>> archiveFrame(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long frameId) {
+
+        frameService.archiveFrame(userId, frameId);
+        return ResponseEntity.ok(ApiResponse.ok(Map.of("frameId", frameId)));
+    }
+
+    @PatchMapping("/{frameId}/unarchive")
+    public ResponseEntity<ApiResponse<Map<String, Long>>> unarchiveFrame(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long frameId) {
+
+        frameService.unarchiveFrame(userId, frameId);
+        return ResponseEntity.ok(ApiResponse.ok(Map.of("frameId", frameId)));
     }
 
     @GetMapping

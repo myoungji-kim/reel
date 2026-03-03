@@ -1,7 +1,7 @@
 import { useToastStore } from '../stores/toastStore'
 
 export default function Toast() {
-  const { message, type, visible, hide } = useToastStore()
+  const { message, type, visible, hide, undoAction } = useToastStore()
 
   const isError = type === 'error'
 
@@ -29,6 +29,11 @@ export default function Toast() {
         ◆
       </span>
       <span style={styles.message}>{message}</span>
+      {undoAction && (
+        <button style={styles.undoBtn} onClick={() => { undoAction(); hide() }}>
+          되돌리기
+        </button>
+      )}
       {isError && (
         <button style={styles.closeBtn} onClick={hide}>
           ✕
@@ -69,6 +74,18 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.04em',
     lineHeight: 1.5,
     flex: 1,
+  },
+  undoBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: 'var(--amber)',
+    fontSize: 10,
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    padding: '0 0 0 8px',
+    flexShrink: 0,
+    letterSpacing: '0.04em',
+    lineHeight: 1,
   },
   closeBtn: {
     background: 'transparent',

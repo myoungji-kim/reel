@@ -17,7 +17,10 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
     long countByUserId(Long userId);
 
     @EntityGraph(attributePaths = {"photos"})
-    Page<Frame> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    Page<Frame> findByUserIdAndIsArchivedFalseOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"photos"})
+    List<Frame> findByUserIdAndIsArchivedTrueOrderByCreatedAtDesc(Long userId);
 
     @EntityGraph(attributePaths = {"session", "photos"})
     Optional<Frame> findByIdAndUserId(Long id, Long userId);
@@ -26,7 +29,7 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
 
     List<Frame> findByUserIdAndDateIn(Long userId, List<LocalDate> dates);
 
-    @Query("SELECT f FROM Frame f WHERE f.user.id = :userId " +
+    @Query("SELECT f FROM Frame f WHERE f.user.id = :userId AND f.isArchived = false " +
            "AND (LOWER(f.title) LIKE LOWER(CONCAT('%', :q, '%')) " +
            "OR LOWER(f.content) LIKE LOWER(CONCAT('%', :q, '%'))) " +
            "ORDER BY f.date DESC, f.createdAt DESC")

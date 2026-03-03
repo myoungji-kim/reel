@@ -53,8 +53,31 @@ public class FrameService {
     @Transactional(readOnly = true)
     public Page<FrameResponse> getFrames(Long userId, int page, int size) {
         return frameRepository
-                .findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size))
+                .findByUserIdAndIsArchivedFalseOrderByCreatedAtDesc(userId, PageRequest.of(page, size))
                 .map(FrameResponse::from);
+    }
+
+    @Transactional
+    public void archiveFrame(Long userId, Long frameId) {
+        Frame frame = frameRepository.findByIdAndUserId(frameId, userId)
+                .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
+        frame.archive();
+        frameRepository.save(frame);
+    }
+
+    @Transactional
+    public void unarchiveFrame(Long userId, Long frameId) {
+        Frame frame = frameRepository.findByIdAndUserId(frameId, userId)
+                .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
+        frame.unarchive();
+        frameRepository.save(frame);
+    }
+
+    @Transactional(readOnly = true)
+    public List<FrameResponse> getArchivedFrames(Long userId) {
+        return frameRepository.findByUserIdAndIsArchivedTrueOrderByCreatedAtDesc(userId).stream()
+                .map(FrameResponse::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)

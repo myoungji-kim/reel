@@ -39,3 +39,12 @@ export const searchFrames = (q: string, page = 0) =>
 export const createQuickFrame = (data: { title: string; content: string; date: string }) =>
   axios.post<ApiResponse<{ frameId: number; frameNum: number; title: string; frameType: string }>>('/api/frames/quick', data)
     .then(r => r.data.data)
+
+export const archiveFrame = (frameId: number) =>
+  axios.patch(`/api/frames/${frameId}/archive`).then(r => r.data)
+
+export const unarchiveFrame = (frameId: number) =>
+  axios.patch(`/api/frames/${frameId}/unarchive`).then(r => r.data)
+
+export const getArchivedFrames = () =>
+  axios.get<ApiResponse<Frame[]>>('/api/frames/archived').then(r => r.data.data)

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getFrames, searchFrames } from '../api/frameApi'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getFrames, searchFrames, getArchivedFrames, unarchiveFrame } from '../api/frameApi'
 import { useFrameStore } from '../stores/frameStore'
 import { useUIStore } from '../stores/uiStore'
 import { useToast } from '../hooks/useToast'
@@ -30,9 +30,10 @@ function groupByMonth(frames: Frame[]): Map<string, Frame[]> {
 }
 
 export default function RollPage() {
-  const { frames, setFrames } = useFrameStore()
+  const { frames, setFrames, restoreFrame } = useFrameStore()
   const { isFrameDetailOpen, setFrameDetailOpen } = useUIStore()
   const { showToast } = useToast()
+  const queryClient = useQueryClient()
   const [loading, setLoading] = useState(true)
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
 
@@ -41,6 +42,9 @@ export default function RollPage() {
   const [inputValue, setInputValue] = useState('')
   const [debouncedQ, setDebouncedQ] = useState('')
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // 보관된 필름
+  const [isArchivedOpen, setIsArchivedOpen] = useState(false)
 
   useEffect(() => {
     getFrames(0, 20)
@@ -66,6 +70,23 @@ export default function RollPage() {
     enabled: debouncedQ.length > 0,
     staleTime: 1000 * 30,
   })
+
+  const { data: archivedFrames = [] } = useQuery({
+    queryKey: ['archived-frames'],
+    queryFn: getArchivedFrames,
+    staleTime: 1000 * 60,
+  })
+
+  const handleUnarchive = async (frame: Frame) => {
+    try {
+      await unarchiveFrame(frame.id)
+      restoreFrame({ ...frame, isArchived: false })
+      queryClient.invalidateQueries({ queryKey: ['archived-frames'] })
+      showToast('복원됐어요.')
+    } catch {
+      showToast('복원에 실패했어요.', 'error')
+    }
+  }
 
   const handleSearchToggle = () => {
     if (isSearchOpen) {
@@ -172,6 +193,36 @@ export default function RollPage() {
         )}
       </div>
 
+      {/* 보관된 필름 섹션 */}
+      {archivedFrames.length > 0 && (
+        <div style={styles.archivedSection}>
+          <button
+            style={styles.archivedToggle}
+            onClick={() => setIsArchivedOpen((v) => !v)}
+          >
+            보관된 필름 {archivedFrames.length}장
+            <span style={styles.archivedChevron}>{isArchivedOpen ? '∧' : '›'}</span>
+          </button>
+          {isArchivedOpen && (
+            <div style={styles.archivedList}>
+              {archivedFrames.map((frame) => (
+                <div key={frame.id} style={styles.archivedItem}>
+                  <span style={styles.archivedTitle}>
+                    ♦{String(frame.frameNum).padStart(2, '0')}　{frame.title}
+                  </span>
+                  <button
+                    style={styles.restoreBtn}
+                    onClick={() => handleUnarchive(frame)}
+                  >
+                    복원
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <FrameOverlay
         isOpen={isFrameDetailOpen}
         frame={selectedFrame}
@@ -274,5 +325,63 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 13,
     color: 'var(--cream-muted)',
     fontWeight: 300,
+  },
+  archivedSection: {
+    flexShrink: 0,
+    borderTop: '1px solid var(--border)',
+  },
+  archivedToggle: {
+    width: '100%',
+    padding: '10px 16px',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.08em',
+    opacity: 0.5,
+  },
+  archivedChevron: {
+    fontSize: 12,
+    lineHeight: 1,
+  },
+  archivedList: {
+    borderTop: '1px solid var(--border)',
+    paddingBottom: 8,
+  },
+  archivedItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '8px 16px',
+  },
+  archivedTitle: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    opacity: 0.5,
+    letterSpacing: '0.04em',
+    flex: 1,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  restoreBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border-light)',
+    color: 'var(--cream-muted)',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    letterSpacing: '0.06em',
+    padding: '3px 8px',
+    borderRadius: 2,
+    cursor: 'pointer',
+    flexShrink: 0,
+    marginLeft: 8,
+    opacity: 0.6,
   },
 }

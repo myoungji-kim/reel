@@ -15,7 +15,8 @@ public record FrameResponse(
         String frameType,
         LocalDate date,
         LocalDateTime createdAt,
-        List<PhotoResponse> photos
+        List<PhotoResponse> photos,
+        boolean isArchived
 ) {
     public static FrameResponse from(Frame frame) {
         List<PhotoResponse> photos = frame.getPhotos().stream()
@@ -30,7 +31,8 @@ public record FrameResponse(
                 frame.getFrameType() != null ? frame.getFrameType().name() : "DEVELOPED",
                 frame.getDate(),
                 frame.getCreatedAt(),
-                photos
+                photos,
+                frame.isArchived()
         );
     }
 }

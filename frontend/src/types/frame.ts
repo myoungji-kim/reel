@@ -14,6 +14,7 @@ export interface Frame {
   date: string
   createdAt: string
   photos: Photo[]
+  isArchived: boolean
 }
 
 export interface DevelopPreview {

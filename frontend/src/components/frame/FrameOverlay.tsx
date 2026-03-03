@@ -3,10 +3,11 @@ import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
 import { getMoodToneStyle } from '../../utils/moodTone'
 import MoodChipSelector from '../MoodChipSelector'
-import { saveFrame, getFrame } from '../../api/frameApi'
+import { saveFrame, getFrame, archiveFrame, unarchiveFrame } from '../../api/frameApi'
 import { uploadPhotos, deletePhoto } from '../../api/photoApi'
 import { useFrameStore } from '../../stores/frameStore'
 import { useToast } from '../../hooks/useToast'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
   isOpen: boolean
@@ -35,7 +36,10 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const updateFrame = useFrameStore((s) => s.updateFrame)
   const updateFramePhotos = useFrameStore((s) => s.updateFramePhotos)
+  const removeFrame = useFrameStore((s) => s.removeFrame)
+  const restoreFrame = useFrameStore((s) => s.restoreFrame)
   const { showToast } = useToast()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (frame) {
@@ -108,6 +112,24 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
       showToast('수정에 실패했어요.', 'error')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleArchive = async () => {
+    if (!frame) return
+    const frameSnapshot = { ...frame }
+    try {
+      await archiveFrame(frame.id)
+      removeFrame(frame.id)
+      queryClient.invalidateQueries({ queryKey: ['archived-frames'] })
+      onClose()
+      showToast('필름을 보관했어요', 'success', async () => {
+        await unarchiveFrame(frameSnapshot.id)
+        restoreFrame(frameSnapshot)
+        queryClient.invalidateQueries({ queryKey: ['archived-frames'] })
+      })
+    } catch {
+      showToast('보관에 실패했어요.', 'error')
     }
   }
 
@@ -262,6 +284,14 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
               <div style={styles.moodSection}>
                 <div style={styles.moodLabel}>오늘 기분</div>
                 <MoodChipSelector value={mood} onChange={setMood} />
+              </div>
+            )}
+
+            {!isEditing && (
+              <div style={styles.archiveRow}>
+                <button style={styles.archiveBtn} onClick={handleArchive}>
+                  필름 보관
+                </button>
               </div>
             )}
           </>
@@ -527,5 +557,23 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
     marginBottom: 8,
+  },
+  archiveRow: {
+    marginTop: 24,
+    paddingTop: 12,
+    borderTop: '1px solid var(--border)',
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  archiveBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    opacity: 0.45,
+    letterSpacing: '0.08em',
+    padding: '4px 0',
   },
 }
