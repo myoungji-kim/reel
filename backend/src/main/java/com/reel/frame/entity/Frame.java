@@ -42,7 +42,7 @@ public class Frame {
     @Column(length = 50)
     private String mood;
 
-    @Column(name = "frame_type", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'DEVELOPED'")
+    @Column(name = "frame_type", nullable = false, columnDefinition = "VARCHAR(20)")
     @Enumerated(EnumType.STRING)
     private FrameType frameType = FrameType.DEVELOPED;
 
