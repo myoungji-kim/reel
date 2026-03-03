@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { DevelopPreview } from '../../types/frame'
+import MoodChipSelector from '../MoodChipSelector'
+import { getMoodTintColor } from '../../utils/moodTone'
 
 interface Props {
   isOpen: boolean
   preview: DevelopPreview | null
-  onSave: (frameId: number, title: string, content: string, photos: File[]) => void
+  onSave: (frameId: number, title: string, content: string, mood: string, photos: File[]) => void
   onCancel: () => void
 }
 
@@ -14,6 +16,7 @@ const MAX_PHOTOS = 5
 export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Props) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [mood, setMood] = useState<string | null>(null)
   const [photos, setPhotos] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -22,6 +25,7 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
     if (preview) {
       setTitle(preview.title)
       setContent(preview.content)
+      setMood(null)
     }
   }, [preview])
 
@@ -53,8 +57,8 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
   }
 
   const handleSave = () => {
-    if (!preview) return
-    onSave(preview.frameId, title, content, photos)
+    if (!preview || !mood) return
+    onSave(preview.frameId, title, content, mood, photos)
   }
 
   return (
@@ -69,6 +73,8 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
         style={{
           ...styles.sheet,
           transform: isOpen ? 'translateY(0)' : 'translateY(60px)',
+          background: `linear-gradient(${getMoodTintColor(mood)}, ${getMoodTintColor(mood)}), var(--bg-mid)`,
+          transition: styles.sheet.transition + ', background 0.3s',
         }}
       >
         {/* 헤더 */}
@@ -131,6 +137,12 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
             style={{ display: 'none' }}
             onChange={handleFileChange}
           />
+
+          <div style={{ ...styles.fieldTag, marginTop: 20 }}>오늘 기분</div>
+          <MoodChipSelector value={mood} onChange={setMood} />
+          {!mood && (
+            <div style={styles.moodHint}>기분을 선택해야 현상할 수 있어요</div>
+          )}
         </div>
 
         {/* 푸터 */}
@@ -138,7 +150,11 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
           <button style={styles.btnCancel} onClick={onCancel}>
             ✕ 취소
           </button>
-          <button style={styles.btnSave} onClick={handleSave}>
+          <button
+            style={{ ...styles.btnSave, ...(!mood ? styles.btnSaveDisabled : {}) }}
+            onClick={handleSave}
+            disabled={!mood}
+          >
             ◆ 이대로 현상하기
           </button>
         </div>
@@ -361,5 +377,19 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+    transition: 'opacity 0.2s',
+  },
+  btnSaveDisabled: {
+    opacity: 0.35,
+    cursor: 'not-allowed',
+    boxShadow: 'none',
+  },
+  moodHint: {
+    marginTop: 8,
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--amber)',
+    letterSpacing: '0.06em',
+    opacity: 0.7,
   },
 }

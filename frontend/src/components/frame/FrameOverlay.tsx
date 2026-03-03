@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
+import { getMoodToneStyle } from '../../utils/moodTone'
+import MoodChipSelector from '../MoodChipSelector'
 import { saveFrame, getFrame } from '../../api/frameApi'
 import { uploadPhotos, deletePhoto } from '../../api/photoApi'
 import { useFrameStore } from '../../stores/frameStore'
@@ -21,6 +23,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [mood, setMood] = useState<string | null>(null)
   const [localPhotos, setLocalPhotos] = useState<Photo[]>([])
   const [isSaving, setIsSaving] = useState(false)
 
@@ -38,6 +41,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     if (frame) {
       setTitle(frame.title)
       setContent(frame.content)
+      setMood(frame.mood ?? null)
       setLocalPhotos(frame.photos ?? [])
     }
     setIsEditing(false)
@@ -78,11 +82,11 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   }
 
   const handleSave = async () => {
-    if (!frame || !title.trim() || !content.trim()) return
+    if (!frame || !title.trim() || !content.trim() || !mood) return
     setIsSaving(true)
     try {
-      await saveFrame(frame.id, title.trim(), content.trim())
-      updateFrame(frame.id, title.trim(), content.trim())
+      await saveFrame(frame.id, title.trim(), content.trim(), mood)
+      updateFrame(frame.id, title.trim(), content.trim(), mood)
 
       // 사진 업로드/삭제 병렬 처리
       await Promise.all([
@@ -111,6 +115,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     if (frame) {
       setTitle(frame.title)
       setContent(frame.content)
+      setMood(frame.mood ?? null)
       setLocalPhotos(frame.photos ?? [])
     }
     pendingAddUrls.forEach((url) => URL.revokeObjectURL(url))
@@ -133,6 +138,8 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
         style={{
           ...styles.sheet,
           transform: isOpen ? 'translateY(0)' : 'translateY(60px)',
+          background: 'linear-gradient(var(--film-tint), var(--film-tint)), var(--bg-mid)',
+          ...getMoodToneStyle(frame?.mood),
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -146,9 +153,9 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
             <>
               <button style={styles.cancelBtn} onClick={handleCancel}>취소</button>
               <button
-                style={{ ...styles.saveBtn, opacity: isSaving ? 0.5 : 1 }}
+                style={{ ...styles.saveBtn, opacity: isSaving || !mood ? 0.4 : 1 }}
                 onClick={handleSave}
-                disabled={isSaving}
+                disabled={isSaving || !mood}
               >
                 저장
               </button>
@@ -158,7 +165,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
         </div>
 
         {/* 상단 필름스트립 */}
-        <div style={styles.frameTop}>
+        <div style={{ ...styles.frameTop, background: 'linear-gradient(var(--film-tint), var(--film-tint)), var(--bg)' }}>
           {Array.from({ length: PERF_COUNT }, (_, i) => (
             <div key={i} style={styles.overlayPerf} />
           ))}
@@ -249,6 +256,13 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
                   ))}
                 </div>
               )
+            )}
+
+            {isEditing && (
+              <div style={styles.moodSection}>
+                <div style={styles.moodLabel}>오늘 기분</div>
+                <MoodChipSelector value={mood} onChange={setMood} />
+              </div>
             )}
           </>
         )}
@@ -500,5 +514,18 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 3,
     border: '1px solid var(--border)',
     flexShrink: 0,
+  },
+  moodSection: {
+    marginTop: 20,
+    borderTop: '1px solid var(--border)',
+    paddingTop: 16,
+  },
+  moodLabel: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.12em',
+    textTransform: 'uppercase',
+    marginBottom: 8,
   },
 }

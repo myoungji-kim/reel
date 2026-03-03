@@ -59,10 +59,10 @@ export default function ChatPage() {
   }
 
   // 최종 저장
-  const handleSave = async (frameId: number, title: string, content: string, photos: File[]) => {
+  const handleSave = async (frameId: number, title: string, content: string, mood: string, photos: File[]) => {
     const isRedevelop = developed
     try {
-      await saveFrame(frameId, title, content)
+      await saveFrame(frameId, title, content, mood)
       if (photos.length > 0) {
         await uploadPhotos(frameId, photos)
       }
@@ -70,7 +70,7 @@ export default function ChatPage() {
       setPreview(null)
       if (isRedevelop) {
         // 재현상: 기존 프레임 업데이트, 채팅 페이지 유지
-        updateFrame(frameId, title, content)
+        updateFrame(frameId, title, content, mood)
         resetNewMsgSinceDevelop()
         showToast('일기가 업데이트됐어요.')
       } else {

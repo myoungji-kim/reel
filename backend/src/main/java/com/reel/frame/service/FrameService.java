@@ -27,7 +27,7 @@ public class FrameService {
         Frame frame = frameRepository.findByIdAndUserId(frameId, userId)
                 .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
 
-        frame.update(request.title(), request.content());
+        frame.update(request.title(), request.content(), request.mood());
 
         if (frame.getSession() != null) {
             frame.getSession().markDeveloped();

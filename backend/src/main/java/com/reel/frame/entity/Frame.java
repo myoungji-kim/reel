@@ -69,8 +69,9 @@ public class Frame {
         return frame;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, String mood) {
         this.title = title;
         this.content = content;
+        this.mood = mood;
     }
 }

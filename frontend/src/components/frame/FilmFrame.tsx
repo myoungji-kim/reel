@@ -1,5 +1,6 @@
 import type { Frame } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
+import { getMoodToneStyle, MOOD_OPTIONS } from '../../utils/moodTone'
 
 interface Props {
   frame: Frame
@@ -39,34 +40,45 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
   const extraCount = photos.length - THUMB_VISIBLE
 
   return (
-    <div style={styles.frame} onClick={onClick}>
+    <div style={{ ...styles.frame, ...getMoodToneStyle(frame.mood) }} onClick={onClick}>
       <div style={styles.outer}>
         <Perfs />
         <div style={styles.body}>
-          <div style={styles.frameNum}>♦{String(frame.frameNum).padStart(2, '0')}</div>
-          <div style={styles.dateLabel}>{formatChatDate(new Date(frame.date))}</div>
-          <div style={styles.title}>{frame.title}</div>
-          <div style={styles.preview}>{frame.content}</div>
+          <div style={styles.tintOverlay} />
+          <div style={{
+            ...styles.grainOverlay,
+            opacity: 'var(--film-grain-opacity)' as unknown as number,
+          }} />
+          <div style={styles.bodyContent}>
+            <div style={styles.frameNum}>♦{String(frame.frameNum).padStart(2, '0')}</div>
+            <div style={styles.dateLabel}>{formatChatDate(new Date(frame.date))}</div>
+            <div style={styles.title}>{frame.title}</div>
+            <div style={styles.preview}>{frame.content}</div>
 
-          {photos.length > 0 && (
-            <div style={styles.photoStrip}>
-              {visiblePhotos.map((photo) => (
-                <img
-                  key={photo.id}
-                  src={`${API_BASE}${photo.url}`}
-                  alt="photo"
-                  style={styles.stripThumb}
-                />
-              ))}
-              {extraCount > 0 && (
-                <div style={styles.extraBadge}>+{extraCount}</div>
-              )}
+            {photos.length > 0 && (
+              <div style={styles.photoStrip}>
+                {visiblePhotos.map((photo) => (
+                  <img
+                    key={photo.id}
+                    src={`${API_BASE}${photo.url}`}
+                    alt="photo"
+                    style={styles.stripThumb}
+                  />
+                ))}
+                {extraCount > 0 && (
+                  <div style={styles.extraBadge}>+{extraCount}</div>
+                )}
+              </div>
+            )}
+
+            <div style={styles.footer}>
+              <div style={styles.mood}>
+                {frame.mood
+                  ? `${MOOD_OPTIONS.find((o) => o.value === frame.mood)?.emoji ?? ''} ${frame.mood}`
+                  : ''}
+              </div>
+              <span style={{ ...styles.status, ...styles.statusDone }}>◆ DEVELOPED</span>
             </div>
-          )}
-
-          <div style={styles.footer}>
-            <div style={styles.mood}>{frame.mood ?? ''}</div>
-            <span style={{ ...styles.status, ...styles.statusDone }}>◆ DEVELOPED</span>
           </div>
         </div>
         <Perfs right />
@@ -116,6 +128,27 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '14px 16px',
     background: 'linear-gradient(135deg, #1e1a0f, #161209)',
     position: 'relative',
+    overflow: 'hidden',
+  },
+  tintOverlay: {
+    position: 'absolute',
+    inset: 0,
+    background: 'var(--film-tint)',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  grainOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E")`,
+    backgroundSize: '200px 200px',
+    mixBlendMode: 'overlay',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  bodyContent: {
+    position: 'relative',
+    zIndex: 1,
   },
   frameNum: {
     position: 'absolute',
