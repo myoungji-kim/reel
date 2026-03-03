@@ -4,6 +4,7 @@ import com.reel.common.response.ApiResponse;
 import com.reel.frame.dto.DevelopPreviewResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
+import com.reel.frame.dto.RollStatsResponse;
 import com.reel.frame.dto.PhotoResponse;
 import com.reel.frame.dto.SaveFrameRequest;
 import com.reel.frame.service.DevelopService;
@@ -30,6 +31,13 @@ public class FrameController {
     private final DevelopService developService;
     private final FrameService frameService;
     private final PhotoService photoService;
+
+    @GetMapping("/roll-stats")
+    public ResponseEntity<ApiResponse<RollStatsResponse>> getRollStats(
+            @AuthenticationPrincipal Long userId) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.getRollStats(userId)));
+    }
 
     @GetMapping("/on-this-day")
     public ResponseEntity<ApiResponse<List<OnThisDayResponse>>> getOnThisDay(

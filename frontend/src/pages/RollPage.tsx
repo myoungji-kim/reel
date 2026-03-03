@@ -6,6 +6,8 @@ import { useToast } from '../hooks/useToast'
 import FilmFrame from '../components/frame/FilmFrame'
 import FrameOverlay from '../components/frame/FrameOverlay'
 import MonthDivider from '../components/frame/MonthDivider'
+import RollProgressBar from '../components/frame/RollProgressBar'
+import RollDivider from '../components/frame/RollDivider'
 import type { Frame } from '../types/frame'
 
 // YYYY-MM → "MARCH 2026" 형태
@@ -49,6 +51,7 @@ export default function RollPage() {
 
   return (
     <div style={styles.view}>
+      <RollProgressBar />
       <div style={styles.list}>
         {loading ? (
           // 스켈레톤 3개
@@ -68,11 +71,15 @@ export default function RollPage() {
                 count={monthFrames.length}
               />
               {monthFrames.map((frame) => (
-                <FilmFrame
-                  key={frame.id}
-                  frame={frame}
-                  onClick={() => handleFrameClick(frame)}
-                />
+                <div key={frame.id}>
+                  <FilmFrame
+                    frame={frame}
+                    onClick={() => handleFrameClick(frame)}
+                  />
+                  {frame.frameNum % 24 === 0 && (
+                    <RollDivider rollNum={Math.ceil(frame.frameNum / 24)} />
+                  )}
+                </div>
               ))}
             </div>
           ))

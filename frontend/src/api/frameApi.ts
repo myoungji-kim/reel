@@ -1,5 +1,5 @@
 import axios from './axiosInstance'
-import type { DevelopPreview, Frame, OnThisDayItem } from '../types/frame'
+import type { DevelopPreview, Frame, OnThisDayItem, RollStats } from '../types/frame'
 
 interface ApiResponse<T> {
   success: boolean
@@ -28,3 +28,6 @@ export const getFrame = (frameId: number) =>
 
 export const getOnThisDay = () =>
   axios.get<ApiResponse<OnThisDayItem[]>>('/api/frames/on-this-day').then(r => r.data.data)
+
+export const getRollStats = () =>
+  axios.get<ApiResponse<RollStats>>('/api/frames/roll-stats').then(r => r.data.data)

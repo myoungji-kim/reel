@@ -5,6 +5,7 @@ import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
+import com.reel.frame.dto.RollStatsResponse;
 import com.reel.frame.dto.SaveFrameRequest;
 import com.reel.frame.entity.Frame;
 import com.reel.frame.repository.FrameRepository;
@@ -64,6 +65,16 @@ public class FrameService {
                         (int) ChronoUnit.YEARS.between(frame.getDate(), today)
                 ))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public RollStatsResponse getRollStats(Long userId) {
+        int totalFrames = (int) frameRepository.countByUserId(userId);
+        int progressRaw = totalFrames % 24;
+        if (progressRaw == 0 && totalFrames > 0) {
+            return new RollStatsResponse(totalFrames / 24, 24, 24, totalFrames);
+        }
+        return new RollStatsResponse((totalFrames / 24) + 1, progressRaw, 24, totalFrames);
     }
 
     @Transactional(readOnly = true)

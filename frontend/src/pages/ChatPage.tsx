@@ -14,8 +14,9 @@ import { formatChatDate } from '../utils/dateFormat'
 import { useUIStore } from '../stores/uiStore'
 import { useFrameStore } from '../stores/frameStore'
 import { useChatStore } from '../stores/chatStore'
-import { developPreview, saveFrame } from '../api/frameApi'
+import { developPreview, saveFrame, getRollStats } from '../api/frameApi'
 import { uploadPhotos } from '../api/photoApi'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function ChatPage() {
   const {
@@ -28,6 +29,7 @@ export default function ChatPage() {
   const resetChat = useChatStore((s) => s.reset)
   const navigate = useNavigate()
   const { showToast } = useToast()
+  const queryClient = useQueryClient()
   const bottomRef = useRef<HTMLDivElement>(null)
 
   // 메시지 추가 시 자동 스크롤
@@ -79,6 +81,19 @@ export default function ChatPage() {
         resetChat()
         setActiveTab('roll')
         navigate('/home')
+      }
+      if (!isRedevelop) {
+        // 롤 완성 여부 확인
+        try {
+          const stats = await getRollStats()
+          queryClient.invalidateQueries({ queryKey: ['roll-stats'] })
+          if (stats.totalFrames % 24 === 0 && stats.totalFrames > 0) {
+            const rollNum = String(stats.totalFrames / 24).padStart(2, '0')
+            showToast(`◆ ROLL ${rollNum} 완성! 🎞 새 롤이 시작됩니다`)
+          }
+        } catch {
+          // 롤 통계 실패는 무시
+        }
       }
     } catch {
       showToast('저장에 실패했어요. 다시 시도해줘요.', 'error')

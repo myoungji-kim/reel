@@ -29,3 +29,10 @@ export interface OnThisDayItem {
   frameDate: string
   yearsAgo: number
 }
+
+export interface RollStats {
+  currentRollNum: number
+  currentRollProgress: number
+  rollSize: number
+  totalFrames: number
+}
