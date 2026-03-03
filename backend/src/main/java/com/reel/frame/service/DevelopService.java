@@ -43,7 +43,8 @@ public class DevelopService {
         }
 
         List<ChatMessage> history = messageRepository.findBySessionIdOrderByCreatedAtAsc(sessionId);
-        String jsonText = anthropicClient.develop(history);
+        String jsonText = extractJson(anthropicClient.develop(history));
+        log.debug("develop JSON: {}", jsonText);
 
         String title;
         String content;
@@ -53,6 +54,7 @@ public class DevelopService {
             content = (String) map.get("content");
             if (title == null || content == null) throw new IllegalArgumentException("missing fields");
         } catch (Exception e) {
+            log.warn("develop parse failed, raw: {}", jsonText);
             throw new ReelException(ErrorCode.AI_PARSE_ERROR);
         }
 
@@ -72,5 +74,16 @@ public class DevelopService {
         );
 
         return new DevelopPreviewResponse(draft.getId(), title, content);
+    }
+
+    /** 모델이 ```json ... ``` 으로 감쌀 경우 JSON 부분만 추출 */
+    private String extractJson(String raw) {
+        String text = raw.trim();
+        int start = text.indexOf('{');
+        int end = text.lastIndexOf('}');
+        if (start >= 0 && end > start) {
+            return text.substring(start, end + 1);
+        }
+        return text;
     }
 }
