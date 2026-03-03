@@ -31,3 +31,7 @@ export const getOnThisDay = () =>
 
 export const getRollStats = () =>
   axios.get<ApiResponse<RollStats>>('/api/frames/roll-stats').then(r => r.data.data)
+
+export const searchFrames = (q: string, page = 0) =>
+  axios.get<ApiResponse<PageResponse<Frame>>>('/api/frames/search', { params: { q, page, size: 20 } })
+    .then(r => r.data.data.content)

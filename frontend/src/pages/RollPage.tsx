@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { getFrames } from '../api/frameApi'
+import { useEffect, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { getFrames, searchFrames } from '../api/frameApi'
 import { useFrameStore } from '../stores/frameStore'
 import { useUIStore } from '../stores/uiStore'
 import { useToast } from '../hooks/useToast'
@@ -35,6 +36,12 @@ export default function RollPage() {
   const [loading, setLoading] = useState(true)
   const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
 
+  // 검색
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [debouncedQ, setDebouncedQ] = useState('')
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     getFrames(0, 20)
       .then(({ data }) => setFrames(data.data.content))
@@ -42,19 +49,98 @@ export default function RollPage() {
       .finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 디바운스 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQ(inputValue.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [inputValue])
+
+  // 검색창 열릴 때 자동 포커스
+  useEffect(() => {
+    if (isSearchOpen) searchInputRef.current?.focus()
+  }, [isSearchOpen])
+
+  const { data: searchResults = [] } = useQuery({
+    queryKey: ['frame-search', debouncedQ],
+    queryFn: () => searchFrames(debouncedQ),
+    enabled: debouncedQ.length > 0,
+    staleTime: 1000 * 30,
+  })
+
+  const handleSearchToggle = () => {
+    if (isSearchOpen) {
+      setIsSearchOpen(false)
+      setInputValue('')
+      setDebouncedQ('')
+    } else {
+      setIsSearchOpen(true)
+    }
+  }
+
   const handleFrameClick = (frame: Frame) => {
     setSelectedFrame(frame)
     setFrameDetailOpen(true)
   }
 
+  const isSearching = debouncedQ.length > 0
   const grouped = groupByMonth(frames)
 
   return (
     <div style={styles.view}>
+      {/* 검색 헤더 */}
+      <div style={styles.header}>
+        <span style={styles.headerLabel}>FILM ROLL</span>
+        <button style={styles.searchBtn} onClick={handleSearchToggle}>
+          {isSearchOpen ? (
+            <span style={styles.searchBtnIcon}>✕</span>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+              <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* 검색 입력창 */}
+      <div style={{
+        ...styles.searchBar,
+        maxHeight: isSearchOpen ? 48 : 0,
+        opacity: isSearchOpen ? 1 : 0,
+        pointerEvents: isSearchOpen ? 'auto' : 'none',
+      }}>
+        <input
+          ref={searchInputRef}
+          style={styles.searchInput}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="제목 또는 내용으로 검색"
+        />
+        {inputValue && (
+          <button style={styles.clearBtn} onClick={() => setInputValue('')}>✕</button>
+        )}
+      </div>
+
       <RollProgressBar />
+
       <div style={styles.list}>
-        {loading ? (
-          // 스켈레톤 3개
+        {isSearching ? (
+          // 검색 결과
+          searchResults.length === 0 ? (
+            <div style={styles.empty}>
+              <p style={styles.emptyText}>// NO RESULTS</p>
+              <p style={styles.emptySub}>'{debouncedQ}'에 대한 프레임이 없습니다</p>
+            </div>
+          ) : (
+            searchResults.map((frame) => (
+              <FilmFrame
+                key={frame.id}
+                frame={frame}
+                onClick={() => handleFrameClick(frame)}
+              />
+            ))
+          )
+        ) : loading ? (
           [0, 1, 2].map((i) => (
             <FilmFrame key={i} frame={{} as Frame} onClick={() => {}} skeleton />
           ))
@@ -102,6 +188,67 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     overflow: 'hidden',
     position: 'relative',
+  },
+  header: {
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 16px',
+    borderBottom: '1px solid var(--border)',
+  },
+  headerLabel: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.12em',
+    opacity: 0.5,
+  },
+  searchBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchBtnIcon: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 11,
+    color: 'var(--cream-muted)',
+    lineHeight: 1,
+  },
+  searchBar: {
+    flexShrink: 0,
+    overflow: 'hidden',
+    transition: 'max-height 0.2s ease, opacity 0.2s ease',
+    borderBottom: '1px solid var(--border)',
+    background: 'var(--bg-card)',
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 16px',
+  },
+  searchInput: {
+    flex: 1,
+    height: 48,
+    background: 'transparent',
+    border: 'none',
+    outline: 'none',
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 13,
+    color: 'var(--cream)',
+    letterSpacing: '0.02em',
+  },
+  clearBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    padding: '4px',
+    opacity: 0.6,
   },
   list: {
     flex: 1,

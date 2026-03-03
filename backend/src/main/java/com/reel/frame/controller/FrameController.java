@@ -32,6 +32,16 @@ public class FrameController {
     private final FrameService frameService;
     private final PhotoService photoService;
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<FrameResponse>>> searchFrames(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.searchFrames(userId, q, page, size)));
+    }
+
     @GetMapping("/roll-stats")
     public ResponseEntity<ApiResponse<RollStatsResponse>> getRollStats(
             @AuthenticationPrincipal Long userId) {

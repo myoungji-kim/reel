@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +66,13 @@ public class FrameService {
                         (int) ChronoUnit.YEARS.between(frame.getDate(), today)
                 ))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<FrameResponse> searchFrames(Long userId, String q, int page, int size) {
+        if (q == null || q.isBlank()) return Page.empty();
+        return frameRepository.searchByKeyword(userId, q, PageRequest.of(page, size))
+                .map(FrameResponse::from);
     }
 
     @Transactional(readOnly = true)
