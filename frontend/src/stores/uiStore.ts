@@ -11,6 +11,8 @@ interface UIStore {
   setPreviewOpen: (open: boolean) => void
   isFrameDetailOpen: boolean
   setFrameDetailOpen: (open: boolean) => void
+  isQuickNoteOpen: boolean
+  setQuickNoteOpen: (open: boolean) => void
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -22,4 +24,6 @@ export const useUIStore = create<UIStore>((set) => ({
   setPreviewOpen: (open) => set({ isPreviewOpen: open }),
   isFrameDetailOpen: false,
   setFrameDetailOpen: (open) => set({ isFrameDetailOpen: open }),
+  isQuickNoteOpen: false,
+  setQuickNoteOpen: (open) => set({ isQuickNoteOpen: open }),
 }))

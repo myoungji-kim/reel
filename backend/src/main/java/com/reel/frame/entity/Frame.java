@@ -42,6 +42,10 @@ public class Frame {
     @Column(length = 50)
     private String mood;
 
+    @Column(name = "frame_type", nullable = false, columnDefinition = "VARCHAR(20) DEFAULT 'DEVELOPED'")
+    @Enumerated(EnumType.STRING)
+    private FrameType frameType = FrameType.DEVELOPED;
+
     @Column(nullable = false)
     private LocalDate date;
 
@@ -78,6 +82,17 @@ public class Frame {
         frame.content = content;
         frame.mood = mood;
         frame.date = date;
+        return frame;
+    }
+
+    public static Frame quick(User user, int frameNum, String title, String content, LocalDate date) {
+        Frame frame = new Frame();
+        frame.user = user;
+        frame.frameNum = frameNum;
+        frame.title = title;
+        frame.content = content;
+        frame.date = date;
+        frame.frameType = FrameType.QUICK;
         return frame;
     }
 

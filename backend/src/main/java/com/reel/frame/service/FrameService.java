@@ -5,10 +5,15 @@ import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
+import com.reel.frame.dto.QuickFrameRequest;
+import com.reel.frame.dto.QuickFrameResponse;
 import com.reel.frame.dto.RollStatsResponse;
 import com.reel.frame.dto.SaveFrameRequest;
 import com.reel.frame.entity.Frame;
+import com.reel.frame.entity.FrameType;
 import com.reel.frame.repository.FrameRepository;
+import com.reel.user.entity.User;
+import com.reel.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,6 +33,7 @@ public class FrameService {
 
     private final FrameRepository frameRepository;
     private final ChatSessionRepository sessionRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public FrameResponse save(Long userId, Long frameId, SaveFrameRequest request) {
@@ -66,6 +72,18 @@ public class FrameService {
                         (int) ChronoUnit.YEARS.between(frame.getDate(), today)
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public QuickFrameResponse createQuickFrame(Long userId, QuickFrameRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ReelException(ErrorCode.USER_NOT_FOUND));
+
+        int frameNum = (int) frameRepository.countByUserId(userId) + 1;
+        LocalDate date = request.date() != null ? request.date() : LocalDate.now();
+
+        Frame frame = frameRepository.save(Frame.quick(user, frameNum, request.title(), request.content(), date));
+        return new QuickFrameResponse(frame.getId(), frame.getFrameNum(), frame.getTitle(), FrameType.QUICK.name());
     }
 
     @Transactional(readOnly = true)

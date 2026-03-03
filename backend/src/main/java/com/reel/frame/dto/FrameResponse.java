@@ -12,6 +12,7 @@ public record FrameResponse(
         String title,
         String content,
         String mood,
+        String frameType,
         LocalDate date,
         LocalDateTime createdAt,
         List<PhotoResponse> photos
@@ -26,6 +27,7 @@ public record FrameResponse(
                 frame.getTitle(),
                 frame.getContent(),
                 frame.getMood(),
+                frame.getFrameType() != null ? frame.getFrameType().name() : "DEVELOPED",
                 frame.getDate(),
                 frame.getCreatedAt(),
                 photos

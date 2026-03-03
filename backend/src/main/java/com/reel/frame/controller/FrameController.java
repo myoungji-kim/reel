@@ -4,6 +4,8 @@ import com.reel.common.response.ApiResponse;
 import com.reel.frame.dto.DevelopPreviewResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
+import com.reel.frame.dto.QuickFrameRequest;
+import com.reel.frame.dto.QuickFrameResponse;
 import com.reel.frame.dto.RollStatsResponse;
 import com.reel.frame.dto.PhotoResponse;
 import com.reel.frame.dto.SaveFrameRequest;
@@ -31,6 +33,14 @@ public class FrameController {
     private final DevelopService developService;
     private final FrameService frameService;
     private final PhotoService photoService;
+
+    @PostMapping("/quick")
+    public ResponseEntity<ApiResponse<QuickFrameResponse>> createQuickFrame(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody QuickFrameRequest request) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.createQuickFrame(userId, request)));
+    }
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<FrameResponse>>> searchFrames(

@@ -10,6 +10,7 @@ export interface Frame {
   title: string
   content: string
   mood: string | null
+  frameType: 'DEVELOPED' | 'QUICK'
   date: string
   createdAt: string
   photos: Photo[]

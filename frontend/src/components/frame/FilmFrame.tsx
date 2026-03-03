@@ -77,7 +77,11 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                   ? `${MOOD_OPTIONS.find((o) => o.value === frame.mood)?.emoji ?? ''} ${frame.mood}`
                   : ''}
               </div>
-              <span style={{ ...styles.status, ...styles.statusDone }}>◆ DEVELOPED</span>
+              {frame.frameType === 'QUICK' ? (
+                <span style={{ ...styles.status, ...styles.statusQuick }}>✦ QUICK</span>
+              ) : (
+                <span style={{ ...styles.status, ...styles.statusDone }}>◆ DEVELOPED</span>
+              )}
             </div>
           </div>
         </div>
@@ -237,5 +241,9 @@ const styles: Record<string, React.CSSProperties> = {
   statusDone: {
     color: 'var(--fade-green)',
     border: '1px solid rgba(122,158,138,0.3)',
+  },
+  statusQuick: {
+    color: 'var(--amber-light)',
+    border: '1px solid rgba(212,130,42,0.3)',
   },
 }
