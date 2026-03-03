@@ -108,23 +108,45 @@ POST /api/frames/quick
    - 저장 성공 시: 시트 닫기 + `RollPage`로 이동 (DevelopingOverlay 없이)
    - 취소 버튼으로 닫기 가능
 
-3. **`ChatPage.tsx` 수정**
-   - 채팅 입력창 옆 또는 상단에 "✦ 빠른 기록" 버튼 추가
-   - 탭 시 `QuickNoteSheet` 열기
-   - 버튼 스타일: 작고 눈에 띄지 않게, `var(--color-text-muted)` 색상
+3. **`TopBar.tsx` 수정** (진입 버튼 위치 변경)
 
-4. **`FilmFrame.tsx` 수정**
+   > **UX 결정:** 빠른 기록은 AI 채팅의 보조 기능이 아닌 독립 기록 경로.
+   > 어느 탭에서든 즉시 접근 가능해야 하므로 TopBar에 배치.
+
+   - `⚙` 설정 버튼 왼쪽에 `✦` 버튼 추가
+   - 탭 그룹(`◈ 오늘의 현장`, `◆ 필름 롤`)과 시각적으로 분리된 우측 액션 영역에 위치
+   - 레이아웃: `[ REEL ] [ 탭 그룹 (flex:1) ] [ ✦ ] [ ⚙ ]`
+   - 버튼 스타일:
+     - 색상: `var(--amber)` — 설정(`var(--cream-muted)`)과 구분해 "액션"임을 전달
+     - opacity: 정상 (숨기지 않음)
+     - 폰트: `Space Mono`, 14px
+   - 탭 시 `QuickNoteSheet` 열기 (`isQuickNoteOpen` 상태는 `uiStore` 사용)
+   - **`ChatPage.tsx`에서 기존 `✦` 버튼 제거** (헤더에서 삭제)
+
+   ```
+   [ REEL ]  [ ◈ 오늘의 현장   ◆ 필름 롤 ]  [ ✦ ]  [ ⚙ ]
+                       탭 그룹               액션 영역
+   ```
+
+4. **`QuickNoteSheet` 렌더링 위치**
+   - `ChatPage.tsx`에서 `HomePage.tsx`로 이동
+   - `HomePage`에서 `isQuickNoteOpen` 상태를 구독하고 `<QuickNoteSheet />` 렌더링
+   - 저장 성공 시: 시트 닫기 + `setActiveTab('roll')`
+
+5. **`FilmFrame.tsx` 수정**
    - `frameType === 'QUICK'`인 프레임에 `QUICK` 배지 표시
    - 배지 위치: 기존 `DEVELOPED` 배지와 동일한 위치
    - 배지 스타일: 기존 배지와 동일한 형태, 텍스트만 `QUICK`
 
 ## 디자인 규칙
 - 바텀시트: 기존 오버레이 스타일과 통일 (배경색, 모서리, 핸들 바)
-- "빠른 기록" 진입 버튼은 채팅 핵심 흐름을 방해하지 않을 크기
+- `✦` 버튼: `var(--amber)` 색상, opacity 정상 — 설정 버튼과 명확히 구분
+- `✦`와 `⚙`는 TopBar 우측 액션 영역에 나란히 배치, 탭 그룹과 시각적으로 분리
 - 저장 후 DevelopingOverlay(현상 연출) 없이 바로 RollPage 이동
 - 기존 디자인 토큰 이외의 색상 추가 금지
 
 ## 검증
+- [ ] TopBar `✦` 버튼이 롤 페이지에서도 탭 시 바텀시트 열림 확인
 - [ ] "빠른 기록" 버튼 탭 시 바텀시트 열림 확인
 - [ ] 제목+내용 입력 후 저장 시 `/api/frames/quick` 호출 확인
 - [ ] 저장된 프레임이 RollPage에 `QUICK` 배지로 표시 확인
