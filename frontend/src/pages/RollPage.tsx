@@ -36,7 +36,7 @@ export default function RollPage() {
   useEffect(() => {
     getFrames(0, 20)
       .then(({ data }) => setFrames(data.data.content))
-      .catch(() => showToast('목록을 불러오지 못했어요.'))
+      .catch(() => showToast('목록을 불러오지 못했어요.', 'error'))
       .finally(() => setLoading(false))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

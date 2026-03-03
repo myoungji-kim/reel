@@ -50,7 +50,7 @@ export default function ChatPage() {
       await new Promise((resolve) => setTimeout(resolve, remaining))
     } catch {
       setDevelopingOpen(false)
-      showToast('현상에 실패했어요. 다시 시도해줘요.')
+      showToast('현상에 실패했어요. 다시 시도해줘요.', 'error')
       return
     }
 
@@ -80,7 +80,7 @@ export default function ChatPage() {
         navigate('/home')
       }
     } catch {
-      showToast('저장에 실패했어요. 다시 시도해줘요.')
+      showToast('저장에 실패했어요. 다시 시도해줘요.', 'error')
     }
   }
 

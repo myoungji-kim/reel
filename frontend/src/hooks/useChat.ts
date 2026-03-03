@@ -16,7 +16,7 @@ export function useChat() {
       .then(({ data }) => {
         store.setSession(data.data.sessionId, data.data.messages, data.data.developed)
       })
-      .catch(() => showToast('세션을 불러오지 못했어요.'))
+      .catch(() => showToast('세션을 불러오지 못했어요.', 'error'))
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendMessage = useCallback(

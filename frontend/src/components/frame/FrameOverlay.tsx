@@ -105,7 +105,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
       setIsEditing(false)
       showToast('수정됐어요.')
     } catch {
-      showToast('수정에 실패했어요.')
+      showToast('수정에 실패했어요.', 'error')
     } finally {
       setIsSaving(false)
     }
