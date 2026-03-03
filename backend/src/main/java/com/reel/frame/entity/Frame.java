@@ -46,7 +46,7 @@ public class Frame {
     @Enumerated(EnumType.STRING)
     private FrameType frameType = FrameType.DEVELOPED;
 
-    @Column(name = "is_archived", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "is_archived", columnDefinition = "BOOLEAN NOT NULL DEFAULT FALSE")
     private boolean isArchived = false;
 
     @Column(nullable = false)
