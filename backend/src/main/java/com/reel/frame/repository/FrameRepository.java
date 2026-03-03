@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface FrameRepository extends JpaRepository<Frame, Long> {
@@ -19,4 +21,6 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
     Optional<Frame> findByIdAndUserId(Long id, Long userId);
 
     Optional<Frame> findBySessionId(Long sessionId);
+
+    List<Frame> findByUserIdAndDateIn(Long userId, List<LocalDate> dates);
 }

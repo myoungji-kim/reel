@@ -4,6 +4,7 @@ import com.reel.chat.repository.ChatSessionRepository;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
 import com.reel.frame.dto.FrameResponse;
+import com.reel.frame.dto.OnThisDayResponse;
 import com.reel.frame.dto.SaveFrameRequest;
 import com.reel.frame.entity.Frame;
 import com.reel.frame.repository.FrameRepository;
@@ -13,6 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -42,6 +47,23 @@ public class FrameService {
         return frameRepository
                 .findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size))
                 .map(FrameResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OnThisDayResponse> getOnThisDay(Long userId) {
+        LocalDate today = LocalDate.now();
+        List<LocalDate> dates = List.of(today.minusYears(1), today.minusYears(2));
+
+        return frameRepository.findByUserIdAndDateIn(userId, dates).stream()
+                .map(frame -> new OnThisDayResponse(
+                        frame.getId(),
+                        frame.getFrameNum(),
+                        frame.getTitle(),
+                        frame.getMood(),
+                        frame.getDate(),
+                        (int) ChronoUnit.YEARS.between(frame.getDate(), today)
+                ))
+                .toList();
     }
 
     @Transactional(readOnly = true)

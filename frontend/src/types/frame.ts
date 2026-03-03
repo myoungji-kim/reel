@@ -20,3 +20,12 @@ export interface DevelopPreview {
   title: string
   content: string
 }
+
+export interface OnThisDayItem {
+  frameId: number
+  frameNum: number
+  title: string
+  mood: string | null
+  frameDate: string
+  yearsAgo: number
+}

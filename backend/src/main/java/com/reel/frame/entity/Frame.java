@@ -69,6 +69,18 @@ public class Frame {
         return frame;
     }
 
+    public static Frame seed(User user, int frameNum, String title, String content,
+                             String mood, LocalDate date) {
+        Frame frame = new Frame();
+        frame.user = user;
+        frame.frameNum = frameNum;
+        frame.title = title;
+        frame.content = content;
+        frame.mood = mood;
+        frame.date = date;
+        return frame;
+    }
+
     public void update(String title, String content, String mood) {
         this.title = title;
         this.content = content;

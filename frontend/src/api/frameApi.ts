@@ -1,5 +1,5 @@
 import axios from './axiosInstance'
-import type { DevelopPreview, Frame } from '../types/frame'
+import type { DevelopPreview, Frame, OnThisDayItem } from '../types/frame'
 
 interface ApiResponse<T> {
   success: boolean
@@ -25,3 +25,6 @@ export const getFrames = (page = 0, size = 20) =>
 
 export const getFrame = (frameId: number) =>
   axios.get<ApiResponse<Frame>>(`/api/frames/${frameId}`)
+
+export const getOnThisDay = () =>
+  axios.get<ApiResponse<OnThisDayItem[]>>('/api/frames/on-this-day').then(r => r.data.data)

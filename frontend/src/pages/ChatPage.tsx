@@ -7,6 +7,7 @@ import TypingIndicator from '../components/chat/TypingIndicator'
 import ChatInput from '../components/chat/ChatInput'
 import DevelopBanner from '../components/chat/DevelopBanner'
 import RedevelopBanner from '../components/chat/RedevelopBanner'
+import OnThisDayBanner from '../components/chat/OnThisDayBanner'
 import DevelopingOverlay from '../components/overlays/DevelopingOverlay'
 import PreviewOverlay from '../components/overlays/PreviewOverlay'
 import { formatChatDate } from '../utils/dateFormat'
@@ -102,6 +103,9 @@ export default function ChatPage() {
             <span style={styles.count}>{userMsgCount} lines</span>
           )}
         </div>
+
+        {/* 이날의 기억 배너 */}
+        <OnThisDayBanner />
 
         {/* 메시지 목록 */}
         <div style={styles.messages}>
