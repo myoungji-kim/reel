@@ -10,7 +10,6 @@ import RedevelopBanner from '../components/chat/RedevelopBanner'
 import OnThisDayBanner from '../components/chat/OnThisDayBanner'
 import DevelopingOverlay from '../components/overlays/DevelopingOverlay'
 import PreviewOverlay from '../components/overlays/PreviewOverlay'
-import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
 import { formatChatDate } from '../utils/dateFormat'
 import { useUIStore } from '../stores/uiStore'
 import { useFrameStore } from '../stores/frameStore'
@@ -24,8 +23,7 @@ export default function ChatPage() {
     messages, isTyping, userMsgCount, developed, newMsgSinceDevelop,
     sendMessage, retryMessage, resetNewMsgSinceDevelop, sessionId,
   } = useChat()
-  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab,
-    isQuickNoteOpen, setQuickNoteOpen } = useUIStore()
+  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab } = useUIStore()
   const { preview, setPreview, updateFrame } = useFrameStore()
   const resetChat = useChatStore((s) => s.reset)
   const navigate = useNavigate()
@@ -118,9 +116,6 @@ export default function ChatPage() {
           ) : (
             <span style={styles.count}>{userMsgCount} lines</span>
           )}
-          <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
-            ✦
-          </button>
         </div>
 
         {/* 이날의 기억 배너 */}
@@ -162,16 +157,6 @@ export default function ChatPage() {
         onCancel={handleCancelPreview}
       />
 
-      {/* 빠른 기록 시트 */}
-      <QuickNoteSheet
-        isOpen={isQuickNoteOpen}
-        onClose={() => setQuickNoteOpen(false)}
-        onSaved={() => {
-          setQuickNoteOpen(false)
-          setActiveTab('roll')
-          navigate('/home')
-        }}
-      />
     </>
   )
 }
@@ -201,18 +186,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "'VT323', monospace",
     fontSize: 18,
     color: 'var(--cream-muted)',
-  },
-  quickNoteBtn: {
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 12,
-    color: 'var(--cream-muted)',
-    padding: '2px 4px',
-    opacity: 0.5,
-    lineHeight: 1,
-    marginLeft: 8,
   },
   developedBadge: {
     fontFamily: "'Space Mono', monospace",

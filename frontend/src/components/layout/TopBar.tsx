@@ -5,7 +5,7 @@ import { useAuthStore } from '../../stores/authStore'
 import { logout } from '../../api/authApi'
 
 export default function TopBar() {
-  const { activeTab, setActiveTab } = useUIStore()
+  const { activeTab, setActiveTab, setQuickNoteOpen } = useUIStore()
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -60,6 +60,9 @@ export default function TopBar() {
             ◆ 필름 롤
           </button>
         </div>
+        <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
+          ✦
+        </button>
         <div ref={menuRef} style={styles.menuWrapper}>
           <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)}>
             ⚙
@@ -110,6 +113,17 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.08em',
     transition: 'all 0.2s',
     whiteSpace: 'nowrap',
+  },
+  quickNoteBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 14,
+    color: 'var(--amber)',
+    padding: '0 8px',
+    paddingBottom: 12,
+    lineHeight: 1,
   },
   menuWrapper: {
     position: 'relative',
