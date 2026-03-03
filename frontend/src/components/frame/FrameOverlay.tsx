@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
 import { getMoodToneStyle } from '../../utils/moodTone'
@@ -8,6 +8,7 @@ import { uploadPhotos, deletePhoto } from '../../api/photoApi'
 import { useFrameStore } from '../../stores/frameStore'
 import { useToast } from '../../hooks/useToast'
 import { useQueryClient } from '@tanstack/react-query'
+import { exportFrameAsImage } from '../../utils/exportFrame'
 
 interface Props {
   isOpen: boolean
@@ -27,6 +28,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const [mood, setMood] = useState<string | null>(null)
   const [localPhotos, setLocalPhotos] = useState<Photo[]>([])
   const [isSaving, setIsSaving] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
 
   // 편집 모드 사진 상태
   const [pendingAdd, setPendingAdd] = useState<File[]>([])
@@ -34,6 +36,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const [pendingDelete, setPendingDelete] = useState<number[]>([])
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const captureRef = useRef<HTMLDivElement>(null)
   const updateFrame = useFrameStore((s) => s.updateFrame)
   const updateFramePhotos = useFrameStore((s) => s.updateFramePhotos)
   const removeFrame = useFrameStore((s) => s.removeFrame)
@@ -115,6 +118,18 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     }
   }
 
+  const handleExport = useCallback(async () => {
+    if (!captureRef.current || !frame) return
+    setIsExporting(true)
+    try {
+      await exportFrameAsImage(captureRef.current, frame.title)
+    } catch {
+      showToast('저장에 실패했어요.', 'error')
+    } finally {
+      setIsExporting(false)
+    }
+  }, [frame, showToast])
+
   const handleArchive = async () => {
     if (!frame) return
     const frameSnapshot = { ...frame }
@@ -157,6 +172,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
       onClick={onClose}
     >
       <div
+        ref={captureRef}
         style={{
           ...styles.sheet,
           transform: isOpen ? 'translateY(0)' : 'translateY(60px)',
@@ -168,7 +184,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
         <div style={styles.handle} />
 
         {/* 닫기 / 수정 버튼 */}
-        <div style={styles.headerBtns}>
+        <div style={styles.headerBtns} data-export-exclude="">
           {!isEditing ? (
             <button style={styles.editBtn} onClick={() => setIsEditing(true)}>✏</button>
           ) : (
@@ -288,7 +304,14 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
             )}
 
             {!isEditing && (
-              <div style={styles.archiveRow}>
+              <div style={styles.actionRow} data-export-exclude="">
+                <button
+                  style={{ ...styles.exportBtn, opacity: isExporting ? 0.5 : 1 }}
+                  onClick={handleExport}
+                  disabled={isExporting}
+                >
+                  {isExporting ? '저장 중...' : '카드로 저장'}
+                </button>
                 <button style={styles.archiveBtn} onClick={handleArchive}>
                   필름 보관
                 </button>
@@ -558,12 +581,24 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     marginBottom: 8,
   },
-  archiveRow: {
+  actionRow: {
     marginTop: 24,
     paddingTop: 12,
     borderTop: '1px solid var(--border)',
     display: 'flex',
-    justifyContent: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  exportBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border-light)',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.08em',
+    padding: '5px 12px',
+    borderRadius: 3,
   },
   archiveBtn: {
     background: 'transparent',
