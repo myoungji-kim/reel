@@ -25,7 +25,21 @@ public class AnthropicClient {
             - 이모지는 1개까지만 사용하세요.
             - 강요하지 말고 편안하게 대화하세요.
             - 반말로 편하게 이야기하세요.
+
+            [후속 질문 지침]
+            - 사용자 메시지에서 감정, 구체적 장면, 등장인물(사람·동물), 장소·날씨·소리 등 감각적 요소가 언급되면 그 부분을 더 구체화하는 질문을 포함할 것
+            - 질문은 반드시 1개로 제한. 여러 질문을 연달아 쏟아내지 말 것
+            - 질문 어조: 캐주얼하고 따뜻하게. 인터뷰나 심문처럼 느껴지지 않을 것
             """;
+
+    private static final String CONTEXT_SUFFICIENT_HINT = """
+
+            [추가 지침]
+            대화 맥락이 충분히 쌓였어. 더 파고드는 질문보다 공감과 따뜻한 마무리에 집중해줘.
+            """;
+
+    private static final int CONTEXT_MSG_THRESHOLD  = 5;
+    private static final int CONTEXT_CHAR_THRESHOLD = 300;
 
     private final WebClient webClient;
     private final AnthropicProperties properties;
@@ -37,8 +51,23 @@ public class AnthropicClient {
     }
 
     public String chat(List<ChatMessage> history) {
+        // 맥락 충분 여부 판단: 사용자 메시지 수 또는 총 입력 글자 수 기준
+        long userMsgCount = history.stream()
+                .filter(m -> m.getRole() == MessageRole.USER)
+                .count();
+        long userCharCount = history.stream()
+                .filter(m -> m.getRole() == MessageRole.USER)
+                .mapToLong(m -> m.getContent().length())
+                .sum();
+        boolean contextSufficient = userMsgCount >= CONTEXT_MSG_THRESHOLD
+                || userCharCount >= CONTEXT_CHAR_THRESHOLD;
+
+        String systemPrompt = contextSufficient
+                ? CHAT_SYSTEM_PROMPT + CONTEXT_SUFFICIENT_HINT
+                : CHAT_SYSTEM_PROMPT;
+
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("system", CHAT_SYSTEM_PROMPT));
+        messages.add(new Message("system", systemPrompt));
 
         // 첫 번째 user 메시지부터 포함
         int firstUserIdx = 0;
