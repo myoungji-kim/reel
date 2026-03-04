@@ -3,7 +3,7 @@ import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
 import { getMoodToneStyle } from '../../utils/moodTone'
 import MoodChipSelector from '../MoodChipSelector'
-import { saveFrame, getFrame, archiveFrame, unarchiveFrame } from '../../api/frameApi'
+import { saveFrame, getFrame, archiveFrame, unarchiveFrame, toggleBookmark } from '../../api/frameApi'
 import { uploadPhotos, deletePhoto } from '../../api/photoApi'
 import { useFrameStore } from '../../stores/frameStore'
 import { useToast } from '../../hooks/useToast'
@@ -38,6 +38,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const updateFramePhotos = useFrameStore((s) => s.updateFramePhotos)
   const removeFrame = useFrameStore((s) => s.removeFrame)
   const restoreFrame = useFrameStore((s) => s.restoreFrame)
+  const toggleBookmarkFrame = useFrameStore((s) => s.toggleBookmarkFrame)
   const { showToast } = useToast()
   const queryClient = useQueryClient()
 
@@ -115,6 +116,19 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     }
   }
 
+  const handleToggleBookmark = async () => {
+    if (!frame) return
+    const prev = frame.isBookmarked
+    toggleBookmarkFrame(frame.id, !prev)
+    try {
+      const result = await toggleBookmark(frame.id)
+      toggleBookmarkFrame(frame.id, result.isBookmarked)
+    } catch {
+      toggleBookmarkFrame(frame.id, prev)
+      showToast('북마크 변경에 실패했어요.', 'error')
+    }
+  }
+
   const handleArchive = async () => {
     if (!frame) return
     const frameSnapshot = { ...frame }
@@ -169,6 +183,17 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
 
         {/* 닫기 / 수정 버튼 */}
         <div style={styles.headerBtns}>
+          {!isEditing && frame && (
+            <button
+              style={{
+                ...styles.bookmarkBtn,
+                color: frame.isBookmarked ? 'var(--amber)' : 'var(--cream-muted)',
+              }}
+              onClick={handleToggleBookmark}
+            >
+              {frame.isBookmarked ? '★' : '☆'}
+            </button>
+          )}
           {!isEditing ? (
             <button style={styles.editBtn} onClick={() => setIsEditing(true)}>✏</button>
           ) : (
@@ -349,6 +374,18 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 3,
     cursor: 'pointer',
     fontSize: 12,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bookmarkBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border-light)',
+    width: 28,
+    height: 28,
+    borderRadius: 3,
+    cursor: 'pointer',
+    fontSize: 14,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

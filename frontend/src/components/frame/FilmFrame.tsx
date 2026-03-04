@@ -51,6 +51,9 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
           }} />
           <div style={styles.bodyContent}>
             <div style={styles.frameNum}>♦{String(frame.frameNum).padStart(2, '0')}</div>
+            {frame.isBookmarked && (
+              <div style={styles.bookmarkIcon}>★</div>
+            )}
             <div style={styles.dateLabel}>{formatChatDate(new Date(frame.date))}</div>
             <div style={styles.title}>{frame.title}</div>
             <div style={styles.preview}>{frame.content}</div>
@@ -162,6 +165,15 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 18,
     color: 'var(--amber)',
     opacity: 0.35,
+  },
+  bookmarkIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 36,
+    fontSize: 10,
+    color: 'var(--amber)',
+    opacity: 0.7,
+    lineHeight: 1,
   },
   dateLabel: {
     fontFamily: "'Space Mono', monospace",

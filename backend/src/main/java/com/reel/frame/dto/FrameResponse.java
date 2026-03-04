@@ -16,7 +16,8 @@ public record FrameResponse(
         LocalDate date,
         LocalDateTime createdAt,
         List<PhotoResponse> photos,
-        boolean isArchived
+        boolean isArchived,
+        boolean isBookmarked
 ) {
     public static FrameResponse from(Frame frame) {
         List<PhotoResponse> photos = frame.getPhotos().stream()
@@ -32,7 +33,8 @@ public record FrameResponse(
                 frame.getDate(),
                 frame.getCreatedAt(),
                 photos,
-                frame.isArchived()
+                frame.isArchived(),
+                frame.isBookmarked()
         );
     }
 }

@@ -1,6 +1,7 @@
 package com.reel.frame.controller;
 
 import com.reel.common.response.ApiResponse;
+import com.reel.frame.dto.BookmarkResponse;
 import com.reel.frame.dto.DevelopPreviewResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
@@ -89,6 +90,14 @@ public class FrameController {
             @AuthenticationPrincipal Long userId) {
 
         return ResponseEntity.ok(ApiResponse.ok(frameService.getArchivedFrames(userId)));
+    }
+
+    @PutMapping("/{frameId}/bookmark")
+    public ResponseEntity<ApiResponse<BookmarkResponse>> toggleBookmark(
+            @AuthenticationPrincipal Long userId,
+            @PathVariable Long frameId) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.toggleBookmark(userId, frameId)));
     }
 
     @PatchMapping("/{frameId}/archive")

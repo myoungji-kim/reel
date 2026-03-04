@@ -35,7 +35,8 @@ export default function RollPage() {
   const { showToast } = useToast()
   const queryClient = useQueryClient()
   const [loading, setLoading] = useState(true)
-  const [selectedFrame, setSelectedFrame] = useState<Frame | null>(null)
+  const [selectedFrameId, setSelectedFrameId] = useState<number | null>(null)
+  const selectedFrame = frames.find((f) => f.id === selectedFrameId) ?? null
 
   // 검색
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -45,6 +46,9 @@ export default function RollPage() {
 
   // 보관된 필름
   const [isArchivedOpen, setIsArchivedOpen] = useState(false)
+
+  // 북마크 필터
+  const [isBookmarkFilter, setIsBookmarkFilter] = useState(false)
 
   useEffect(() => {
     getFrames(0, 20)
@@ -99,28 +103,41 @@ export default function RollPage() {
   }
 
   const handleFrameClick = (frame: Frame) => {
-    setSelectedFrame(frame)
+    setSelectedFrameId(frame.id)
     setFrameDetailOpen(true)
   }
 
   const isSearching = debouncedQ.length > 0
-  const grouped = groupByMonth(frames)
+  const displayFrames = isBookmarkFilter ? frames.filter((f) => f.isBookmarked) : frames
+  const grouped = groupByMonth(displayFrames)
 
   return (
     <div style={styles.view}>
       {/* 검색 헤더 */}
       <div style={styles.header}>
         <span style={styles.headerLabel}>FILM ROLL</span>
-        <button style={styles.searchBtn} onClick={handleSearchToggle}>
-          {isSearchOpen ? (
-            <span style={styles.searchBtnIcon}>✕</span>
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
-              <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
-            </svg>
-          )}
-        </button>
+        <div style={styles.headerActions}>
+          <button
+            style={{
+              ...styles.bookmarkFilterBtn,
+              color: isBookmarkFilter ? 'var(--amber)' : 'var(--cream-muted)',
+              opacity: isBookmarkFilter ? 1 : 0.5,
+            }}
+            onClick={() => setIsBookmarkFilter((v) => !v)}
+          >
+            ★
+          </button>
+          <button style={styles.searchBtn} onClick={handleSearchToggle}>
+            {isSearchOpen ? (
+              <span style={styles.searchBtnIcon}>✕</span>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+                <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* 검색 입력창 */}
@@ -165,6 +182,11 @@ export default function RollPage() {
           [0, 1, 2].map((i) => (
             <FilmFrame key={i} frame={{} as Frame} onClick={() => {}} skeleton />
           ))
+        ) : isBookmarkFilter && displayFrames.length === 0 ? (
+          <div style={styles.empty}>
+            <p style={styles.emptyText}>// NO BOOKMARKS</p>
+            <p style={styles.emptySub}>즐겨찾기한 프레임이 없어요</p>
+          </div>
         ) : frames.length === 0 ? (
           <div style={styles.empty}>
             <p style={styles.emptyText}>// FILM ROLL EMPTY</p>
@@ -254,6 +276,22 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--cream-muted)',
     letterSpacing: '0.12em',
     opacity: 0.5,
+  },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+  },
+  bookmarkFilterBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '4px',
+    fontSize: 15,
+    lineHeight: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchBtn: {
     background: 'transparent',

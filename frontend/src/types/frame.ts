@@ -15,6 +15,7 @@ export interface Frame {
   createdAt: string
   photos: Photo[]
   isArchived: boolean
+  isBookmarked: boolean
 }
 
 export interface DevelopPreview {

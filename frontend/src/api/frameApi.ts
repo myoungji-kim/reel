@@ -48,3 +48,7 @@ export const unarchiveFrame = (frameId: number) =>
 
 export const getArchivedFrames = () =>
   axios.get<ApiResponse<Frame[]>>('/api/frames/archived').then(r => r.data.data)
+
+export const toggleBookmark = (frameId: number) =>
+  axios.put<ApiResponse<{ frameId: number; isBookmarked: boolean }>>(`/api/frames/${frameId}/bookmark`)
+    .then(r => r.data.data)

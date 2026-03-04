@@ -3,6 +3,7 @@ package com.reel.frame.service;
 import com.reel.chat.repository.ChatSessionRepository;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
+import com.reel.frame.dto.BookmarkResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
 import com.reel.frame.dto.QuickFrameRequest;
@@ -132,5 +133,14 @@ public class FrameService {
         Frame frame = frameRepository.findByIdAndUserId(frameId, userId)
                 .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
         return FrameResponse.from(frame);
+    }
+
+    @Transactional
+    public BookmarkResponse toggleBookmark(Long userId, Long frameId) {
+        Frame frame = frameRepository.findByIdAndUserId(frameId, userId)
+                .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
+        frame.toggleBookmark();
+        frameRepository.save(frame);
+        return new BookmarkResponse(frameId, frame.isBookmarked());
     }
 }

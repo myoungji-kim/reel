@@ -49,6 +49,9 @@ public class Frame {
     @Column(name = "is_archived", columnDefinition = "BOOLEAN NOT NULL DEFAULT FALSE")
     private boolean isArchived = false;
 
+    @Column(name = "is_bookmarked", columnDefinition = "BOOLEAN NOT NULL DEFAULT FALSE")
+    private boolean isBookmarked = false;
+
     @Column(nullable = false)
     private LocalDate date;
 
@@ -107,4 +110,5 @@ public class Frame {
 
     public void archive() { this.isArchived = true; }
     public void unarchive() { this.isArchived = false; }
+    public void toggleBookmark() { this.isBookmarked = !this.isBookmarked; }
 }

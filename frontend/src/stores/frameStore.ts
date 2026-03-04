@@ -11,6 +11,7 @@ interface FrameStore {
   updateFramePhotos: (id: number, photos: Photo[]) => void
   removeFrame: (id: number) => void
   restoreFrame: (frame: Frame) => void
+  toggleBookmarkFrame: (id: number, isBookmarked: boolean) => void
   setPreview: (preview: DevelopPreview | null) => void
   setIsDeveloping: (v: boolean) => void
   reset: () => void
@@ -39,6 +40,10 @@ export const useFrameStore = create<FrameStore>((set) => ({
       )
       return { frames }
     }),
+  toggleBookmarkFrame: (id, isBookmarked) =>
+    set((s) => ({
+      frames: s.frames.map((f) => (f.id === id ? { ...f, isBookmarked } : f)),
+    })),
   setPreview: (preview) => set({ preview }),
   setIsDeveloping: (isDeveloping) => set({ isDeveloping }),
   reset: () => set({ frames: [], preview: null, isDeveloping: false }),
