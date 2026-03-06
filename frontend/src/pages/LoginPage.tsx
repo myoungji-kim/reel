@@ -149,7 +149,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    boxShadow: '0 3px 12px rgba(212,130,42,0.35)',
+    boxShadow: '0 3px 12px var(--amber-35)',
     transition: 'opacity 0.2s',
   },
   btnIcon: {

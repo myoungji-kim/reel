@@ -14,7 +14,7 @@ export default function Toast() {
           ? 'translate(-50%, -50%) scale(1)'
           : 'translate(-50%, -50%) scale(0.88)',
         pointerEvents: visible ? 'all' : 'none',
-        borderColor: isError ? 'rgba(192,98,74,0.4)' : 'rgba(122,158,138,0.35)',
+        borderColor: isError ? 'var(--error-border)' : 'rgba(122,158,138,0.35)',
         transition: visible
           ? 'opacity 0.22s cubic-bezier(0.34,1.56,0.64,1), transform 0.22s cubic-bezier(0.34,1.56,0.64,1)'
           : 'opacity 0.18s ease-in, transform 0.18s ease-in',
@@ -23,7 +23,7 @@ export default function Toast() {
       <span
         style={{
           ...styles.icon,
-          color: isError ? '#c0624a' : 'var(--fade-green)',
+          color: isError ? 'var(--error)' : 'var(--fade-green)',
         }}
       >
         ◆

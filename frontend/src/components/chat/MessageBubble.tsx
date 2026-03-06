@@ -62,12 +62,12 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: 6,
+    gap: 8,
     marginTop: 4,
   },
   failedText: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'rgba(200,60,60,0.85)',
   },
   retryBtn: {
@@ -112,8 +112,8 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 14,
     lineHeight: 1.65,
     fontWeight: 300,
-    background: 'rgba(212,130,42,0.15)',
-    border: '1px solid rgba(212,130,42,0.25)',
+    background: 'var(--amber-15)',
+    border: '1px solid var(--amber-25)',
     color: 'var(--cream)',
   },
   bubbleAi: {
@@ -128,7 +128,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   time: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     marginTop: 4,
   },

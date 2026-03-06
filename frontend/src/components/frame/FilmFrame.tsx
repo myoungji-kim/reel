@@ -226,7 +226,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     flexShrink: 0,
   },
@@ -241,11 +241,11 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--cream-muted)',
     display: 'flex',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
   },
   status: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     letterSpacing: '0.06em',
     padding: '2px 7px',
     borderRadius: 2,
@@ -256,6 +256,6 @@ const styles: Record<string, React.CSSProperties> = {
   },
   statusQuick: {
     color: 'var(--amber-light)',
-    border: '1px solid rgba(212,130,42,0.3)',
+    border: '1px solid var(--amber-30)',
   },
 }

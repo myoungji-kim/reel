@@ -48,6 +48,12 @@ body::after {
   border-radius: 4px;
 }
 
+/* 버튼 active 피드백 */
+button:active:not(:disabled) {
+  opacity: 0.72;
+  transform: scale(0.96);
+}
+
 /* 스크롤바 */
 ::-webkit-scrollbar {
   width: 3px;
@@ -97,4 +103,10 @@ body::after {
 @keyframes flicker {
   0%, 100% { opacity: 0.55; }
   50%       { opacity: 1; }
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }

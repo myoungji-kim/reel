@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { createQuickFrame } from '../../api/frameApi'
 import { uploadPhotos } from '../../api/photoApi'
 import { useToast } from '../../hooks/useToast'
+import OverlaySheet from './OverlaySheet'
 
 interface Props {
   isOpen: boolean
@@ -72,8 +73,8 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
   const canSave = title.trim().length > 0 && content.trim().length > 0 && !saving
 
   return (
-    <div style={{ ...styles.overlay, opacity: isOpen ? 1 : 0, pointerEvents: isOpen ? 'all' : 'none' }}>
-      <div style={{ ...styles.sheet, transform: isOpen ? 'translateY(0)' : 'translateY(60px)' }}>
+    <OverlaySheet isOpen={isOpen} zIndex={400}>
+      <div>
         {/* 헤더 */}
         <div style={styles.header}>
           <div style={styles.handle} />
@@ -124,7 +125,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
             {photos.length < MAX_PHOTOS && (
               <button style={styles.addBtn} onClick={() => fileInputRef.current?.click()}>
                 <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
-                <span style={{ fontSize: 9, marginTop: 2 }}>추가</span>
+                <span style={{ fontSize: 10, marginTop: 2 }}>추가</span>
               </button>
             )}
           </div>
@@ -152,33 +153,11 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
           </button>
         </div>
       </div>
-    </div>
+    </OverlaySheet>
   )
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  overlay: {
-    position: 'fixed',
-    inset: 0,
-    zIndex: 400,
-    background: 'rgba(10,8,5,0.97)',
-    display: 'flex',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    transition: 'opacity 0.25s',
-  },
-  sheet: {
-    width: '100%',
-    maxWidth: 440,
-    background: 'var(--bg-mid)',
-    border: '1.5px solid var(--border)',
-    borderBottom: 'none',
-    borderRadius: '20px 20px 0 0',
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: '92vh',
-    transition: 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)',
-  },
   header: {
     flexShrink: 0,
     padding: '16px 20px 12px',
@@ -220,7 +199,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   fieldTag: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
@@ -295,10 +274,10 @@ const styles: Record<string, React.CSSProperties> = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: 'rgba(10,8,5,0.8)',
+    background: 'var(--overlay-dim)',
     border: 'none',
     color: 'var(--cream)',
-    fontSize: 8,
+    fontSize: 10,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -350,7 +329,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 11,
     letterSpacing: '0.06em',
     fontWeight: 700,
-    boxShadow: '0 3px 12px rgba(212,130,42,0.35)',
+    boxShadow: '0 3px 12px var(--amber-35)',
     transition: 'opacity 0.2s',
   },
   btnSaveDisabled: {

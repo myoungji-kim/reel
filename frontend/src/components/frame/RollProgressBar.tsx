@@ -36,14 +36,14 @@ const styles: Record<string, React.CSSProperties> = {
   },
   rollNum: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--amber)',
     letterSpacing: '0.1em',
     flexShrink: 0,
   },
   dots: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 7,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     letterSpacing: '0.05em',
     flex: 1,
@@ -53,7 +53,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   progress: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     flexShrink: 0,
     opacity: 0.6,

@@ -19,8 +19,8 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
     margin: '8px 16px',
     padding: '12px 16px',
-    background: 'rgba(212,130,42,0.07)',
-    border: '1px dashed rgba(212,130,42,0.3)',
+    background: 'var(--amber-07)',
+    border: '1px dashed var(--amber-30)',
     borderRadius: 8,
     display: 'flex',
     alignItems: 'center',
@@ -53,6 +53,6 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.05em',
     borderRadius: 20,
     whiteSpace: 'nowrap',
-    boxShadow: '0 2px 8px rgba(212,130,42,0.3)',
+    boxShadow: '0 2px 8px var(--amber-30)',
   },
 }

@@ -29,11 +29,11 @@ const styles: Record<string, React.CSSProperties> = {
   line: {
     flex: 1,
     height: 1,
-    background: 'linear-gradient(90deg, rgba(212,130,42,0.25), transparent)',
+    background: 'linear-gradient(90deg, var(--amber-25), transparent)',
   },
   count: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
   },
 }

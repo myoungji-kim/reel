@@ -413,7 +413,7 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid var(--border-light)',
     color: 'var(--cream-muted)',
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     letterSpacing: '0.06em',
     padding: '3px 8px',
     borderRadius: 2,

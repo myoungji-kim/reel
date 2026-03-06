@@ -23,11 +23,11 @@ const styles: Record<string, React.CSSProperties> = {
   line: {
     flex: 1,
     height: 1,
-    background: 'rgba(212,130,42,0.2)',
+    background: 'var(--amber-20)',
   },
   text: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--amber)',
     opacity: 0.6,
     letterSpacing: '0.1em',

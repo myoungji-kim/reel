@@ -37,7 +37,7 @@ export default function MoodChipSelector({ value, onChange }: Props) {
 const styles: Record<string, React.CSSProperties> = {
   row: {
     display: 'flex',
-    gap: 6,
+    gap: 8,
     overflowX: 'auto',
     paddingBottom: 2,
     scrollbarWidth: 'none',
@@ -59,7 +59,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   label: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     letterSpacing: '0.04em',
   },
 }

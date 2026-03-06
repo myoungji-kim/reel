@@ -105,7 +105,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    boxShadow: '0 2px 8px rgba(212,130,42,0.35)',
+    boxShadow: '0 2px 8px var(--amber-35)',
     transition: 'opacity 0.2s, transform 0.1s',
   },
 }

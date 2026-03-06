@@ -285,7 +285,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
                   {totalCount < MAX_PHOTOS && (
                     <button style={styles.addBtn} onClick={() => fileInputRef.current?.click()}>
                       <span style={{ fontSize: 18, lineHeight: 1 }}>+</span>
-                      <span style={{ fontSize: 9, marginTop: 2 }}>추가</span>
+                      <span style={{ fontSize: 10, marginTop: 2 }}>추가</span>
                     </button>
                   )}
                 </div>
@@ -339,7 +339,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'fixed',
     inset: 0,
     zIndex: 200,
-    background: 'rgba(10,8,5,0.97)',
+    background: 'var(--overlay-bg)',
     display: 'flex',
     alignItems: 'flex-end',
     justifyContent: 'center',
@@ -370,7 +370,7 @@ const styles: Record<string, React.CSSProperties> = {
     top: 20,
     right: 20,
     display: 'flex',
-    gap: 6,
+    gap: 8,
     alignItems: 'center',
   },
   closeBtn: {
@@ -419,7 +419,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 3,
     cursor: 'pointer',
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
   },
   saveBtn: {
     background: 'var(--amber)',
@@ -429,7 +429,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 3,
     cursor: 'pointer',
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
   },
   frameTop: {
     height: 18,
@@ -441,7 +441,7 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: 'hidden',
     marginBottom: 20,
     padding: '0 6px',
-    gap: 6,
+    gap: 8,
   },
   overlayPerf: {
     width: 10,
@@ -519,7 +519,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   photoLabel: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
@@ -550,10 +550,10 @@ const styles: Record<string, React.CSSProperties> = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: 'rgba(10,8,5,0.8)',
+    background: 'var(--overlay-dim)',
     border: 'none',
     color: 'var(--cream)',
-    fontSize: 8,
+    fontSize: 10,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -576,7 +576,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   photoStrip: {
     display: 'flex',
-    gap: 6,
+    gap: 8,
     marginTop: 16,
     overflowX: 'auto',
     borderTop: '1px solid var(--border)',
@@ -597,7 +597,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   moodLabel: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: 'var(--cream-muted)',
     letterSpacing: '0.12em',
     textTransform: 'uppercase',

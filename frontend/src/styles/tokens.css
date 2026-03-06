@@ -1,16 +1,47 @@
 :root {
+  /* 배경색 */
   --bg: #131008;
   --bg-mid: #1a1510;
   --bg-card: #1e1a0f;
+
+  /* 테두리색 */
   --border: #2e2518;
   --border-light: #3d3220;
+
+  /* 앰버색 (주 강조색) */
   --amber: #d4822a;
   --amber-light: #e8a94a;
   --amber-pale: #f0c878;
+
+  /* 앰버 알파 변형 */
+  --amber-07: rgba(212, 130, 42, 0.07);
+  --amber-15: rgba(212, 130, 42, 0.15);
+  --amber-20: rgba(212, 130, 42, 0.2);
+  --amber-25: rgba(212, 130, 42, 0.25);
+  --amber-30: rgba(212, 130, 42, 0.3);
+  --amber-35: rgba(212, 130, 42, 0.35);
+
+  /* 크림색 (텍스트) */
   --cream: #f2e8d0;
   --cream-dim: #c8b898;
   --cream-muted: #9a8a70;
+
+  /* 기타 색상 */
   --fade-green: #7a9e8a;
-  --film-tint: rgba(0,0,0,0);
+
+  /* 에러 */
+  --error: #c0624a;
+  --error-border: rgba(192, 98, 74, 0.4);
+
+  /* 재현상 (파란색) */
+  --redevelop-bg: rgba(100, 120, 180, 0.07);
+  --redevelop-border: rgba(100, 120, 180, 0.3);
+
+  /* 오버레이 배경 */
+  --overlay-bg: rgba(10, 8, 5, 0.97);
+  --overlay-dim: rgba(10, 8, 5, 0.8);
+
+  /* 필름 */
+  --film-tint: rgba(0, 0, 0, 0);
   --film-grain-opacity: 0.45;
 }
