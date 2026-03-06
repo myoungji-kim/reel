@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { X } from 'lucide-react'
 import type { DevelopPreview } from '../../types/frame'
 import MoodChipSelector from '../MoodChipSelector'
@@ -29,8 +29,9 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [dateMode, setDateMode] = useState<DateMode>('today')
   const [customDate, setCustomDate] = useState<string>('')
+  const [showDatePicker, setShowDatePicker] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const dateInputRef = useRef<HTMLInputElement>(null)
+  const datePickerRef = useRef<HTMLDivElement>(null)
 
   const todayStr = useMemo(() => getLocalDateStr(new Date()), [])
   const yesterdayStr = useMemo(() => {
@@ -38,6 +39,28 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
     d.setDate(d.getDate() - 1)
     return getLocalDateStr(d)
   }, [])
+
+  // 오늘/어제 제외한 최근 12일
+  const pastDays = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date()
+      d.setDate(d.getDate() - (i + 2))
+      return getLocalDateStr(d)
+    })
+  }, [])
+
+  const handlePickerClose = useCallback((e: MouseEvent) => {
+    if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) {
+      setShowDatePicker(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (showDatePicker) {
+      document.addEventListener('mousedown', handlePickerClose)
+    }
+    return () => document.removeEventListener('mousedown', handlePickerClose)
+  }, [showDatePicker, handlePickerClose])
 
   const selectedDate = dateMode === 'yesterday' ? yesterdayStr
     : dateMode === 'custom' && customDate ? customDate
@@ -117,37 +140,60 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
           {/* 날짜 선택 */}
           <div style={styles.fieldTag}>날짜</div>
           <div style={styles.dateChips}>
-            {(['yesterday', 'today'] as DateMode[]).map((mode) => (
+            {(['yesterday', 'today'] as DateMode[]).map((mode) => {
+              const dateStr = mode === 'yesterday' ? yesterdayStr : todayStr
+              const label = mode === 'yesterday' ? '어제' : '오늘'
+              const mmdd = dateStr.slice(5).replace('-', '/')
+              return (
+                <button
+                  key={mode}
+                  style={{
+                    ...styles.dateChip,
+                    ...(dateMode === mode ? styles.dateChipActive : {}),
+                  }}
+                  onClick={() => setDateMode(mode)}
+                >
+                  {label} <span style={styles.dateChipSub}>{mmdd}</span>
+                </button>
+              )
+            })}
+            <div ref={datePickerRef} style={{ position: 'relative' }}>
               <button
-                key={mode}
                 style={{
                   ...styles.dateChip,
-                  ...(dateMode === mode ? styles.dateChipActive : {}),
+                  ...(dateMode === 'custom' ? styles.dateChipActive : {}),
                 }}
-                onClick={() => setDateMode(mode)}
+                onClick={() => setShowDatePicker((v) => !v)}
               >
-                {mode === 'yesterday' ? '어제' : '오늘'}
+                {dateMode === 'custom' && customDate
+                  ? customDate.slice(5).replace('-', '/')
+                  : '날짜 선택'}
               </button>
-            ))}
-            <button
-              style={{
-                ...styles.dateChip,
-                ...(dateMode === 'custom' ? styles.dateChipActive : {}),
-              }}
-              onClick={() => { setDateMode('custom'); dateInputRef.current?.click() }}
-            >
-              {dateMode === 'custom' && customDate
-                ? customDate.slice(5).replace('-', '/')
-                : '날짜 선택'}
-            </button>
-            <input
-              ref={dateInputRef}
-              type="date"
-              value={customDate}
-              max={todayStr}
-              onChange={(e) => { setCustomDate(e.target.value); setDateMode('custom') }}
-              style={{ display: 'none' }}
-            />
+              {showDatePicker && (
+                <div style={styles.dateDrop}>
+                  {pastDays.map((d) => {
+                    const mmdd = d.slice(5).replace('-', '/')
+                    const dow = ['일','월','화','수','목','금','토'][new Date(d).getDay()]
+                    return (
+                      <button
+                        key={d}
+                        style={{
+                          ...styles.dateDropItem,
+                          ...(customDate === d ? styles.dateDropItemActive : {}),
+                        }}
+                        onClick={() => {
+                          setCustomDate(d)
+                          setDateMode('custom')
+                          setShowDatePicker(false)
+                        }}
+                      >
+                        {mmdd} <span style={styles.dateDropDow}>{dow}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           <input
@@ -446,5 +492,45 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--amber)',
     opacity: 1,
     background: 'rgba(200, 150, 50, 0.08)',
+  },
+  dateChipSub: {
+    opacity: 0.6,
+    marginLeft: 3,
+  },
+  dateDrop: {
+    position: 'absolute',
+    top: 'calc(100% + 4px)',
+    left: 0,
+    background: 'var(--bg-mid)',
+    border: '1px solid var(--border)',
+    borderRadius: 8,
+    zIndex: 10,
+    minWidth: 110,
+    maxHeight: 220,
+    overflowY: 'auto' as const,
+    boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+  },
+  dateDropItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    width: '100%',
+    padding: '9px 14px',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 11,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.05em',
+    textAlign: 'left' as const,
+  },
+  dateDropItemActive: {
+    color: 'var(--amber)',
+    background: 'rgba(200,150,50,0.08)',
+  },
+  dateDropDow: {
+    opacity: 0.5,
+    fontSize: 10,
   },
 }
