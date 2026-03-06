@@ -150,7 +150,7 @@ export default function RollPage() {
           }}
           onClick={() => setIsBookmarkFilter(true)}
         >
-          ★ BOOKMARKED
+          ★
         </button>
       </div>
 
@@ -309,7 +309,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '0 4px',
   },
   filterTab: {
-    padding: '8px 12px 10px',
+    padding: '8px 16px 10px',
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
