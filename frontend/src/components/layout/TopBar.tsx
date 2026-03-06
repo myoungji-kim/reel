@@ -46,7 +46,7 @@ export default function TopBar() {
             }}
             onClick={() => setActiveTab('chat')}
           >
-            ◈ 오늘의 현장
+            ◈ 오늘의 현상
           </button>
           <button
             style={{
@@ -58,7 +58,7 @@ export default function TopBar() {
             }}
             onClick={() => setActiveTab('roll')}
           >
-            ◆ 필름 롤
+            ◆ 현상소
           </button>
         </div>
         <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)} aria-label="빠른 기록">

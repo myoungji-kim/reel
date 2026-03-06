@@ -76,7 +76,7 @@ export default function ChatPage() {
         resetNewMsgSinceDevelop()
         showToast('일기가 업데이트됐어요.')
       } else {
-        // 첫 현상: 채팅 초기화 후 필름 롤로 이동
+        // 첫 현상: 채팅 초기화 후 현상소로 이동
         resetChat()
         setActiveTab('roll')
         navigate('/home')

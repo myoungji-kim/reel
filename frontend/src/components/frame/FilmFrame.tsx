@@ -83,9 +83,9 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                   : ''}
               </div>
               {frame.frameType === 'QUICK' ? (
-                <span style={{ ...styles.status, ...styles.statusQuick }}>✦ 메모</span>
+                <span style={{ ...styles.status, ...styles.statusQuick }}>✦ 노트</span>
               ) : (
-                <span style={{ ...styles.status, ...styles.statusDone }}>◈ AI 현상</span>
+                <span style={{ ...styles.status, ...styles.statusDone }}>◈ 현상</span>
               )}
             </div>
           </div>
