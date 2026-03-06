@@ -38,6 +38,16 @@ body::after {
   opacity: 0.5;
 }
 
+/* 포커스 접근성 — 키보드 탐색 시 현재 위치 표시 */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 /* 스크롤바 */
 ::-webkit-scrollbar {
   width: 3px;

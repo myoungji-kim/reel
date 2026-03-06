@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { X } from 'lucide-react'
 import type { DevelopPreview } from '../../types/frame'
 import MoodChipSelector from '../MoodChipSelector'
 import { getMoodTintColor } from '../../utils/moodTone'
@@ -117,8 +118,8 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
             {previewUrls.map((url, i) => (
               <div key={i} style={styles.photoThumb}>
                 <img src={url} alt={`photo-${i}`} style={styles.thumbImg} />
-                <button style={styles.removeBtn} onClick={() => removePhoto(i)}>
-                  ✕
+                <button style={styles.removeBtn} onClick={() => removePhoto(i)} aria-label="사진 제거">
+                  <X size={8} />
                 </button>
               </div>
             ))}

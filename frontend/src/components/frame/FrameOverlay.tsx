@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Bookmark, BookmarkCheck, Pencil, X } from 'lucide-react'
 import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
 import { getMoodToneStyle } from '../../utils/moodTone'
@@ -190,12 +191,17 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
                 color: frame.isBookmarked ? 'var(--amber)' : 'var(--cream-muted)',
               }}
               onClick={handleToggleBookmark}
+              aria-label={frame.isBookmarked ? '북마크 해제' : '북마크'}
             >
-              {frame.isBookmarked ? '★' : '☆'}
+              {frame.isBookmarked
+                ? <BookmarkCheck size={14} />
+                : <Bookmark size={14} />}
             </button>
           )}
           {!isEditing ? (
-            <button style={styles.editBtn} onClick={() => setIsEditing(true)}>✏</button>
+            <button style={styles.editBtn} onClick={() => setIsEditing(true)} aria-label="수정">
+              <Pencil size={12} />
+            </button>
           ) : (
             <>
               <button style={styles.cancelBtn} onClick={handleCancel}>취소</button>
@@ -208,7 +214,9 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
               </button>
             </>
           )}
-          <button style={styles.closeBtn} onClick={onClose}>✕</button>
+          <button style={styles.closeBtn} onClick={onClose} aria-label="닫기">
+            <X size={12} />
+          </button>
         </div>
 
         {/* 상단 필름스트립 */}
@@ -261,16 +269,16 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
                         alt="photo"
                         style={styles.thumbImg}
                       />
-                      <button style={styles.removeBtn} onClick={() => removeExisting(photo.id)}>
-                        ✕
+                      <button style={styles.removeBtn} onClick={() => removeExisting(photo.id)} aria-label="사진 제거">
+                        <X size={8} />
                       </button>
                     </div>
                   ))}
                   {pendingAddUrls.map((url, i) => (
                     <div key={`new-${i}`} style={styles.photoThumb}>
                       <img src={url} alt={`new-${i}`} style={styles.thumbImg} />
-                      <button style={styles.removeBtn} onClick={() => removePending(i)}>
-                        ✕
+                      <button style={styles.removeBtn} onClick={() => removePending(i)} aria-label="사진 제거">
+                        <X size={8} />
                       </button>
                     </div>
                   ))}

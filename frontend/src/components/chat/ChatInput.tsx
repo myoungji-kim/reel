@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Send } from 'lucide-react'
 
 interface Props {
   onSend: (content: string) => void
@@ -56,8 +57,9 @@ export default function ChatInput({ onSend, disabled = false }: Props) {
           }}
           onClick={handleSend}
           disabled={!value.trim() || disabled}
+          aria-label="메시지 전송"
         >
-          ➤
+          <Send size={16} />
         </button>
       </div>
     </div>

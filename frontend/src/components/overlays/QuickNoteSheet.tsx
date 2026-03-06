@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { X } from 'lucide-react'
 import { createQuickFrame } from '../../api/frameApi'
 import { uploadPhotos } from '../../api/photoApi'
 import { useToast } from '../../hooks/useToast'
@@ -78,7 +79,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
           <div style={styles.handle} />
           <div style={styles.titleRow}>
             <span style={styles.eyebrow}>✦ 빠른 기록</span>
-            <button style={styles.closeBtn} onClick={handleClose}>✕</button>
+            <button style={styles.closeBtn} onClick={handleClose} aria-label="닫기"><X size={14} /></button>
           </div>
         </div>
 
@@ -117,7 +118,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
             {previewUrls.map((url, i) => (
               <div key={i} style={styles.photoThumb}>
                 <img src={url} alt={`photo-${i}`} style={styles.thumbImg} />
-                <button style={styles.removeBtn} onClick={() => removePhoto(i)}>✕</button>
+                <button style={styles.removeBtn} onClick={() => removePhoto(i)} aria-label="사진 제거"><X size={8} /></button>
               </div>
             ))}
             {photos.length < MAX_PHOTOS && (

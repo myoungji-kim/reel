@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
+import { Settings } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useUIStore } from '../../stores/uiStore'
 import { useAuthStore } from '../../stores/authStore'
@@ -60,12 +61,12 @@ export default function TopBar() {
             ◆ 필름 롤
           </button>
         </div>
-        <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
+        <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)} aria-label="빠른 기록">
           ✦
         </button>
         <div ref={menuRef} style={styles.menuWrapper}>
-          <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)}>
-            ⚙
+          <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)} aria-label="메뉴">
+            <Settings size={16} />
           </button>
           {menuOpen && (
             <div style={styles.dropdown}>
