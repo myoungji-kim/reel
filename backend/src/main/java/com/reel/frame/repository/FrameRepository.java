@@ -25,7 +25,7 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
     @EntityGraph(attributePaths = {"session", "photos"})
     Optional<Frame> findByIdAndUserId(Long id, Long userId);
 
-    Optional<Frame> findBySessionId(Long sessionId);
+    Optional<Frame> findFirstBySessionIdOrderByCreatedAtDesc(Long sessionId);
 
     List<Frame> findByUserIdAndDateIn(Long userId, List<LocalDate> dates);
 

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -58,10 +59,11 @@ public class DevelopService {
             throw new ReelException(ErrorCode.AI_PARSE_ERROR);
         }
 
-        // 재현상: 이미 현상된 세션은 기존 프레임을 재사용
-        if (session.isDeveloped()) {
-            Frame existingFrame = frameRepository.findBySessionId(sessionId)
-                    .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
+        // 기존 드래프트가 있으면 재사용 (재현상 또는 미리보기 취소 후 재시도)
+        Optional<Frame> existingOpt = frameRepository.findFirstBySessionIdOrderByCreatedAtDesc(sessionId);
+        if (existingOpt.isPresent()) {
+            Frame existingFrame = existingOpt.get();
+            existingFrame.update(title, content, existingFrame.getMood());
             return new DevelopPreviewResponse(existingFrame.getId(), title, content);
         }
 
