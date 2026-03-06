@@ -40,7 +40,15 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
   const extraCount = photos.length - THUMB_VISIBLE
 
   return (
-    <div style={{ ...styles.frame, ...getMoodToneStyle(frame.mood) }} onClick={onClick}>
+    <div
+      style={{ ...styles.frame, ...getMoodToneStyle(frame.mood) }}
+      onClick={onClick}
+      onMouseDown={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.985)' }}
+      onMouseUp={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
+      onTouchStart={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.985)' }}
+      onTouchEnd={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
+    >
       <div style={styles.outer}>
         <Perfs />
         <div style={styles.body}>

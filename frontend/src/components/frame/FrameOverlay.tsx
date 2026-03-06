@@ -14,6 +14,7 @@ interface Props {
   isOpen: boolean
   frame: Frame | null
   onClose: () => void
+  onUnarchive?: (frame: Frame) => void
 }
 
 const PERF_COUNT = 8
@@ -21,7 +22,7 @@ const MAX_PHOTOS = 5
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
-export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
+export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Props) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -346,9 +347,15 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
 
             {!isEditing && (
               <div style={styles.archiveRow}>
-                <button style={styles.archiveBtn} onClick={handleArchive}>
-                  필름 보관
-                </button>
+                {frame.isArchived ? (
+                  <button style={styles.archiveBtn} onClick={() => { onUnarchive?.(frame); onClose() }}>
+                    복원하기
+                  </button>
+                ) : (
+                  <button style={styles.archiveBtn} onClick={handleArchive}>
+                    필름 보관
+                  </button>
+                )}
               </div>
             )}
           </>

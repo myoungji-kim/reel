@@ -113,9 +113,9 @@ export default function ChatPage() {
           <span style={styles.date}>{formatChatDate(new Date())}</span>
           {developed ? (
             <span style={styles.developedBadge}>◈ 현상 완료</span>
-          ) : (
+          ) : userMsgCount > 0 ? (
             <span style={styles.count}>{userMsgCount} lines</span>
-          )}
+          ) : null}
         </div>
 
         {/* 이날의 기억 배너 */}
@@ -123,14 +123,28 @@ export default function ChatPage() {
 
         {/* 메시지 목록 */}
         <div style={styles.messages}>
-          {messages.map((msg) => (
-            <MessageBubble
-              key={msg.id}
-              message={msg}
-              onRetry={msg.failed ? () => retryMessage(msg) : undefined}
-            />
-          ))}
-          {isTyping && <TypingIndicator />}
+          {userMsgCount === 0 ? (
+            <div style={styles.emptyState}>
+              <p style={styles.emptyDate}>{formatChatDate(new Date())}</p>
+              <p style={styles.emptyTitle}>오늘 하루의 한 장면을</p>
+              <p style={styles.emptyTitle}>담아볼까요</p>
+              <p style={styles.emptyDesc}>AI와 대화하거나, 짧게 직접 기록하세요</p>
+              <button style={styles.emptyQuickBtn} onClick={() => setQuickNoteOpen(true)}>
+                ✦ 빠른 현상
+              </button>
+            </div>
+          ) : (
+            <>
+              {messages.map((msg) => (
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onRetry={msg.failed ? () => retryMessage(msg) : undefined}
+                />
+              ))}
+              {isTyping && <TypingIndicator />}
+            </>
+          )}
           <div ref={bottomRef} />
         </div>
 
@@ -140,15 +154,6 @@ export default function ChatPage() {
         )}
         {developed && newMsgSinceDevelop >= 1 && sessionId !== null && (
           <RedevelopBanner onRedevelop={handleDevelop} />
-        )}
-
-        {/* 빠른 현상 */}
-        {!developed && userMsgCount === 0 && (
-          <div style={styles.quickNoteBar}>
-            <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
-              ✦ 빠른 현상 — AI 없이 짧게 기록
-            </button>
-          </div>
         )}
 
         {/* 입력창 */}
@@ -206,23 +211,50 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.05em',
     opacity: 0.8,
   },
-  quickNoteBar: {
-    flexShrink: 0,
-    padding: '0 16px 8px',
+  emptyState: {
+    flex: 1,
     display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     justifyContent: 'center',
+    gap: 4,
+    paddingBottom: 40,
   },
-  quickNoteBtn: {
+  emptyDate: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--amber)',
+    letterSpacing: '0.15em',
+    opacity: 0.5,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontFamily: "'Noto Serif KR', serif",
+    fontSize: 20,
+    color: 'var(--cream-dim)',
+    fontWeight: 300,
+    lineHeight: 1.6,
+    letterSpacing: '0.02em',
+  },
+  emptyDesc: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 12,
+    color: 'var(--cream-muted)',
+    fontWeight: 300,
+    marginTop: 8,
+    marginBottom: 20,
+    opacity: 0.7,
+  },
+  emptyQuickBtn: {
     background: 'transparent',
-    border: '1px solid var(--border-light)',
+    border: '1px solid var(--amber-35)',
     cursor: 'pointer',
     fontFamily: "'Space Mono', monospace",
     fontSize: 10,
-    color: 'var(--cream-muted)',
-    letterSpacing: '0.06em',
-    padding: '6px 16px',
+    color: 'var(--amber)',
+    letterSpacing: '0.1em',
+    padding: '8px 20px',
     borderRadius: 2,
-    opacity: 0.6,
   },
   messages: {
     flex: 1,

@@ -11,14 +11,16 @@ export default function RollProgressBar() {
   if (!data) return null
 
   const { currentRollNum, currentRollProgress, rollSize } = data
-  const dots = Array.from({ length: rollSize }, (_, i) => i < currentRollProgress ? '●' : '○').join('')
+  const pct = (currentRollProgress / rollSize) * 100
   const rollLabel = String(currentRollNum).padStart(2, '0')
 
   return (
     <div style={styles.wrap}>
       <span style={styles.rollNum}>ROLL {rollLabel}</span>
-      <span style={styles.dots}>{dots}</span>
-      <span style={styles.progress}>{currentRollProgress} / {rollSize}</span>
+      <div style={styles.track}>
+        <div style={{ ...styles.fill, width: `${pct}%` }} />
+      </div>
+      <span style={styles.progress}>{currentRollProgress}<span style={styles.total}> / {rollSize}</span></span>
     </div>
   )
 }
@@ -29,33 +31,41 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    height: 32,
+    height: 28,
     padding: '0 16px',
     borderBottom: '1px solid var(--border)',
     background: 'var(--bg-card)',
   },
   rollNum: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
+    fontSize: 9,
     color: 'var(--amber)',
-    letterSpacing: '0.1em',
+    letterSpacing: '0.12em',
     flexShrink: 0,
+    opacity: 0.8,
   },
-  dots: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: 'var(--cream-muted)',
-    letterSpacing: '0.05em',
+  track: {
     flex: 1,
+    height: 2,
+    background: 'var(--amber-15)',
+    borderRadius: 1,
     overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'clip',
+  },
+  fill: {
+    height: '100%',
+    background: 'linear-gradient(90deg, var(--amber), var(--amber-light))',
+    borderRadius: 1,
+    transition: 'width 0.4s ease',
   },
   progress: {
     fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: 'var(--cream-muted)',
+    fontSize: 9,
+    color: 'var(--amber-light)',
     flexShrink: 0,
-    opacity: 0.6,
+    letterSpacing: '0.04em',
+  },
+  total: {
+    color: 'var(--cream-muted)',
+    opacity: 0.5,
   },
 }

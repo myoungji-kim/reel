@@ -1,3 +1,4 @@
+import { Aperture } from 'lucide-react'
 import type { ChatMessage } from '../../types/chat'
 import { formatTime } from '../../utils/dateFormat'
 
@@ -37,7 +38,7 @@ export default function MessageBubble({ message, onRetry }: Props) {
 
   return (
     <div style={styles.msgAi}>
-      <div style={styles.avatar}>AI</div>
+      <div style={styles.avatar}><Aperture size={14} /></div>
       <div>
         <div style={styles.bubbleAi}>
           {message.content.split('\n').map((line, i) => (
@@ -101,9 +102,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     background: 'linear-gradient(135deg, var(--amber), #8a5a1a)',
-    fontFamily: "'VT323', monospace",
     color: 'var(--bg)',
-    fontSize: 11,
     marginTop: 2,
   },
   bubbleUser: {

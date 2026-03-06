@@ -6,7 +6,7 @@ import { useAuthStore } from '../../stores/authStore'
 import { logout } from '../../api/authApi'
 
 export default function TopBar() {
-  const { activeTab, setActiveTab } = useUIStore()
+  const { activeTab, setActiveTab, setArchivedOpen } = useUIStore()
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -67,6 +67,10 @@ export default function TopBar() {
           </button>
           {menuOpen && (
             <div style={styles.dropdown}>
+              <button style={styles.dropdownItem} onClick={() => { setArchivedOpen(true); setMenuOpen(false) }}>
+                보관된 필름
+              </button>
+              <div style={styles.dropdownDivider} />
               <button style={styles.dropdownItem} onClick={handleLogout}>
                 로그아웃
               </button>
@@ -133,6 +137,11 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid var(--border)',
     minWidth: 120,
     zIndex: 100,
+  },
+  dropdownDivider: {
+    height: 1,
+    background: 'var(--border)',
+    margin: '0 12px',
   },
   dropdownItem: {
     display: 'block',

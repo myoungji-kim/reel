@@ -3,10 +3,11 @@ import FilmBar from '../components/layout/FilmBar'
 import ChatPage from './ChatPage'
 import RollPage from './RollPage'
 import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
+import ArchivedSheet from '../components/overlays/ArchivedSheet'
 import { useUIStore } from '../stores/uiStore'
 
 export default function HomePage() {
-  const { activeTab, setActiveTab, isQuickNoteOpen, setQuickNoteOpen } = useUIStore()
+  const { activeTab, setActiveTab, isQuickNoteOpen, setQuickNoteOpen, isArchivedOpen, setArchivedOpen } = useUIStore()
 
   return (
     <div style={styles.container}>
@@ -20,6 +21,10 @@ export default function HomePage() {
           setQuickNoteOpen(false)
           setActiveTab('roll')
         }}
+      />
+      <ArchivedSheet
+        isOpen={isArchivedOpen}
+        onClose={() => setArchivedOpen(false)}
       />
     </div>
   )

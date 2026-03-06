@@ -1,7 +1,9 @@
+import { Aperture } from 'lucide-react'
+
 export default function TypingIndicator() {
   return (
     <div style={styles.wrap}>
-      <div style={styles.avatar}>AI</div>
+      <div style={styles.avatar}><Aperture size={14} /></div>
       <div style={styles.bubble}>
         <div style={styles.dotWrap}>
           <span style={{ ...styles.dot, animationDelay: '0s' }} />
@@ -29,9 +31,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     background: 'linear-gradient(135deg, var(--amber), #8a5a1a)',
-    fontFamily: "'VT323', monospace",
     color: 'var(--bg)',
-    fontSize: 11,
     marginTop: 2,
   },
   bubble: {
