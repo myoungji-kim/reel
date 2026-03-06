@@ -46,7 +46,7 @@ export default function TopBar() {
             }}
             onClick={() => setActiveTab('chat')}
           >
-            ◈ 오늘의 현상
+            ◈ 하루 현상
           </button>
           <button
             style={{

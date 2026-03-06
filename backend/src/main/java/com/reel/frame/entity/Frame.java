@@ -108,6 +108,10 @@ public class Frame {
         this.mood = mood;
     }
 
+    public void updateDate(LocalDate date) {
+        if (date != null) this.date = date;
+    }
+
     public void archive() { this.isArchived = true; }
     public void unarchive() { this.isArchived = false; }
     public void toggleBookmark() { this.isBookmarked = !this.isBookmarked; }

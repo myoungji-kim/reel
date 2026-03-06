@@ -1,14 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import type { DevelopPreview } from '../../types/frame'
 import MoodChipSelector from '../MoodChipSelector'
 import { getMoodTintColor } from '../../utils/moodTone'
 import OverlaySheet from './OverlaySheet'
 
+type DateMode = 'yesterday' | 'today' | 'custom'
+
+function getLocalDateStr(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
 interface Props {
   isOpen: boolean
   preview: DevelopPreview | null
-  onSave: (frameId: number, title: string, content: string, mood: string, photos: File[]) => void
+  onSave: (frameId: number, title: string, content: string, mood: string, photos: File[], date: string) => void
   onCancel: () => void
 }
 
@@ -21,13 +27,29 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
   const [mood, setMood] = useState<string | null>(null)
   const [photos, setPhotos] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
+  const [dateMode, setDateMode] = useState<DateMode>('today')
+  const [customDate, setCustomDate] = useState<string>('')
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dateInputRef = useRef<HTMLInputElement>(null)
+
+  const todayStr = useMemo(() => getLocalDateStr(new Date()), [])
+  const yesterdayStr = useMemo(() => {
+    const d = new Date()
+    d.setDate(d.getDate() - 1)
+    return getLocalDateStr(d)
+  }, [])
+
+  const selectedDate = dateMode === 'yesterday' ? yesterdayStr
+    : dateMode === 'custom' && customDate ? customDate
+    : todayStr
 
   useEffect(() => {
     if (preview) {
       setTitle(preview.title)
       setContent(preview.content)
       setMood(null)
+      setDateMode('today')
+      setCustomDate('')
     }
   }, [preview])
 
@@ -60,7 +82,7 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
 
   const handleSave = () => {
     if (!preview || !mood) return
-    onSave(preview.frameId, title, content, mood, photos)
+    onSave(preview.frameId, title, content, mood, photos, selectedDate)
   }
 
   return (
@@ -92,7 +114,42 @@ export default function PreviewOverlay({ isOpen, preview, onSave, onCancel }: Pr
 
         {/* 본문 */}
         <div style={styles.body}>
-          <div style={styles.fieldTag}>제목</div>
+          {/* 날짜 선택 */}
+          <div style={styles.fieldTag}>날짜</div>
+          <div style={styles.dateChips}>
+            {(['yesterday', 'today'] as DateMode[]).map((mode) => (
+              <button
+                key={mode}
+                style={{
+                  ...styles.dateChip,
+                  ...(dateMode === mode ? styles.dateChipActive : {}),
+                }}
+                onClick={() => setDateMode(mode)}
+              >
+                {mode === 'yesterday' ? '어제' : '오늘'}
+              </button>
+            ))}
+            <button
+              style={{
+                ...styles.dateChip,
+                ...(dateMode === 'custom' ? styles.dateChipActive : {}),
+              }}
+              onClick={() => { setDateMode('custom'); dateInputRef.current?.click() }}
+            >
+              {dateMode === 'custom' && customDate
+                ? customDate.slice(5).replace('-', '/')
+                : '날짜 선택'}
+            </button>
+            <input
+              ref={dateInputRef}
+              type="date"
+              value={customDate}
+              max={todayStr}
+              onChange={(e) => { setCustomDate(e.target.value); setDateMode('custom') }}
+              style={{ display: 'none' }}
+            />
+          </div>
+
           <input
             style={styles.titleInput}
             value={title}
@@ -365,5 +422,29 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--amber)',
     letterSpacing: '0.06em',
     opacity: 0.7,
+  },
+  dateChips: {
+    display: 'flex',
+    gap: 6,
+    marginBottom: 20,
+  },
+  dateChip: {
+    padding: '5px 12px',
+    background: 'transparent',
+    border: '1px solid var(--border-light)',
+    borderRadius: 20,
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.06em',
+    transition: 'all 0.15s',
+    opacity: 0.7,
+  },
+  dateChipActive: {
+    border: '1px solid var(--amber)',
+    color: 'var(--amber)',
+    opacity: 1,
+    background: 'rgba(200, 150, 50, 0.08)',
   },
 }

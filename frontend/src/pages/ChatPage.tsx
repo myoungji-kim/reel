@@ -61,10 +61,10 @@ export default function ChatPage() {
   }
 
   // 최종 저장
-  const handleSave = async (frameId: number, title: string, content: string, mood: string, photos: File[]) => {
+  const handleSave = async (frameId: number, title: string, content: string, mood: string, photos: File[], date: string) => {
     const isRedevelop = developed
     try {
-      await saveFrame(frameId, title, content, mood)
+      await saveFrame(frameId, title, content, mood, date)
       if (photos.length > 0) {
         await uploadPhotos(frameId, photos)
       }

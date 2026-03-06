@@ -42,6 +42,7 @@ public class FrameService {
                 .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
 
         frame.update(request.title(), request.content(), request.mood());
+        frame.updateDate(request.date());
 
         if (frame.getSession() != null) {
             frame.getSession().markDeveloped();
