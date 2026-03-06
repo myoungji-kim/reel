@@ -116,28 +116,42 @@ export default function RollPage() {
       {/* 검색 헤더 */}
       <div style={styles.header}>
         <span style={styles.headerLabel}>FILM ROLL</span>
-        <div style={styles.headerActions}>
-          <button
-            style={{
-              ...styles.bookmarkFilterBtn,
-              color: isBookmarkFilter ? 'var(--amber)' : 'var(--cream-muted)',
-              opacity: isBookmarkFilter ? 1 : 0.5,
-            }}
-            onClick={() => setIsBookmarkFilter((v) => !v)}
-          >
-            ★
-          </button>
-          <button style={styles.searchBtn} onClick={handleSearchToggle}>
-            {isSearchOpen ? (
-              <span style={styles.searchBtnIcon}>✕</span>
-            ) : (
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
-                <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
-              </svg>
-            )}
-          </button>
-        </div>
+        <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label={isSearchOpen ? '검색 닫기' : '검색'}>
+          {isSearchOpen ? (
+            <span style={styles.searchBtnIcon}>✕</span>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+              <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {/* 필터 탭바 */}
+      <div style={styles.filterBar}>
+        <button
+          style={{
+            ...styles.filterTab,
+            color: !isBookmarkFilter ? 'var(--amber-light)' : 'var(--cream-muted)',
+            borderBottom: !isBookmarkFilter ? '2px solid var(--amber)' : '2px solid transparent',
+            opacity: !isBookmarkFilter ? 1 : 0.45,
+          }}
+          onClick={() => setIsBookmarkFilter(false)}
+        >
+          ALL
+        </button>
+        <button
+          style={{
+            ...styles.filterTab,
+            color: isBookmarkFilter ? 'var(--amber-light)' : 'var(--cream-muted)',
+            borderBottom: isBookmarkFilter ? '2px solid var(--amber)' : '2px solid transparent',
+            opacity: isBookmarkFilter ? 1 : 0.45,
+          }}
+          onClick={() => setIsBookmarkFilter(true)}
+        >
+          ★ BOOKMARKED
+        </button>
       </div>
 
       {/* 검색 입력창 */}
@@ -277,22 +291,6 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.12em',
     opacity: 0.5,
   },
-  headerActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 4,
-  },
-  bookmarkFilterBtn: {
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    padding: '4px',
-    fontSize: 15,
-    lineHeight: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   searchBtn: {
     background: 'transparent',
     border: 'none',
@@ -301,6 +299,28 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  filterBar: {
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'stretch',
+    borderBottom: '1px solid var(--border)',
+    background: 'var(--bg)',
+    padding: '0 4px',
+  },
+  filterTab: {
+    padding: '8px 12px 10px',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    letterSpacing: '0.08em',
+    transition: 'all 0.2s',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+    whiteSpace: 'nowrap' as const,
   },
   searchBtnIcon: {
     fontFamily: "'Space Mono', monospace",
