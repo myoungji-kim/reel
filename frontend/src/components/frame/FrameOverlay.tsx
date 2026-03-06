@@ -43,6 +43,16 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
   const { showToast } = useToast()
   const queryClient = useQueryClient()
 
+  // 오버레이가 열릴 때마다 편집 상태 리셋 (같은 frame 재진입 포함)
+  useEffect(() => {
+    if (isOpen) {
+      setIsEditing(false)
+      setPendingAdd([])
+      setPendingAddUrls([])
+      setPendingDelete([])
+    }
+  }, [isOpen])
+
   useEffect(() => {
     if (frame) {
       setTitle(frame.title)
@@ -50,10 +60,6 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
       setMood(frame.mood ?? null)
       setLocalPhotos(frame.photos ?? [])
     }
-    setIsEditing(false)
-    setPendingAdd([])
-    setPendingAddUrls([])
-    setPendingDelete([])
   }, [frame])
 
   // cleanup object URLs
@@ -162,6 +168,18 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
     setIsEditing(false)
   }
 
+  // 닫기 — 편집 중이면 pending 변경사항 정리 후 닫기
+  const handleClose = () => {
+    if (isEditing) {
+      pendingAddUrls.forEach((url) => URL.revokeObjectURL(url))
+      setPendingAdd([])
+      setPendingAddUrls([])
+      setPendingDelete([])
+      setIsEditing(false)
+    }
+    onClose()
+  }
+
   return (
     <div
       style={{
@@ -169,7 +187,7 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
         opacity: isOpen ? 1 : 0,
         pointerEvents: isOpen ? 'all' : 'none',
       }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
         style={{
@@ -197,25 +215,8 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
           </div>
 
           <div style={styles.headerBtns}>
-            {!isEditing && frame && (
-              <button
-                style={{
-                  ...styles.iconBtn,
-                  color: frame.isBookmarked ? 'var(--amber)' : 'var(--cream-muted)',
-                }}
-                onClick={handleToggleBookmark}
-                aria-label={frame.isBookmarked ? '북마크 해제' : '북마크'}
-              >
-                {frame.isBookmarked
-                  ? <BookmarkCheck size={14} />
-                  : <Bookmark size={14} />}
-              </button>
-            )}
-            {!isEditing ? (
-              <button style={styles.iconBtn} onClick={() => setIsEditing(true)} aria-label="수정">
-                <Pencil size={12} />
-              </button>
-            ) : (
+            {isEditing ? (
+              /* 편집 모드: 취소·저장만 표시, X 숨김 */
               <>
                 <button style={styles.cancelBtn} onClick={handleCancel}>취소</button>
                 <button
@@ -226,10 +227,31 @@ export default function FrameOverlay({ isOpen, frame, onClose }: Props) {
                   저장
                 </button>
               </>
+            ) : (
+              /* 보기 모드: 북마크·편집·닫기 */
+              <>
+                {frame && (
+                  <button
+                    style={{
+                      ...styles.iconBtn,
+                      color: frame.isBookmarked ? 'var(--amber)' : 'var(--cream-muted)',
+                    }}
+                    onClick={handleToggleBookmark}
+                    aria-label={frame.isBookmarked ? '북마크 해제' : '북마크'}
+                  >
+                    {frame.isBookmarked
+                      ? <BookmarkCheck size={14} />
+                      : <Bookmark size={14} />}
+                  </button>
+                )}
+                <button style={styles.iconBtn} onClick={() => setIsEditing(true)} aria-label="수정">
+                  <Pencil size={12} />
+                </button>
+                <button style={styles.iconBtn} onClick={handleClose} aria-label="닫기">
+                  <X size={12} />
+                </button>
+              </>
             )}
-            <button style={styles.iconBtn} onClick={onClose} aria-label="닫기">
-              <X size={12} />
-            </button>
           </div>
         </div>
 
