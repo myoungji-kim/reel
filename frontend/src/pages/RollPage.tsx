@@ -108,6 +108,7 @@ export default function RollPage() {
   }
 
   const isSearching = debouncedQ.length > 0
+  const filteredSearchResults = isBookmarkFilter ? searchResults.filter((f) => f.isBookmarked) : searchResults
   const displayFrames = isBookmarkFilter ? frames.filter((f) => f.isBookmarked) : frames
   const grouped = groupByMonth(displayFrames)
 
@@ -175,14 +176,14 @@ export default function RollPage() {
 
       <div style={styles.list}>
         {isSearching ? (
-          // 검색 결과
-          searchResults.length === 0 ? (
+          // 검색 결과 (북마크 필터 적용)
+          filteredSearchResults.length === 0 ? (
             <div style={styles.empty}>
               <p style={styles.emptyText}>// NO RESULTS</p>
               <p style={styles.emptySub}>'{debouncedQ}'에 대한 프레임이 없습니다</p>
             </div>
           ) : (
-            searchResults.map((frame) => (
+            filteredSearchResults.map((frame) => (
               <FilmFrame
                 key={frame.id}
                 frame={frame}
