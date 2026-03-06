@@ -79,7 +79,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
         <div style={styles.header}>
           <div style={styles.handle} />
           <div style={styles.titleRow}>
-            <span style={styles.eyebrow}>✦ 빠른 기록</span>
+            <span style={styles.eyebrow}>✦ 빠른 현상</span>
             <button style={styles.closeBtn} onClick={handleClose} aria-label="닫기"><X size={14} /></button>
           </div>
         </div>
@@ -149,7 +149,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
             onClick={handleSave}
             disabled={!canSave}
           >
-            {saving ? '저장 중...' : '✦ 현상하기'}
+            {saving ? '현상 중...' : '✦ 즉시 현상'}
           </button>
         </div>
       </div>

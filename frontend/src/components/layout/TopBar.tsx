@@ -6,7 +6,7 @@ import { useAuthStore } from '../../stores/authStore'
 import { logout } from '../../api/authApi'
 
 export default function TopBar() {
-  const { activeTab, setActiveTab, setQuickNoteOpen } = useUIStore()
+  const { activeTab, setActiveTab } = useUIStore()
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -61,9 +61,6 @@ export default function TopBar() {
             ◆ 현상소
           </button>
         </div>
-        <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)} aria-label="빠른 기록">
-          ✦
-        </button>
         <div ref={menuRef} style={styles.menuWrapper}>
           <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)} aria-label="메뉴">
             <Settings size={16} />
@@ -114,17 +111,6 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.08em',
     transition: 'all 0.2s',
     whiteSpace: 'nowrap',
-  },
-  quickNoteBtn: {
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 14,
-    color: 'var(--amber)',
-    padding: '0 8px',
-    paddingBottom: 12,
-    lineHeight: 1,
   },
   menuWrapper: {
     position: 'relative',

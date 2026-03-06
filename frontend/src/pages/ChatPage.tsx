@@ -23,7 +23,7 @@ export default function ChatPage() {
     messages, isTyping, userMsgCount, developed, newMsgSinceDevelop,
     sendMessage, retryMessage, resetNewMsgSinceDevelop, sessionId,
   } = useChat()
-  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab } = useUIStore()
+  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab, setQuickNoteOpen } = useUIStore()
   const { preview, setPreview, updateFrame } = useFrameStore()
   const resetChat = useChatStore((s) => s.reset)
   const navigate = useNavigate()
@@ -142,6 +142,15 @@ export default function ChatPage() {
           <RedevelopBanner onRedevelop={handleDevelop} />
         )}
 
+        {/* 빠른 현상 */}
+        {!developed && userMsgCount === 0 && (
+          <div style={styles.quickNoteBar}>
+            <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
+              ✦ 빠른 현상 — AI 없이 짧게 기록
+            </button>
+          </div>
+        )}
+
         {/* 입력창 */}
         <ChatInput onSend={sendMessage} disabled={isTyping} />
       </div>
@@ -196,6 +205,24 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '3px 8px',
     letterSpacing: '0.05em',
     opacity: 0.8,
+  },
+  quickNoteBar: {
+    flexShrink: 0,
+    padding: '0 16px 8px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  quickNoteBtn: {
+    background: 'transparent',
+    border: '1px solid var(--border-light)',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    letterSpacing: '0.06em',
+    padding: '6px 16px',
+    borderRadius: 2,
+    opacity: 0.6,
   },
   messages: {
     flex: 1,

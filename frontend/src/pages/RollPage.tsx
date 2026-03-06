@@ -31,7 +31,7 @@ function groupByMonth(frames: Frame[]): Map<string, Frame[]> {
 
 export default function RollPage() {
   const { frames, setFrames, restoreFrame } = useFrameStore()
-  const { isFrameDetailOpen, setFrameDetailOpen } = useUIStore()
+  const { isFrameDetailOpen, setFrameDetailOpen, setQuickNoteOpen } = useUIStore()
   const { showToast } = useToast()
   const queryClient = useQueryClient()
   const [loading, setLoading] = useState(true)
@@ -136,12 +136,17 @@ export default function RollPage() {
         ) : (
           <>
             <span style={styles.headerLabel}>FILM ROLL</span>
-            <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
-                <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
-              </svg>
-            </button>
+            <div style={styles.headerActions}>
+              <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
+                ✦ 빠른 현상
+              </button>
+              <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+                  <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
           </>
         )}
       </div>
@@ -289,6 +294,22 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--amber)',
     letterSpacing: '0.15em',
     opacity: 0.6,
+  },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+  },
+  quickNoteBtn: {
+    background: 'transparent',
+    border: '1px solid var(--amber-35)',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--amber)',
+    letterSpacing: '0.08em',
+    padding: '4px 10px',
+    borderRadius: 2,
   },
   searchBtn: {
     background: 'transparent',
