@@ -50,11 +50,13 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             opacity: 'var(--film-grain-opacity)' as unknown as number,
           }} />
           <div style={styles.bodyContent}>
-            <div style={styles.frameNum}>♦{String(frame.frameNum).padStart(2, '0')}</div>
-            {frame.isBookmarked && (
-              <div style={styles.bookmarkIcon}>★</div>
-            )}
-            <div style={styles.dateLabel}>{formatChatDate(new Date(frame.date))}</div>
+            <div style={styles.metaRow}>
+              <span style={styles.dateLabel}>
+                {formatChatDate(new Date(frame.date))}
+                <span style={styles.frameNumInline}> · #{String(frame.frameNum).padStart(2, '0')}</span>
+              </span>
+              {frame.isBookmarked && <span style={styles.bookmarkIcon}>★</span>}
+            </div>
             <div style={styles.title}>{frame.title}</div>
             <div style={styles.preview}>{frame.content}</div>
 
@@ -81,9 +83,9 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                   : ''}
               </div>
               {frame.frameType === 'QUICK' ? (
-                <span style={{ ...styles.status, ...styles.statusQuick }}>✦ QUICK</span>
+                <span style={{ ...styles.status, ...styles.statusQuick }}>✦ 메모</span>
               ) : (
-                <span style={{ ...styles.status, ...styles.statusDone }}>◆ DEVELOPED</span>
+                <span style={{ ...styles.status, ...styles.statusDone }}>◈ AI 현상</span>
               )}
             </div>
           </div>
@@ -157,23 +159,11 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'relative',
     zIndex: 1,
   },
-  frameNum: {
-    position: 'absolute',
-    top: 10,
-    right: 12,
-    fontFamily: "'VT323', monospace",
-    fontSize: 18,
-    color: 'var(--amber)',
-    opacity: 0.35,
-  },
-  bookmarkIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 36,
-    fontSize: 10,
-    color: 'var(--amber)',
-    opacity: 0.7,
-    lineHeight: 1,
+  metaRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
   },
   dateLabel: {
     fontFamily: "'Space Mono', monospace",
@@ -181,7 +171,20 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--amber-light)',
     opacity: 0.65,
     letterSpacing: '0.06em',
-    marginBottom: 6,
+  },
+  frameNumInline: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--cream-muted)',
+    opacity: 0.5,
+    letterSpacing: '0.04em',
+  },
+  bookmarkIcon: {
+    fontSize: 10,
+    color: 'var(--amber)',
+    opacity: 0.8,
+    lineHeight: 1,
+    flexShrink: 0,
   },
   title: {
     fontFamily: "'Noto Serif KR', serif",
