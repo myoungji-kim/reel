@@ -113,19 +113,36 @@ export default function RollPage() {
 
   return (
     <div style={styles.view}>
-      {/* 검색 헤더 */}
+      {/* 헤더: 검색 비활성 = 라벨+검색아이콘 / 검색 활성 = 인라인 검색창 */}
       <div style={styles.header}>
-        <span style={styles.headerLabel}>FILM ROLL</span>
-        <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label={isSearchOpen ? '검색 닫기' : '검색'}>
-          {isSearchOpen ? (
-            <span style={styles.searchBtnIcon}>✕</span>
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        {isSearchOpen ? (
+          <>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, opacity: 0.5 }}>
               <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
               <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
             </svg>
-          )}
-        </button>
+            <input
+              ref={searchInputRef}
+              style={styles.searchInput}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="제목 또는 내용으로 검색"
+            />
+            <button style={styles.cancelBtn} onClick={handleSearchToggle}>
+              취소
+            </button>
+          </>
+        ) : (
+          <>
+            <span style={styles.headerLabel}>FILM ROLL</span>
+            <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+                <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+            </button>
+          </>
+        )}
       </div>
 
       {/* 필터 탭바 */}
@@ -152,25 +169,6 @@ export default function RollPage() {
         >
           ★
         </button>
-      </div>
-
-      {/* 검색 입력창 */}
-      <div style={{
-        ...styles.searchBar,
-        maxHeight: isSearchOpen ? 48 : 0,
-        opacity: isSearchOpen ? 1 : 0,
-        pointerEvents: isSearchOpen ? 'auto' : 'none',
-      }}>
-        <input
-          ref={searchInputRef}
-          style={styles.searchInput}
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="제목 또는 내용으로 검색"
-        />
-        {inputValue && (
-          <button style={styles.clearBtn} onClick={() => setInputValue('')}>✕</button>
-        )}
       </div>
 
       <RollProgressBar />
@@ -287,9 +285,9 @@ const styles: Record<string, React.CSSProperties> = {
   headerLabel: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 10,
-    color: 'var(--cream-muted)',
-    letterSpacing: '0.12em',
-    opacity: 0.5,
+    color: 'var(--amber)',
+    letterSpacing: '0.15em',
+    opacity: 0.6,
   },
   searchBtn: {
     background: 'transparent',
@@ -322,25 +320,9 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 5,
     whiteSpace: 'nowrap' as const,
   },
-  searchBtnIcon: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 11,
-    color: 'var(--cream-muted)',
-    lineHeight: 1,
-  },
-  searchBar: {
-    flexShrink: 0,
-    overflow: 'hidden',
-    transition: 'max-height 0.2s ease, opacity 0.2s ease',
-    borderBottom: '1px solid var(--border)',
-    background: 'var(--bg-card)',
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 16px',
-  },
   searchInput: {
     flex: 1,
-    height: 48,
+    height: '100%',
     background: 'transparent',
     border: 'none',
     outline: 'none',
@@ -348,16 +330,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 13,
     color: 'var(--cream)',
     letterSpacing: '0.02em',
+    padding: '0 8px',
   },
-  clearBtn: {
+  cancelBtn: {
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
     fontFamily: "'Space Mono', monospace",
     fontSize: 10,
     color: 'var(--cream-muted)',
+    letterSpacing: '0.06em',
     padding: '4px',
-    opacity: 0.6,
+    flexShrink: 0,
+    opacity: 0.7,
   },
   list: {
     flex: 1,
