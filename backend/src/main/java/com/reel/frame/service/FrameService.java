@@ -154,7 +154,13 @@ public class FrameService {
                 ))
                 .values().stream()
                 .sorted(Comparator.comparing(Frame::getDate))
-                .map(f -> new CalendarFrameResponse(f.getId(), f.getDate(), f.getMood()))
+                .map(f -> {
+                    String preview = f.getContent() != null && f.getContent().length() > 150
+                            ? f.getContent().substring(0, 150) + "…"
+                            : f.getContent();
+                    String thumbnail = f.getPhotos().isEmpty() ? null : f.getPhotos().get(0).getUrl();
+                    return new CalendarFrameResponse(f.getId(), f.getDate(), f.getMood(), f.getTitle(), preview, thumbnail);
+                })
                 .toList();
     }
 

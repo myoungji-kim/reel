@@ -5,5 +5,8 @@ import java.time.LocalDate;
 public record CalendarFrameResponse(
         Long frameId,
         LocalDate date,
-        String mood
+        String mood,
+        String title,
+        String contentPreview,
+        String thumbnailUrl
 ) {}

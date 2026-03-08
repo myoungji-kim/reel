@@ -54,6 +54,7 @@ export default function RollPage() {
   // 뷰 전환
   const [viewMode, setViewMode] = useState<ViewMode>('roll')
 
+
   useEffect(() => {
     getFrames(0, 20)
       .then(({ data }) => setFrames(data.data.content))
@@ -89,17 +90,13 @@ export default function RollPage() {
     }
   }
 
-  const handleViewModeToggle = () => {
-    setViewMode(v => {
-      const next = v === 'roll' ? 'calendar' : 'roll'
-      // 캘린더 뷰 진입 시 검색창 닫기
-      if (next === 'calendar' && isSearchOpen) {
-        setIsSearchOpen(false)
-        setInputValue('')
-        setDebouncedQ('')
-      }
-      return next
-    })
+  const handleTabSelect = (tab: 'roll' | 'calendar') => {
+    setViewMode(tab)
+    if (tab === 'calendar' && isSearchOpen) {
+      setIsSearchOpen(false)
+      setInputValue('')
+      setDebouncedQ('')
+    }
   }
 
   const handleFrameClick = (frame: Frame) => {
@@ -134,43 +131,46 @@ export default function RollPage() {
           </>
         ) : (
           <>
-            {viewMode === 'roll' && (['all', 'bookmark'] as Filter[]).map((f) => (
+            {/* 뷰 전환 탭: ROLL / GRID */}
+            {(['roll', 'calendar'] as const).map((tab) => (
               <button
-                key={f}
+                key={tab}
                 style={{
                   ...styles.filterTab,
-                  color: activeFilter === f ? 'var(--amber-light)' : 'var(--cream-muted)',
-                  borderBottom: activeFilter === f ? '2px solid var(--amber)' : '2px solid transparent',
-                  opacity: activeFilter === f ? 1 : 0.45,
+                  color: viewMode === tab ? 'var(--amber-light)' : 'var(--cream-muted)',
+                  borderBottom: viewMode === tab ? '2px solid var(--amber)' : '2px solid transparent',
+                  opacity: viewMode === tab ? 1 : 0.45,
                 }}
-                onClick={() => setActiveFilter(f)}
+                onClick={() => handleTabSelect(tab)}
               >
-                {f === 'all' ? 'ALL' : '★'}
+                {tab === 'roll' ? 'ROLL' : 'GRID'}
               </button>
             ))}
             <div style={styles.filterActions}>
               {viewMode === 'roll' && (
-                <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
-                    <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
-                  </svg>
-                </button>
-              )}
-              <button
-                style={{
-                  ...styles.calendarBtn,
-                  color: viewMode === 'calendar' ? 'var(--amber)' : 'var(--cream-muted)',
-                }}
-                onClick={handleViewModeToggle}
-                aria-label="캘린더 뷰 전환"
-              >
-                ▦
-              </button>
-              {viewMode === 'roll' && (
-                <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
-                  ✦ 빠른 현상
-                </button>
+                <>
+                  {/* ★ 북마크 필터 토글 */}
+                  <button
+                    style={{
+                      ...styles.bookmarkBtn,
+                      color: activeFilter === 'bookmark' ? 'var(--amber)' : 'var(--cream-muted)',
+                      opacity: activeFilter === 'bookmark' ? 1 : 0.45,
+                    }}
+                    onClick={() => setActiveFilter(f => f === 'bookmark' ? 'all' : 'bookmark')}
+                    aria-label="북마크 필터"
+                  >
+                    ★
+                  </button>
+                  <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+                      <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                  <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
+                    ✦ 빠른 현상
+                  </button>
+                </>
               )}
             </div>
           </>
@@ -181,10 +181,12 @@ export default function RollPage() {
 
       {viewMode === 'calendar' ? (
         <div style={styles.calendarWrapper}>
-          <CalendarView onFrameSelect={(frameId) => {
-            setSelectedFrameId(frameId)
-            setFrameDetailOpen(true)
-          }} />
+          <CalendarView
+            onFrameSelect={(frameId) => {
+              setSelectedFrameId(frameId)
+              setFrameDetailOpen(true)
+            }}
+          />
         </div>
       ) : (
         <div style={styles.list}>
@@ -277,6 +279,16 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 4,
     paddingRight: 4,
   },
+  bookmarkBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 12,
+    padding: '4px 6px',
+    lineHeight: 1,
+    transition: 'color 0.15s, opacity 0.15s',
+  },
   searchBtn: {
     background: 'transparent',
     border: 'none',
@@ -285,16 +297,6 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  calendarBtn: {
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 13,
-    padding: '4px 6px',
-    lineHeight: 1,
-    transition: 'color 0.15s',
   },
   quickNoteBtn: {
     background: 'transparent',

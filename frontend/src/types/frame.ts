@@ -44,4 +44,7 @@ export interface CalendarFrame {
   frameId: number
   date: string   // "YYYY-MM-DD"
   mood: string | null
+  title: string
+  contentPreview: string | null
+  thumbnailUrl: string | null
 }
