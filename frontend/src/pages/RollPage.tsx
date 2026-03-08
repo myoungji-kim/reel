@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getFrames, searchFrames } from '../api/frameApi'
+import { getRolls } from '../api/rollApi'
 import { useFrameStore } from '../stores/frameStore'
 import { useUIStore } from '../stores/uiStore'
 import { useToast } from '../hooks/useToast'
@@ -35,7 +36,7 @@ function groupByMonth(frames: Frame[]): Map<string, Frame[]> {
 
 export default function RollPage() {
   const { frames, setFrames } = useFrameStore()
-  const { isFrameDetailOpen, setFrameDetailOpen, setQuickNoteOpen } = useUIStore()
+  const { isFrameDetailOpen, setFrameDetailOpen, setQuickNoteOpen, setRollTitleOpen, setPendingRollNum } = useUIStore()
   const { showToast } = useToast()
   const queryClient = useQueryClient()
   const [loading, setLoading] = useState(true)
@@ -72,6 +73,14 @@ export default function RollPage() {
   useEffect(() => {
     if (isSearchOpen) searchInputRef.current?.focus()
   }, [isSearchOpen])
+
+  const { data: rolls = [] } = useQuery({
+    queryKey: ['rolls'],
+    queryFn: getRolls,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const rollTitleMap = new Map(rolls.map(r => [r.rollNum, r.title]))
 
   const { data: searchResults = [] } = useQuery({
     queryKey: ['frame-search', debouncedQ],
@@ -222,9 +231,19 @@ export default function RollPage() {
                 {monthFrames.map((frame) => (
                   <div key={frame.id}>
                     <FilmFrame frame={frame} onClick={() => handleFrameClick(frame)} />
-                    {frame.frameNum % 24 === 0 && (
-                      <RollDivider rollNum={Math.ceil(frame.frameNum / 24)} />
-                    )}
+                    {frame.frameNum % 24 === 0 && (() => {
+                      const rn = Math.ceil(frame.frameNum / 24)
+                      return (
+                        <RollDivider
+                          rollNum={rn}
+                          title={rollTitleMap.get(rn) ?? null}
+                          onEditTitle={() => {
+                            setPendingRollNum(rn)
+                            setRollTitleOpen(true)
+                          }}
+                        />
+                      )
+                    })()}
                   </div>
                 ))}
               </div>

@@ -1,7 +1,9 @@
 package com.reel.common.config;
 
 import com.reel.frame.entity.Frame;
+import com.reel.frame.entity.Roll;
 import com.reel.frame.repository.FrameRepository;
+import com.reel.frame.repository.RollRepository;
 import com.reel.user.entity.User;
 import com.reel.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class LocalDataSeeder implements ApplicationRunner {
 
     private final UserRepository userRepository;
     private final FrameRepository frameRepository;
+    private final RollRepository rollRepository;
 
     private static final String[][] SEED_FRAMES = {
         {"봄볕 아래서", "봄바람이 살랑이는 날이었다. 오후 내내 창가에 앉아 따스한 햇살을 받으며 책을 읽었다.", "평온"},
@@ -91,5 +94,11 @@ public class LocalDataSeeder implements ApplicationRunner {
 
         frameRepository.saveAll(frames);
         log.info("[Seeder] 테스트 프레임 25개 삽입 완료 — userId={}", user.getId());
+
+        // Roll 1 완성 (frame #24) — 타이틀 포함해서 UI에서 확인 가능하게
+        Roll roll1 = Roll.of(user, 1);
+        roll1.updateTitle("봄이 왔던 롤");
+        rollRepository.save(roll1);
+        log.info("[Seeder] Roll 1 타이틀 삽입 완료");
     }
 }

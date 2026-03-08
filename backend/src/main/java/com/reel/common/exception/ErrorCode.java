@@ -22,6 +22,7 @@ public enum ErrorCode {
     // Frame
     ALREADY_DEVELOPED(HttpStatus.CONFLICT, "이미 현상된 세션입니다."),
     FRAME_NOT_FOUND(HttpStatus.NOT_FOUND, "프레임을 찾을 수 없습니다."),
+    ROLL_NOT_FOUND(HttpStatus.NOT_FOUND, "롤을 찾을 수 없습니다."),
     PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "사진을 찾을 수 없습니다."),
     PHOTO_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "사진은 최대 5장까지 첨부할 수 있습니다."),
     PHOTO_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "사진 업로드에 실패했습니다."),

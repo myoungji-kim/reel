@@ -92,6 +92,11 @@ public class AnthropicClient {
         return call(new ChatRequest(properties.getModel(), messages, properties.getMaxTokens()));
     }
 
+    public String singleMessage(String prompt) {
+        List<Message> messages = List.of(new Message("user", prompt));
+        return call(new ChatRequest(properties.getModel(), messages, 100));
+    }
+
     public String develop(List<ChatMessage> history) {
         String conversation = history.stream()
                 .map(m -> (m.getRole() == MessageRole.USER ? "나" : "AI") + ": " + m.getContent())

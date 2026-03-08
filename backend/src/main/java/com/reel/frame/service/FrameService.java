@@ -38,6 +38,7 @@ public class FrameService {
     private final FrameRepository frameRepository;
     private final ChatSessionRepository sessionRepository;
     private final UserRepository userRepository;
+    private final RollService rollService;
 
     @Transactional
     public FrameResponse save(Long userId, Long frameId, SaveFrameRequest request) {
@@ -50,6 +51,11 @@ public class FrameService {
         if (frame.getSession() != null) {
             frame.getSession().markDeveloped();
             sessionRepository.save(frame.getSession());
+        }
+
+        // 롤 완성 시점(frameNum이 24의 배수)에 Roll 레코드 생성
+        if (frame.getFrameNum() % 24 == 0) {
+            rollService.ensureRollCreated(frame.getUser(), frame.getFrameNum() / 24);
         }
 
         return FrameResponse.from(frame);
@@ -111,6 +117,11 @@ public class FrameService {
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
 
         Frame frame = frameRepository.save(Frame.quick(user, frameNum, request.title(), request.content(), date));
+
+        if (frameNum % 24 == 0) {
+            rollService.ensureRollCreated(user, frameNum / 24);
+        }
+
         return new QuickFrameResponse(frame.getId(), frame.getFrameNum(), frame.getTitle(), FrameType.QUICK.name());
     }
 

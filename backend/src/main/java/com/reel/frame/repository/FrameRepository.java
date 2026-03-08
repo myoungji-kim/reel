@@ -35,6 +35,15 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
            "ORDER BY f.date DESC, f.createdAt DESC")
     Page<Frame> searchByKeyword(@Param("userId") Long userId, @Param("q") String q, Pageable pageable);
 
+    @Query("SELECT f.title FROM Frame f WHERE f.user.id = :userId " +
+           "AND f.frameNum BETWEEN :start AND :end AND f.isArchived = false " +
+           "ORDER BY f.frameNum ASC")
+    List<String> findTitlesByUserIdAndFrameNumBetween(
+            @Param("userId") Long userId,
+            @Param("start") int start,
+            @Param("end") int end
+    );
+
     @Query("SELECT f FROM Frame f WHERE f.user.id = :userId " +
            "AND f.date >= :startDate AND f.date <= :endDate " +
            "AND f.isArchived = false " +

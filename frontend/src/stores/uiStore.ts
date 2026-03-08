@@ -15,6 +15,10 @@ interface UIStore {
   setQuickNoteOpen: (open: boolean) => void
   isArchivedOpen: boolean
   setArchivedOpen: (open: boolean) => void
+  isRollTitleOpen: boolean
+  setRollTitleOpen: (open: boolean) => void
+  pendingRollNum: number | null
+  setPendingRollNum: (num: number | null) => void
 }
 
 export const useUIStore = create<UIStore>((set) => ({
@@ -30,4 +34,8 @@ export const useUIStore = create<UIStore>((set) => ({
   setQuickNoteOpen: (open) => set({ isQuickNoteOpen: open }),
   isArchivedOpen: false,
   setArchivedOpen: (open) => set({ isArchivedOpen: open }),
+  isRollTitleOpen: false,
+  setRollTitleOpen: (open) => set({ isRollTitleOpen: open }),
+  pendingRollNum: null,
+  setPendingRollNum: (num) => set({ pendingRollNum: num }),
 }))

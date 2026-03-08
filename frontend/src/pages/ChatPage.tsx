@@ -23,7 +23,7 @@ export default function ChatPage() {
     messages, isTyping, userMsgCount, developed, newMsgSinceDevelop,
     sendMessage, retryMessage, resetNewMsgSinceDevelop, sessionId,
   } = useChat()
-  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab, setQuickNoteOpen } = useUIStore()
+  const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab, setQuickNoteOpen, setRollTitleOpen, setPendingRollNum } = useUIStore()
   const { preview, setPreview, updateFrame } = useFrameStore()
   const resetChat = useChatStore((s) => s.reset)
   const navigate = useNavigate()
@@ -87,8 +87,16 @@ export default function ChatPage() {
           const stats = await getRollStats()
           queryClient.invalidateQueries({ queryKey: ['roll-stats'] })
           if (stats.totalFrames % 24 === 0 && stats.totalFrames > 0) {
-            const rollNum = String(stats.totalFrames / 24).padStart(2, '0')
-            showToast(`◆ ROLL ${rollNum} 완성! 🎞 새 롤이 시작됩니다`)
+            const completedRollNum = stats.totalFrames / 24
+            const rollLabel = String(completedRollNum).padStart(2, '0')
+            showToast(
+              `◆ ROLL ${rollLabel} 완성! 이름 붙이기 →`,
+              'success',
+              () => {
+                setPendingRollNum(completedRollNum)
+                setRollTitleOpen(true)
+              }
+            )
           }
         } catch {
           // 롤 통계 실패는 무시

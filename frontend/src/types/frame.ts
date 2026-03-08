@@ -40,6 +40,11 @@ export interface RollStats {
   totalFrames: number
 }
 
+export interface RollInfo {
+  rollNum: number
+  title: string | null
+}
+
 export interface CalendarFrame {
   frameId: number
   date: string   // "YYYY-MM-DD"
