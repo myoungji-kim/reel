@@ -2,7 +2,7 @@
 
 ## 사전 준비
 - `docs/00_context_project-overview.md` 읽기
-- `docs/15_feat_calendar-view.md` 읽기 (선행 구현 완료 상태)
+- `docs/15_0_feat_calendar-view.md` 읽기 (선행 구현 완료 상태)
 - 관련 파일:
   - `frontend/src/pages/RollPage.tsx`
   - `frontend/src/components/frame/CalendarView.tsx`
@@ -13,7 +13,7 @@
   - `frontend/src/types/frame.ts`
 
 ## 개선 개요
-`15_feat_calendar-view.md` 기준으로 캘린더 뷰가 구현된 상태에서, UX 검토를 통해 발견된 7가지 문제를 개선한다.
+`15_0_feat_calendar-view.md` 기준으로 캘린더 뷰가 구현된 상태에서, UX 검토를 통해 발견된 7가지 문제를 개선한다.
 백엔드 변경은 없다. 모든 수정은 프론트엔드 전용이다.
 
 ---
