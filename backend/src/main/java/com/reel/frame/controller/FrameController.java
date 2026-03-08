@@ -2,6 +2,7 @@ package com.reel.frame.controller;
 
 import com.reel.common.response.ApiResponse;
 import com.reel.frame.dto.BookmarkResponse;
+import com.reel.frame.dto.CalendarFrameResponse;
 import com.reel.frame.dto.DevelopPreviewResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
@@ -59,6 +60,15 @@ public class FrameController {
             @AuthenticationPrincipal Long userId) {
 
         return ResponseEntity.ok(ApiResponse.ok(frameService.getRollStats(userId)));
+    }
+
+    @GetMapping("/calendar")
+    public ResponseEntity<ApiResponse<List<CalendarFrameResponse>>> getCalendarFrames(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.getCalendarFrames(userId, year, month)));
     }
 
     @GetMapping("/on-this-day")

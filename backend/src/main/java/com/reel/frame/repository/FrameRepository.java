@@ -34,4 +34,14 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
            "OR LOWER(f.content) LIKE LOWER(CONCAT('%', :q, '%'))) " +
            "ORDER BY f.date DESC, f.createdAt DESC")
     Page<Frame> searchByKeyword(@Param("userId") Long userId, @Param("q") String q, Pageable pageable);
+
+    @Query("SELECT f FROM Frame f WHERE f.user.id = :userId " +
+           "AND f.date >= :startDate AND f.date <= :endDate " +
+           "AND f.isArchived = false " +
+           "ORDER BY f.date ASC, f.createdAt DESC")
+    List<Frame> findByUserIdAndDateBetween(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

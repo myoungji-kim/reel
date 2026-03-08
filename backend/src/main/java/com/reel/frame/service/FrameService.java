@@ -4,6 +4,7 @@ import com.reel.chat.repository.ChatSessionRepository;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
 import com.reel.frame.dto.BookmarkResponse;
+import com.reel.frame.dto.CalendarFrameResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
 import com.reel.frame.dto.QuickFrameRequest;
@@ -25,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -134,6 +137,25 @@ public class FrameService {
         Frame frame = frameRepository.findByIdAndUserId(frameId, userId)
                 .orElseThrow(() -> new ReelException(ErrorCode.FRAME_NOT_FOUND));
         return FrameResponse.from(frame);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CalendarFrameResponse> getCalendarFrames(Long userId, int year, int month) {
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        List<Frame> frames = frameRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
+
+        return frames.stream()
+                .collect(Collectors.toMap(
+                        Frame::getDate,
+                        f -> f,
+                        (existing, newer) -> newer.getCreatedAt().isAfter(existing.getCreatedAt()) ? newer : existing
+                ))
+                .values().stream()
+                .sorted(Comparator.comparing(Frame::getDate))
+                .map(f -> new CalendarFrameResponse(f.getId(), f.getDate(), f.getMood()))
+                .toList();
     }
 
     @Transactional

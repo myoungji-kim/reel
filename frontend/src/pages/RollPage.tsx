@@ -9,9 +9,11 @@ import FrameOverlay from '../components/frame/FrameOverlay'
 import MonthDivider from '../components/frame/MonthDivider'
 import RollProgressBar from '../components/frame/RollProgressBar'
 import RollDivider from '../components/frame/RollDivider'
+import CalendarView from '../components/frame/CalendarView'
 import type { Frame } from '../types/frame'
 
 type Filter = 'all' | 'bookmark'
+type ViewMode = 'roll' | 'calendar'
 
 // YYYY-MM → "MARCH 2026" 형태
 function toMonthLabel(yearMonth: string): string {
@@ -49,6 +51,9 @@ export default function RollPage() {
   // 필터
   const [activeFilter, setActiveFilter] = useState<Filter>('all')
 
+  // 뷰 전환
+  const [viewMode, setViewMode] = useState<ViewMode>('roll')
+
   useEffect(() => {
     getFrames(0, 20)
       .then(({ data }) => setFrames(data.data.content))
@@ -84,6 +89,19 @@ export default function RollPage() {
     }
   }
 
+  const handleViewModeToggle = () => {
+    setViewMode(v => {
+      const next = v === 'roll' ? 'calendar' : 'roll'
+      // 캘린더 뷰 진입 시 검색창 닫기
+      if (next === 'calendar' && isSearchOpen) {
+        setIsSearchOpen(false)
+        setInputValue('')
+        setDebouncedQ('')
+      }
+      return next
+    })
+  }
+
   const handleFrameClick = (frame: Frame) => {
     setSelectedFrameId(frame.id)
     setFrameDetailOpen(true)
@@ -116,7 +134,7 @@ export default function RollPage() {
           </>
         ) : (
           <>
-            {(['all', 'bookmark'] as Filter[]).map((f) => (
+            {viewMode === 'roll' && (['all', 'bookmark'] as Filter[]).map((f) => (
               <button
                 key={f}
                 style={{
@@ -131,15 +149,29 @@ export default function RollPage() {
               </button>
             ))}
             <div style={styles.filterActions}>
-              <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
-                  <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
-                </svg>
+              {viewMode === 'roll' && (
+                <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
+                    <line x1="8.5" y1="8.5" x2="12.5" y2="12.5" stroke="var(--cream-muted)" strokeWidth="1.4" strokeLinecap="round" />
+                  </svg>
+                </button>
+              )}
+              <button
+                style={{
+                  ...styles.calendarBtn,
+                  color: viewMode === 'calendar' ? 'var(--amber)' : 'var(--cream-muted)',
+                }}
+                onClick={handleViewModeToggle}
+                aria-label="캘린더 뷰 전환"
+              >
+                ▦
               </button>
-              <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
-                ✦ 빠른 현상
-              </button>
+              {viewMode === 'roll' && (
+                <button style={styles.quickNoteBtn} onClick={() => setQuickNoteOpen(true)}>
+                  ✦ 빠른 현상
+                </button>
+              )}
             </div>
           </>
         )}
@@ -147,48 +179,57 @@ export default function RollPage() {
 
       <RollProgressBar />
 
-      <div style={styles.list}>
-        {isSearching ? (
-          searchResults.length === 0 ? (
+      {viewMode === 'calendar' ? (
+        <div style={styles.calendarWrapper}>
+          <CalendarView onFrameSelect={(frameId) => {
+            setSelectedFrameId(frameId)
+            setFrameDetailOpen(true)
+          }} />
+        </div>
+      ) : (
+        <div style={styles.list}>
+          {isSearching ? (
+            searchResults.length === 0 ? (
+              <div style={styles.empty}>
+                <p style={styles.emptyText}>// NO RESULTS</p>
+                <p style={styles.emptySub}>'{debouncedQ}'에 대한 프레임이 없습니다</p>
+              </div>
+            ) : (
+              searchResults.map((frame) => (
+                <FilmFrame key={frame.id} frame={frame} onClick={() => handleFrameClick(frame)} />
+              ))
+            )
+          ) : loading ? (
+            [0, 1, 2].map((i) => (
+              <FilmFrame key={i} frame={{} as Frame} onClick={() => {}} skeleton />
+            ))
+          ) : activeFilter === 'bookmark' && displayFrames.length === 0 ? (
             <div style={styles.empty}>
-              <p style={styles.emptyText}>// NO RESULTS</p>
-              <p style={styles.emptySub}>'{debouncedQ}'에 대한 프레임이 없습니다</p>
+              <p style={styles.emptyText}>// NO BOOKMARKS</p>
+              <p style={styles.emptySub}>즐겨찾기한 프레임이 없어요</p>
+            </div>
+          ) : frames.length === 0 ? (
+            <div style={styles.empty}>
+              <p style={styles.emptyText}>// FILM ROLL EMPTY</p>
+              <p style={styles.emptySub}>현상된 일기가 여기에 쌓여요</p>
             </div>
           ) : (
-            searchResults.map((frame) => (
-              <FilmFrame key={frame.id} frame={frame} onClick={() => handleFrameClick(frame)} />
+            Array.from(grouped.entries()).map(([yearMonth, monthFrames]) => (
+              <div key={yearMonth}>
+                <MonthDivider label={toMonthLabel(yearMonth)} count={monthFrames.length} />
+                {monthFrames.map((frame) => (
+                  <div key={frame.id}>
+                    <FilmFrame frame={frame} onClick={() => handleFrameClick(frame)} />
+                    {frame.frameNum % 24 === 0 && (
+                      <RollDivider rollNum={Math.ceil(frame.frameNum / 24)} />
+                    )}
+                  </div>
+                ))}
+              </div>
             ))
-          )
-        ) : loading ? (
-          [0, 1, 2].map((i) => (
-            <FilmFrame key={i} frame={{} as Frame} onClick={() => {}} skeleton />
-          ))
-        ) : activeFilter === 'bookmark' && displayFrames.length === 0 ? (
-          <div style={styles.empty}>
-            <p style={styles.emptyText}>// NO BOOKMARKS</p>
-            <p style={styles.emptySub}>즐겨찾기한 프레임이 없어요</p>
-          </div>
-        ) : frames.length === 0 ? (
-          <div style={styles.empty}>
-            <p style={styles.emptyText}>// FILM ROLL EMPTY</p>
-            <p style={styles.emptySub}>현상된 일기가 여기에 쌓여요</p>
-          </div>
-        ) : (
-          Array.from(grouped.entries()).map(([yearMonth, monthFrames]) => (
-            <div key={yearMonth}>
-              <MonthDivider label={toMonthLabel(yearMonth)} count={monthFrames.length} />
-              {monthFrames.map((frame) => (
-                <div key={frame.id}>
-                  <FilmFrame frame={frame} onClick={() => handleFrameClick(frame)} />
-                  {frame.frameNum % 24 === 0 && (
-                    <RollDivider rollNum={Math.ceil(frame.frameNum / 24)} />
-                  )}
-                </div>
-              ))}
-            </div>
-          ))
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <FrameOverlay
         isOpen={isFrameDetailOpen}
@@ -245,6 +286,16 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
   },
+  calendarBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 13,
+    padding: '4px 6px',
+    lineHeight: 1,
+    transition: 'color 0.15s',
+  },
   quickNoteBtn: {
     background: 'transparent',
     border: '1px solid var(--amber-35)',
@@ -285,6 +336,11 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     overflowY: 'auto',
     padding: '12px 16px 80px',
+  },
+  calendarWrapper: {
+    flex: 1,
+    overflowY: 'auto',
+    paddingBottom: 80,
   },
   empty: {
     display: 'flex',

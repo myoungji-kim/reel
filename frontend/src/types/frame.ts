@@ -39,3 +39,9 @@ export interface RollStats {
   rollSize: number
   totalFrames: number
 }
+
+export interface CalendarFrame {
+  frameId: number
+  date: string   // "YYYY-MM-DD"
+  mood: string | null
+}
