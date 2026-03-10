@@ -16,7 +16,7 @@ export default function StreakBadge() {
     <div style={styles.wrap}>
       <span style={{ ...styles.text, color: recorded ? 'var(--amber)' : 'var(--cream-muted)' }}>
         {recorded
-          ? `◆ ${data.streakCount}일 연속 기록 중`
+          ? `◆ ${data.streakCount}일 연속 기록 완료`
           : `◇ 오늘 기록하면 ${data.streakCount + 1}일 연속`}
       </span>
     </div>
