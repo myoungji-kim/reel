@@ -112,6 +112,17 @@ public class Frame {
         if (date != null) this.date = date;
     }
 
+    public static Frame retrospective(User user, int frameNum, String title, String content, LocalDate date) {
+        Frame frame = new Frame();
+        frame.user = user;
+        frame.frameNum = frameNum;
+        frame.title = title;
+        frame.content = content;
+        frame.date = date;
+        frame.frameType = FrameType.RETROSPECTIVE;
+        return frame;
+    }
+
     public void archive() { this.isArchived = true; }
     public void unarchive() { this.isArchived = false; }
     public void toggleBookmark() { this.isBookmarked = !this.isBookmarked; }

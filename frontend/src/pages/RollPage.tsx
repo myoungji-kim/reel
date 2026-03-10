@@ -225,9 +225,11 @@ export default function RollPage() {
               <p style={styles.emptySub}>현상된 일기가 여기에 쌓여요</p>
             </div>
           ) : (
-            Array.from(grouped.entries()).map(([yearMonth, monthFrames]) => (
+            Array.from(grouped.entries()).map(([yearMonth, monthFrames]) => {
+              const [ym_year, ym_month] = yearMonth.split('-').map(Number)
+              return (
               <div key={yearMonth}>
-                <MonthDivider label={toMonthLabel(yearMonth)} count={monthFrames.length} />
+                <MonthDivider label={toMonthLabel(yearMonth)} count={monthFrames.length} year={ym_year} month={ym_month} />
                 {monthFrames.map((frame) => (
                   <div key={frame.id}>
                     <FilmFrame frame={frame} onClick={() => handleFrameClick(frame)} />
@@ -247,7 +249,7 @@ export default function RollPage() {
                   </div>
                 ))}
               </div>
-            ))
+            )})
           )}
         </div>
       )}

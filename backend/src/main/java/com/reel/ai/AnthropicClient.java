@@ -94,7 +94,7 @@ public class AnthropicClient {
 
     public String singleMessage(String prompt) {
         List<Message> messages = List.of(new Message("user", prompt));
-        return call(new ChatRequest(properties.getModel(), messages, 100));
+        return call(new ChatRequest(properties.getModel(), messages, properties.getMaxTokens()));
     }
 
     public String develop(List<ChatMessage> history) {

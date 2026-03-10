@@ -3,11 +3,13 @@ package com.reel.frame.controller;
 import com.reel.common.response.ApiResponse;
 import com.reel.frame.dto.BookmarkResponse;
 import com.reel.frame.dto.CalendarFrameResponse;
+import com.reel.frame.dto.CreateRetrospectiveRequest;
 import com.reel.frame.dto.DevelopPreviewResponse;
 import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
 import com.reel.frame.dto.QuickFrameRequest;
 import com.reel.frame.dto.QuickFrameResponse;
+import com.reel.frame.dto.RetrospectiveAvailableResponse;
 import com.reel.frame.dto.RollStatsResponse;
 import com.reel.frame.dto.PhotoResponse;
 import com.reel.frame.dto.SaveFrameRequest;
@@ -36,6 +38,23 @@ public class FrameController {
     private final DevelopService developService;
     private final FrameService frameService;
     private final PhotoService photoService;
+
+    @GetMapping("/retrospective/available")
+    public ResponseEntity<ApiResponse<RetrospectiveAvailableResponse>> checkRetrospectiveAvailable(
+            @AuthenticationPrincipal Long userId,
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.checkRetrospectiveAvailable(userId, year, month)));
+    }
+
+    @PostMapping("/retrospective")
+    public ResponseEntity<ApiResponse<FrameResponse>> createRetrospective(
+            @AuthenticationPrincipal Long userId,
+            @Valid @RequestBody CreateRetrospectiveRequest request) {
+
+        return ResponseEntity.ok(ApiResponse.ok(frameService.createRetrospective(userId, request.year(), request.month())));
+    }
 
     @PostMapping("/quick")
     public ResponseEntity<ApiResponse<QuickFrameResponse>> createQuickFrame(

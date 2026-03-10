@@ -1,5 +1,5 @@
 package com.reel.frame.entity;
 
 public enum FrameType {
-    DEVELOPED, QUICK
+    DEVELOPED, QUICK, RETROSPECTIVE
 }

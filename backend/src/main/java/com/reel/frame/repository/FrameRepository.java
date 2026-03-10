@@ -1,6 +1,7 @@
 package com.reel.frame.repository;
 
 import com.reel.frame.entity.Frame;
+import com.reel.frame.entity.FrameType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -52,5 +53,36 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
             @Param("userId") Long userId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
+    );
+
+    @Query("SELECT COUNT(f) FROM Frame f " +
+           "WHERE f.user.id = :userId " +
+           "AND YEAR(f.date) = :year AND MONTH(f.date) = :month " +
+           "AND f.isArchived = false AND f.frameType != com.reel.frame.entity.FrameType.RETROSPECTIVE")
+    int countByUserIdAndYearAndMonth(
+            @Param("userId") Long userId,
+            @Param("year") int year,
+            @Param("month") int month
+    );
+
+    @Query("SELECT COUNT(f) > 0 FROM Frame f " +
+           "WHERE f.user.id = :userId " +
+           "AND YEAR(f.date) = :year AND MONTH(f.date) = :month " +
+           "AND f.frameType = com.reel.frame.entity.FrameType.RETROSPECTIVE")
+    boolean existsRetrospectiveByUserIdAndYearAndMonth(
+            @Param("userId") Long userId,
+            @Param("year") int year,
+            @Param("month") int month
+    );
+
+    @Query("SELECT f FROM Frame f " +
+           "WHERE f.user.id = :userId " +
+           "AND YEAR(f.date) = :year AND MONTH(f.date) = :month " +
+           "AND f.isArchived = false AND f.frameType != com.reel.frame.entity.FrameType.RETROSPECTIVE " +
+           "ORDER BY f.date ASC")
+    List<Frame> findAllByUserIdAndYearAndMonth(
+            @Param("userId") Long userId,
+            @Param("year") int year,
+            @Param("month") int month
     );
 }

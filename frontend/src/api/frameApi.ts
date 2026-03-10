@@ -1,5 +1,5 @@
 import axios from './axiosInstance'
-import type { CalendarFrame, DevelopPreview, Frame, OnThisDayItem, RollStats } from '../types/frame'
+import type { CalendarFrame, DevelopPreview, Frame, OnThisDayItem, RetrospectiveAvailable, RollStats } from '../types/frame'
 
 interface ApiResponse<T> {
   success: boolean
@@ -55,4 +55,12 @@ export const toggleBookmark = (frameId: number) =>
 
 export const getCalendarFrames = (year: number, month: number) =>
   axios.get<ApiResponse<CalendarFrame[]>>('/api/frames/calendar', { params: { year, month } })
+    .then(r => r.data.data)
+
+export const checkRetrospectiveAvailable = (year: number, month: number) =>
+  axios.get<ApiResponse<RetrospectiveAvailable>>('/api/frames/retrospective/available', { params: { year, month } })
+    .then(r => r.data.data)
+
+export const createRetrospective = (year: number, month: number) =>
+  axios.post<ApiResponse<Frame>>('/api/frames/retrospective', { year, month })
     .then(r => r.data.data)

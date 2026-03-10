@@ -208,10 +208,15 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
               <div key={i} style={styles.overlayPerf} />
             ))}
             {frame && (
-              <span style={styles.overlayNum}>
-                <span style={styles.overlayNumLabel}>FR.</span>
-                {String(frame.frameNum).padStart(2, '0')}
-              </span>
+              <>
+                {frame.frameType === 'RETROSPECTIVE' && (
+                  <span style={styles.recapLabel}>월간 회고</span>
+                )}
+                <span style={styles.overlayNum}>
+                  <span style={styles.overlayNumLabel}>FR.</span>
+                  {String(frame.frameNum).padStart(2, '0')}
+                </span>
+              </>
             )}
           </div>
 
@@ -229,7 +234,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
                 </button>
               </>
             ) : (
-              /* 보기 모드: 북마크·편집·닫기 */
+              /* 보기 모드: 북마크·(편집)·닫기 */
               <>
                 {frame && (
                   <button
@@ -245,9 +250,11 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
                       : <Bookmark size={14} />}
                   </button>
                 )}
-                <button style={styles.iconBtn} onClick={() => setIsEditing(true)} aria-label="수정">
-                  <Pencil size={12} />
-                </button>
+                {frame?.frameType !== 'RETROSPECTIVE' && (
+                  <button style={styles.iconBtn} onClick={() => setIsEditing(true)} aria-label="수정">
+                    <Pencil size={12} />
+                  </button>
+                )}
                 <button style={styles.iconBtn} onClick={handleClose} aria-label="닫기">
                   <X size={12} />
                 </button>
@@ -459,6 +466,17 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 1,
     background: 'var(--bg-mid)',
     border: '1px solid var(--border)',
+    flexShrink: 0,
+  },
+  recapLabel: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 10,
+    fontWeight: 500,
+    color: 'var(--fade-green)',
+    background: 'rgba(122,158,138,0.12)',
+    border: '1px solid rgba(122,158,138,0.4)',
+    padding: '1px 7px',
+    borderRadius: 2,
     flexShrink: 0,
   },
   overlayNum: {

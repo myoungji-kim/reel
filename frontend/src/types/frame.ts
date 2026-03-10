@@ -10,7 +10,7 @@ export interface Frame {
   title: string
   content: string
   mood: string | null
-  frameType: 'DEVELOPED' | 'QUICK'
+  frameType: 'DEVELOPED' | 'QUICK' | 'RETROSPECTIVE'
   date: string
   createdAt: string
   photos: Photo[]
@@ -45,6 +45,12 @@ export interface RollInfo {
   title: string | null
 }
 
+export interface RetrospectiveAvailable {
+  available: boolean
+  frameCount: number
+  alreadyGenerated: boolean
+}
+
 export interface CalendarFrame {
   frameId: number
   date: string   // "YYYY-MM-DD"
@@ -52,4 +58,5 @@ export interface CalendarFrame {
   title: string
   contentPreview: string | null
   thumbnailUrl: string | null
+  frameType: FrameType
 }

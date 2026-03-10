@@ -1,24 +1,34 @@
+import RetrospectiveBanner from './RetrospectiveBanner'
+
 interface Props {
   label: string
   count: number
+  year: number
+  month: number
 }
 
-export default function MonthDivider({ label, count }: Props) {
+export default function MonthDivider({ label, count, year, month }: Props) {
   return (
-    <div style={styles.wrap}>
-      <span style={styles.text}>{label}</span>
-      <div style={styles.line} />
-      <span style={styles.count}>{count} frame{count !== 1 ? 's' : ''}</span>
+    <div style={styles.container}>
+      <div style={styles.wrap}>
+        <span style={styles.text}>{label}</span>
+        <div style={styles.line} />
+        <span style={styles.count}>{count} frame{count !== 1 ? 's' : ''}</span>
+      </div>
+      <RetrospectiveBanner year={year} month={month} />
     </div>
   )
 }
 
 const styles: Record<string, React.CSSProperties> = {
+  container: {
+    margin: '16px 0 12px',
+  },
   wrap: {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    margin: '16px 0 12px',
+    marginBottom: 8,
   },
   text: {
     fontFamily: "'Bebas Neue', sans-serif",

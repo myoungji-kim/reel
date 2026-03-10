@@ -21,6 +21,8 @@ public enum ErrorCode {
 
     // Frame
     ALREADY_DEVELOPED(HttpStatus.CONFLICT, "이미 현상된 세션입니다."),
+    ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 생성된 회고입니다."),
+    INSUFFICIENT_FRAMES(HttpStatus.UNPROCESSABLE_ENTITY, "회고를 생성하기 위한 프레임이 부족합니다."),
     FRAME_NOT_FOUND(HttpStatus.NOT_FOUND, "프레임을 찾을 수 없습니다."),
     ROLL_NOT_FOUND(HttpStatus.NOT_FOUND, "롤을 찾을 수 없습니다."),
     PHOTO_NOT_FOUND(HttpStatus.NOT_FOUND, "사진을 찾을 수 없습니다."),

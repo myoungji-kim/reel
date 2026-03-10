@@ -8,5 +8,6 @@ public record CalendarFrameResponse(
         String mood,
         String title,
         String contentPreview,
-        String thumbnailUrl
+        String thumbnailUrl,
+        String frameType
 ) {}

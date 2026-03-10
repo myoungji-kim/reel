@@ -1,5 +1,6 @@
 package com.reel.frame.service;
 
+import com.reel.ai.AnthropicService;
 import com.reel.chat.repository.ChatSessionRepository;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
@@ -9,6 +10,7 @@ import com.reel.frame.dto.FrameResponse;
 import com.reel.frame.dto.OnThisDayResponse;
 import com.reel.frame.dto.QuickFrameRequest;
 import com.reel.frame.dto.QuickFrameResponse;
+import com.reel.frame.dto.RetrospectiveAvailableResponse;
 import com.reel.frame.dto.RollStatsResponse;
 import com.reel.frame.dto.SaveFrameRequest;
 import com.reel.frame.entity.Frame;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
@@ -39,6 +42,7 @@ public class FrameService {
     private final ChatSessionRepository sessionRepository;
     private final UserRepository userRepository;
     private final RollService rollService;
+    private final AnthropicService anthropicService;
 
     @Transactional
     public FrameResponse save(Long userId, Long frameId, SaveFrameRequest request) {
@@ -157,7 +161,15 @@ public class FrameService {
 
         List<Frame> frames = frameRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
 
-        return frames.stream()
+        // RETROSPECTIVE는 날짜 dedup 밖에서 별도 처리
+        List<Frame> regular = frames.stream()
+                .filter(f -> f.getFrameType() != FrameType.RETROSPECTIVE)
+                .toList();
+        List<Frame> retrospectives = frames.stream()
+                .filter(f -> f.getFrameType() == FrameType.RETROSPECTIVE)
+                .toList();
+
+        List<CalendarFrameResponse> regularResponses = regular.stream()
                 .collect(Collectors.toMap(
                         Frame::getDate,
                         f -> f,
@@ -165,14 +177,51 @@ public class FrameService {
                 ))
                 .values().stream()
                 .sorted(Comparator.comparing(Frame::getDate))
-                .map(f -> {
-                    String preview = f.getContent() != null && f.getContent().length() > 150
-                            ? f.getContent().substring(0, 150) + "…"
-                            : f.getContent();
-                    String thumbnail = f.getPhotos().isEmpty() ? null : f.getPhotos().get(0).getUrl();
-                    return new CalendarFrameResponse(f.getId(), f.getDate(), f.getMood(), f.getTitle(), preview, thumbnail);
-                })
+                .map(f -> toCalendarResponse(f))
                 .toList();
+
+        List<CalendarFrameResponse> retroResponses = retrospectives.stream()
+                .map(f -> toCalendarResponse(f))
+                .toList();
+
+        return java.util.stream.Stream.concat(regularResponses.stream(), retroResponses.stream()).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public RetrospectiveAvailableResponse checkRetrospectiveAvailable(Long userId, int year, int month) {
+        YearMonth targetMonth = YearMonth.of(year, month);
+        if (!targetMonth.isBefore(YearMonth.now())) {
+            return new RetrospectiveAvailableResponse(false, 0, false);
+        }
+        int frameCount = frameRepository.countByUserIdAndYearAndMonth(userId, year, month);
+        boolean alreadyGenerated = frameRepository.existsRetrospectiveByUserIdAndYearAndMonth(userId, year, month);
+        boolean available = frameCount >= 3 && !alreadyGenerated;
+        return new RetrospectiveAvailableResponse(available, frameCount, alreadyGenerated);
+    }
+
+    @Transactional
+    public FrameResponse createRetrospective(Long userId, int year, int month) {
+        if (frameRepository.existsRetrospectiveByUserIdAndYearAndMonth(userId, year, month)) {
+            throw new ReelException(ErrorCode.ALREADY_EXISTS);
+        }
+        List<Frame> monthFrames = frameRepository.findAllByUserIdAndYearAndMonth(userId, year, month);
+        if (monthFrames.size() < 3) {
+            throw new ReelException(ErrorCode.INSUFFICIENT_FRAMES);
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new ReelException(ErrorCode.USER_NOT_FOUND));
+        AnthropicService.RetrospectiveResult result = anthropicService.generateRetrospective(year, month, monthFrames);
+        LocalDate frameDate = YearMonth.of(year, month).atEndOfMonth();
+        int nextFrameNum = (int) frameRepository.countByUserId(userId) + 1;
+        Frame saved = frameRepository.save(Frame.retrospective(user, nextFrameNum, result.title(), result.content(), frameDate));
+        return FrameResponse.from(saved);
+    }
+
+    private CalendarFrameResponse toCalendarResponse(Frame f) {
+        String preview = f.getContent() != null && f.getContent().length() > 150
+                ? f.getContent().substring(0, 150) + "…"
+                : f.getContent();
+        String thumbnail = f.getPhotos().isEmpty() ? null : f.getPhotos().get(0).getUrl();
+        return new CalendarFrameResponse(f.getId(), f.getDate(), f.getMood(), f.getTitle(), preview, thumbnail, f.getFrameType().name());
     }
 
     @Transactional

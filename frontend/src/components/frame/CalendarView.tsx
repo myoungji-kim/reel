@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getCalendarFrames } from '../../api/frameApi'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getCalendarFrames, checkRetrospectiveAvailable, createRetrospective } from '../../api/frameApi'
 import { getMoodDotColor } from '../../utils/moodTone'
 import type { CalendarFrame } from '../../types/frame'
+import { useToast } from '../../hooks/useToast'
 
 interface CalendarViewProps {
   onFrameSelect: (frameId: number) => void
@@ -23,6 +24,10 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
   const [month, setMonth] = useState(today.getMonth() + 1)
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [pressedDate, setPressedDate] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+
+  const queryClient = useQueryClient()
+  const { showToast } = useToast()
 
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth() + 1
 
@@ -51,8 +56,42 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
     staleTime: 1000 * 60,
   })
 
+  const { data: retroAvail } = useQuery({
+    queryKey: ['retrospectiveAvailable', year, month],
+    queryFn: () => checkRetrospectiveAvailable(year, month),
+    enabled: !isCurrentMonth,
+    staleTime: 1000 * 60 * 5,
+  })
+
+  const handleGenerate = async () => {
+    if (isGenerating) return
+    setIsGenerating(true)
+    try {
+      await createRetrospective(year, month)
+      queryClient.invalidateQueries({ queryKey: ['calendarFrames', year, month] })
+      queryClient.invalidateQueries({ queryKey: ['retrospectiveAvailable', year, month] })
+      queryClient.invalidateQueries({ queryKey: ['frames'] })
+      showToast('회고가 생성됐어요')
+    } catch {
+      showToast('회고 생성에 실패했어요.', 'error')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  const retrospectiveCf = calendarFrames.find(cf => cf.frameType === 'RETROSPECTIVE')
+  const regularFrames = calendarFrames.filter(cf => cf.frameType !== 'RETROSPECTIVE')
+
+  const retroSectionDivider = (
+    <div style={styles.retroDivider}>
+      <div style={styles.retroDividerLine} />
+      <span style={styles.retroDividerLabel}>월간 회고</span>
+      <div style={styles.retroDividerLine} />
+    </div>
+  )
+
   const frameByDate = new Map<string, CalendarFrame>()
-  for (const cf of calendarFrames) {
+  for (const cf of regularFrames) {
     frameByDate.set(cf.date, cf)
   }
 
@@ -186,13 +225,62 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
         </div>
       )}
 
-      {/* 개선7: 빈 상태 */}
-      {!isFetching && calendarFrames.length === 0 && (
+      {/* 빈 상태 */}
+      {!isFetching && regularFrames.length === 0 && !retrospectiveCf && (
         <div style={styles.emptyState}>
           <p style={styles.emptyText}>// NO RECORDS</p>
           <p style={styles.emptySub}>이 달에 현상된 프레임이 없어요</p>
         </div>
       )}
+
+      {/* 월간 회고 섹션 — 날짜 미선택 + 현재 달 아닐 때만 표시 */}
+      {!isFetching && !selectedDate && !isCurrentMonth && (() => {
+        // 생성 완료
+        if (retrospectiveCf) {
+          return (
+            <div style={styles.retroSection}>
+              {retroSectionDivider}
+              <div style={styles.retroCard} onClick={() => onFrameSelect(retrospectiveCf.frameId)}>
+                <div style={styles.retroCardHeader}>
+                  <span style={styles.retroCardBadge}>◆ 월간 회고</span>
+                  <span style={styles.retroCardArrow}>전체 보기 →</span>
+                </div>
+                <div style={styles.retroCardTitle}>{retrospectiveCf.title}</div>
+                {retrospectiveCf.contentPreview && (
+                  <div style={styles.retroCardContent}>{retrospectiveCf.contentPreview}</div>
+                )}
+              </div>
+            </div>
+          )
+        }
+
+        // 기록 0개 → 섹션 숨김
+        if (!retroAvail || retroAvail.frameCount === 0) return null
+
+        // 기록 1~2개 → 조용한 안내
+        if (retroAvail.frameCount < 3) {
+          return (
+            <div style={styles.retroSection}>
+              {retroSectionDivider}
+              <p style={styles.retroHint}>기록이 조금 더 쌓이면 이 달의 회고를 만들 수 있어요</p>
+            </div>
+          )
+        }
+
+        // 기록 ≥ 3 + 미생성 → CTA
+        return (
+          <div style={styles.retroSection}>
+            {retroSectionDivider}
+            <button style={styles.retroCta} onClick={handleGenerate} disabled={isGenerating}>
+              <span style={styles.retroCtaDiamond}>◆</span>
+              <span style={{ ...styles.retroCtaLabel, ...(isGenerating ? styles.retroCtaBlink : {}) }}>
+                {isGenerating ? '현상 중...' : `${MONTH_NAMES[month - 1]} 회고 생성하기`}
+              </span>
+              {!isGenerating && <span style={styles.retroCtaArrow}>→</span>}
+            </button>
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -356,5 +444,121 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 12,
     color: 'var(--cream-muted)',
     fontWeight: 300,
+  },
+  retroSection: {
+    marginTop: 20,
+    padding: '0 4px',
+  },
+  retroDivider: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+  },
+  retroDividerLine: {
+    flex: 1,
+    height: 1,
+    background: 'linear-gradient(90deg, transparent, rgba(122,158,138,0.3))',
+  },
+  retroDividerLabel: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--fade-green)',
+    letterSpacing: '0.12em',
+    opacity: 0.7,
+    flexShrink: 0,
+  },
+  retroCard: {
+    padding: '14px 16px',
+    border: '1px solid rgba(122,158,138,0.35)',
+    background: 'rgba(122,158,138,0.05)',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 8,
+    borderRadius: 2,
+  },
+  retroCardHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  retroCardBadge: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--fade-green)',
+    letterSpacing: '0.1em',
+    opacity: 0.8,
+  },
+  retroCardArrow: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--fade-green)',
+    opacity: 0.5,
+    letterSpacing: '0.06em',
+  },
+  retroCardTitle: {
+    fontFamily: "'Noto Serif KR', serif",
+    fontSize: 15,
+    color: 'var(--cream)',
+    fontWeight: 400,
+    lineHeight: 1.4,
+  },
+  retroCardContent: {
+    fontFamily: "'Noto Serif KR', serif",
+    fontSize: 12,
+    color: 'var(--cream-muted)',
+    lineHeight: 1.8,
+    fontWeight: 300,
+    display: '-webkit-box',
+    WebkitLineClamp: 3,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+  },
+  retroHint: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 11,
+    color: 'var(--cream-muted)',
+    fontWeight: 300,
+    textAlign: 'center' as const,
+    opacity: 0.45,
+    padding: '8px 0 4px',
+    lineHeight: 1.6,
+  },
+  retroCta: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    width: '100%',
+    height: 38,
+    background: 'var(--bg-card)',
+    border: '1px solid var(--border-light)',
+    borderRadius: 3,
+    padding: '0 12px',
+    cursor: 'pointer',
+    textAlign: 'left' as const,
+  },
+  retroCtaDiamond: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 9,
+    color: 'var(--amber-light)',
+    flexShrink: 0,
+  },
+  retroCtaLabel: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 11,
+    color: 'var(--amber-light)',
+    letterSpacing: '0.08em',
+    flex: 1,
+  },
+  retroCtaBlink: {
+    animation: 'devBlink 1s ease-in-out infinite',
+  },
+  retroCtaArrow: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 12,
+    color: 'var(--amber-light)',
+    opacity: 0.6,
+    flexShrink: 0,
   },
 }

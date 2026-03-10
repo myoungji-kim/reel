@@ -39,6 +39,8 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
   const visiblePhotos = photos.slice(0, THUMB_VISIBLE)
   const extraCount = photos.length - THUMB_VISIBLE
 
+  const isRetro = frame.frameType === 'RETROSPECTIVE'
+
   return (
     <div
       style={{ ...styles.frame, ...getMoodToneStyle(frame.mood) }}
@@ -49,7 +51,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
       onTouchStart={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.985)' }}
       onTouchEnd={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
     >
-      <div style={styles.outer}>
+      <div style={{ ...styles.outer, ...(isRetro ? styles.outerRetro : {}) }}>
         <Perfs />
         <div style={styles.body}>
           <div style={styles.tintOverlay} />
@@ -63,9 +65,14 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                 {formatChatDate(new Date(frame.date))}
                 <span style={styles.frameNumInline}> · #{String(frame.frameNum).padStart(2, '0')}</span>
               </span>
-              {frame.isBookmarked && <span style={styles.bookmarkIcon}>★</span>}
+              <div style={styles.metaRight}>
+                {isRetro && (
+                  <span style={styles.retroBadgeTop}>월간 회고</span>
+                )}
+                {frame.isBookmarked && <span style={styles.bookmarkIcon}>★</span>}
+              </div>
             </div>
-            <div style={styles.title}>{frame.title}</div>
+            <div style={{ ...styles.title, ...(isRetro ? styles.titleRetro : {}) }}>{frame.title}</div>
             <div style={styles.preview}>{frame.content}</div>
 
             {photos.length > 0 && (
@@ -90,7 +97,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                   ? `${MOOD_OPTIONS.find((o) => o.value === frame.mood)?.emoji ?? ''} ${frame.mood}`
                   : ''}
               </div>
-              {frame.frameType === 'QUICK' ? (
+              {isRetro ? null : frame.frameType === 'QUICK' ? (
                 <span style={{ ...styles.status, ...styles.statusQuick }}>✦ 노트</span>
               ) : (
                 <span style={{ ...styles.status, ...styles.statusDone }}>◈ 현상</span>
@@ -187,6 +194,23 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.5,
     letterSpacing: '0.04em',
   },
+  metaRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 0,
+  },
+  retroBadgeTop: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 10,
+    fontWeight: 500,
+    color: 'var(--fade-green)',
+    background: 'rgba(122,158,138,0.12)',
+    border: '1px solid rgba(122,158,138,0.4)',
+    borderRadius: 2,
+    padding: '1px 6px',
+    letterSpacing: '0.04em',
+  },
   bookmarkIcon: {
     fontSize: 10,
     color: 'var(--amber)',
@@ -268,5 +292,16 @@ const styles: Record<string, React.CSSProperties> = {
   statusQuick: {
     color: 'var(--amber-light)',
     border: '1px solid var(--amber-30)',
+  },
+  statusRetro: {
+    color: 'var(--fade-green)',
+    border: '1px solid var(--fade-green)',
+    background: 'rgba(122,158,138,0.1)',
+  },
+  outerRetro: {
+    border: '1.5px solid var(--fade-green)',
+  },
+  titleRetro: {
+    fontFamily: "'Noto Serif KR', serif",
   },
 }
