@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(
     name = "users",
@@ -36,6 +38,12 @@ public class User extends BaseTimeEntity {
     @Column(name = "profile_img", length = 500)
     private String profileImg;
 
+    @Column(name = "streak_count", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int streakCount = 0;
+
+    @Column(name = "last_frame_date")
+    private LocalDate lastFrameDate;
+
     public static User of(OAuthProvider provider, OAuthUserInfo info) {
         User user = new User();
         user.oauthId = info.getProviderId();
@@ -50,5 +58,18 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
         this.email = email;
         this.profileImg = profileImg;
+    }
+
+    public void updateStreak(LocalDate today) {
+        if (lastFrameDate == null) {
+            streakCount = 1;
+        } else if (lastFrameDate.equals(today)) {
+            return;
+        } else if (lastFrameDate.equals(today.minusDays(1))) {
+            streakCount += 1;
+        } else {
+            streakCount = 1;
+        }
+        lastFrameDate = today;
     }
 }

@@ -62,6 +62,11 @@ public class FrameService {
             rollService.ensureRollCreated(frame.getUser(), frame.getFrameNum() / 24);
         }
 
+        // 스트릭 갱신 (RETROSPECTIVE 제외)
+        if (frame.getFrameType() != FrameType.RETROSPECTIVE) {
+            frame.getUser().updateStreak(LocalDate.now());
+        }
+
         return FrameResponse.from(frame);
     }
 
@@ -125,6 +130,9 @@ public class FrameService {
         if (frameNum % 24 == 0) {
             rollService.ensureRollCreated(user, frameNum / 24);
         }
+
+        // 스트릭 갱신
+        user.updateStreak(LocalDate.now());
 
         return new QuickFrameResponse(frame.getId(), frame.getFrameNum(), frame.getTitle(), FrameType.QUICK.name());
     }

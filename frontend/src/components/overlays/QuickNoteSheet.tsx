@@ -3,6 +3,7 @@ import { X } from 'lucide-react'
 import { createQuickFrame } from '../../api/frameApi'
 import { uploadPhotos } from '../../api/photoApi'
 import { useToast } from '../../hooks/useToast'
+import { useQueryClient } from '@tanstack/react-query'
 import OverlaySheet from './OverlaySheet'
 
 interface Props {
@@ -15,6 +16,7 @@ const MAX_PHOTOS = 5
 const today = () => new Date().toISOString().split('T')[0]
 
 export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
+  const queryClient = useQueryClient()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [date, setDate] = useState(today())
@@ -62,6 +64,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
       if (photos.length > 0) {
         await uploadPhotos(frameId, photos)
       }
+      queryClient.invalidateQueries({ queryKey: ['streak'] })
       reset()
       onSaved()
     } catch {

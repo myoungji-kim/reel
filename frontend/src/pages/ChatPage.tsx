@@ -8,6 +8,7 @@ import ChatInput from '../components/chat/ChatInput'
 import DevelopBanner from '../components/chat/DevelopBanner'
 import RedevelopBanner from '../components/chat/RedevelopBanner'
 import OnThisDayBanner from '../components/chat/OnThisDayBanner'
+import StreakBadge from '../components/chat/StreakBadge'
 import DevelopingOverlay from '../components/overlays/DevelopingOverlay'
 import PreviewOverlay from '../components/overlays/PreviewOverlay'
 import { formatChatDate } from '../utils/dateFormat'
@@ -68,6 +69,7 @@ export default function ChatPage() {
       if (photos.length > 0) {
         await uploadPhotos(frameId, photos)
       }
+      queryClient.invalidateQueries({ queryKey: ['streak'] })
       setPreviewOpen(false)
       setPreview(null)
       if (isRedevelop) {
@@ -128,6 +130,9 @@ export default function ChatPage() {
 
         {/* 이날의 기억 배너 */}
         <OnThisDayBanner />
+
+        {/* 연속 기록 배지 */}
+        <StreakBadge />
 
         {/* 메시지 목록 */}
         <div style={styles.messages}>

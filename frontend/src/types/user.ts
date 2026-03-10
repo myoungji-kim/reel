@@ -4,3 +4,9 @@ export interface User {
   email: string | null
   nickname: string | null
 }
+
+export interface StreakInfo {
+  streakCount: number
+  lastFrameDate: string | null
+  recordedToday: boolean
+}
