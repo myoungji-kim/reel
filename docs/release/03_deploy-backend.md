@@ -87,6 +87,8 @@ GET https://your-backend.onrender.com/actuator/health
 현재 `upload.path=uploads` (로컬 파일시스템). Render는 재배포 시 파일이 사라지므로 추후 S3 교체 권장.
 임시 방편: Render Disk 마운트 (`/app/uploads`, 무료 플랜 미지원 → 유료 필요)
 
+→ S3 교체 가이드: [07_s3-file-upload.md](./07_s3-file-upload.md)
+
 ## 다음 단계
 
 → [04_deploy-frontend.md](./04_deploy-frontend.md) — Vercel 프론트엔드 배포
