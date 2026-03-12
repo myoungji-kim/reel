@@ -14,7 +14,7 @@
 1. [upstash.com](https://upstash.com) → GitHub 로그인
 2. **Create Database** → Redis 선택
 3. Region: `ap-northeast-1` (도쿄)
-4. 생성 후 **Endpoint**, **Port**, **Password** 복사해두기
+4. 생성 후 **Connection** 탭 → `redis://` 로 시작하는 URL 복사
 
 ### 2. Render PostgreSQL 생성
 1. [render.com](https://render.com) → GitHub 로그인
@@ -42,9 +42,7 @@ Web Service → **Environment** 탭에 입력:
 | `DB_NAME` | Render PostgreSQL Database명 |
 | `DB_USERNAME` | Render PostgreSQL Username |
 | `DB_PASSWORD` | Render PostgreSQL Password |
-| `REDIS_HOST` | Upstash Endpoint |
-| `REDIS_PORT` | Upstash Port |
-| `REDIS_PASSWORD` | Upstash Password |
+| `REDIS_URL` | Upstash URL (`redis://` → `rediss://` 로 변경해서 입력) |
 | `JWT_SECRET` | 32자 이상 랜덤 문자열 |
 | `ANTHROPIC_API_KEY` | Anthropic API 키 |
 | `GOOGLE_CLIENT_ID` | Google Cloud Console |
@@ -53,18 +51,18 @@ Web Service → **Environment** 탭에 입력:
 | `KAKAO_CLIENT_SECRET` | Kakao Developers |
 | `FRONTEND_BASE_URL` | `https://reel-film.vercel.app` |
 
-### 5. Redis 패스워드 설정 확인
+### 5. Redis URL 설정 확인
 
-Upstash는 패스워드 인증이 필요하므로 `application-prod.yml`에 Redis password 설정 확인:
+Upstash는 TLS 연결이 필요하므로 URL 방식으로 설정. `application-prod.yml` 확인:
 
 ```yaml
 spring:
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD}
+      url: ${REDIS_URL}
 ```
+
+> `REDIS_URL` 값은 Upstash에서 제공하는 URL의 `redis://`를 `rediss://`로 변경해서 입력 (s 하나 추가 = TLS)
 
 ### 6. 배포 확인
 
