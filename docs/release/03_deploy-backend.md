@@ -51,7 +51,7 @@ Web Service → **Environment** 탭에 입력:
 | `GOOGLE_CLIENT_SECRET` | Google Cloud Console |
 | `KAKAO_CLIENT_ID` | Kakao Developers |
 | `KAKAO_CLIENT_SECRET` | Kakao Developers |
-| `FRONTEND_BASE_URL` | Vercel 배포 URL (e.g. `https://reel.vercel.app`) |
+| `FRONTEND_BASE_URL` | `https://reel-film.vercel.app` |
 
 ### 5. Redis 패스워드 설정 확인
 

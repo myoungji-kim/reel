@@ -24,7 +24,7 @@ Vite/React 최적화, GitHub 연동 자동 배포, 무료 티어 충분.
 
 | 변수명 | 값 |
 |--------|-----|
-| `VITE_API_BASE_URL` | `https://your-backend.railway.app` |
+| `VITE_API_BASE_URL` | `https://your-backend.onrender.com` |
 
 ### 4. SPA 라우팅
 
