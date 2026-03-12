@@ -18,7 +18,7 @@ Vite/React 최적화, GitHub 연동 자동 배포, 무료 티어 충분.
 |------|-----|
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
-| Install Command | `npm ci` |
+| Install Command | `npm install` |
 
 ### 3. 환경변수
 
