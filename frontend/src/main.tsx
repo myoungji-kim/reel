@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
         useAuthStore.getState().clearAuth()
         window.location.href = '/'
       } else {
-        useToastStore.getState().show('오류가 발생했습니다.')
+        useToastStore.getState().show('오류가 발생했습니다.', 'error')
         setTimeout(() => useToastStore.getState().hide(), 3000)
       }
     },

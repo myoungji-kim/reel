@@ -23,7 +23,7 @@ export default function StreakBadge() {
   )
 }
 
-const styles: React.CSSProperties | Record<string, React.CSSProperties> = {
+const styles: Record<string, React.CSSProperties> = {
   wrap: {
     display: 'flex',
     alignItems: 'center',

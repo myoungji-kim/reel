@@ -1,3 +1,5 @@
+export type FrameType = 'DEVELOPED' | 'QUICK' | 'RETROSPECTIVE'
+
 export interface Photo {
   id: number
   url: string

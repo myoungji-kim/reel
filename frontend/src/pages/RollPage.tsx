@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { getFrames, searchFrames } from '../api/frameApi'
 import { getRolls } from '../api/rollApi'
 import { useFrameStore } from '../stores/frameStore'
@@ -38,7 +38,6 @@ export default function RollPage() {
   const { frames, setFrames } = useFrameStore()
   const { isFrameDetailOpen, setFrameDetailOpen, setQuickNoteOpen, setRollTitleOpen, setPendingRollNum } = useUIStore()
   const { showToast } = useToast()
-  const queryClient = useQueryClient()
   const [loading, setLoading] = useState(true)
   const [selectedFrameId, setSelectedFrameId] = useState<number | null>(null)
   const selectedFrame = frames.find((f) => f.id === selectedFrameId) ?? null
