@@ -36,8 +36,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         // Refresh Token → httpOnly 쿠키
         ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
-                .secure(false)          // prod: true
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/api/auth/refresh")
                 .maxAge(Duration.ofDays(14))
                 .build();
