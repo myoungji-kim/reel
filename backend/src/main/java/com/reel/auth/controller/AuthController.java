@@ -48,7 +48,7 @@ public class AuthController {
         authService.logout(refreshToken);
 
         ResponseCookie expiredCookie = ResponseCookie.from("refresh_token", "")
-                .httpOnly(true).secure(false).sameSite("Lax")
+                .httpOnly(true).secure(true).sameSite("None")
                 .path("/api/auth/refresh").maxAge(0)
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
@@ -59,8 +59,8 @@ public class AuthController {
     private ResponseCookie buildRefreshCookie(String token) {
         return ResponseCookie.from("refresh_token", token)
                 .httpOnly(true)
-                .secure(false)          // prod: true
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/api/auth/refresh")
                 .maxAge(Duration.ofDays(14))
                 .build();
