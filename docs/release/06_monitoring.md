@@ -62,7 +62,7 @@ SENTRY_DSN=https://xxx@sentry.io/xxx
 
 1. [uptimerobot.com](https://uptimerobot.com) 가입
 2. "+ Add New Monitor" → HTTP(s)
-3. URL: `https://your-backend.railway.app/actuator/health`
+3. URL: `https://reel-m41z.onrender.com/api/health`
 4. Monitoring Interval: 5분
 5. Alert Contact: 이메일 알림 설정
 
