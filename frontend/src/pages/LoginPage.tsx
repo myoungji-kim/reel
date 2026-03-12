@@ -51,7 +51,7 @@ const styles: Record<string, React.CSSProperties> = {
   root: {
     maxWidth: 440,
     margin: '0 auto',
-    height: '100vh',
+    height: '100dvh',
     display: 'flex',
     flexDirection: 'column',
     background: 'var(--bg)',

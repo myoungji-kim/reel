@@ -60,7 +60,7 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     maxWidth: 440,
     margin: '0 auto',
-    height: '100vh',
+    height: '100dvh',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
