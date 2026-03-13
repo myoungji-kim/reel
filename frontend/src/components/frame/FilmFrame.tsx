@@ -26,10 +26,56 @@ function Perfs({ right = false }: { right?: boolean }) {
 export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
   if (skeleton) {
     return (
-      <div style={{ ...styles.frame, cursor: 'default', opacity: 0.4 }}>
+      <div style={{ ...styles.frame, cursor: 'default' }}>
         <div style={styles.outer}>
           <Perfs />
-          <div style={{ ...styles.body, minHeight: 90 }} />
+          <div
+            style={{
+              ...styles.body,
+              minHeight: 90,
+              background: 'linear-gradient(90deg, #161209 0%, #161209 35%, rgba(212,130,42,0.07) 50%, #161209 65%, #161209 100%)',
+              backgroundSize: '250% 100%',
+              animation: 'shimmer 2s ease-in-out infinite',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              padding: '14px 16px',
+            }}
+          >
+            {/* 메타 줄 플레이스홀더 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
+              <div style={{
+                width: 72, height: 8, borderRadius: 2,
+                background: 'rgba(212,130,42,0.08)',
+              }} />
+              <div style={{
+                width: '55%', height: 11, borderRadius: 2,
+                background: 'rgba(242,232,208,0.06)',
+              }} />
+              <div style={{
+                width: '80%', height: 8, borderRadius: 2,
+                background: 'rgba(242,232,208,0.04)',
+              }} />
+              <div style={{
+                width: '65%', height: 8, borderRadius: 2,
+                background: 'rgba(242,232,208,0.04)',
+                marginBottom: 10,
+              }} />
+            </div>
+            {/* DEVELOPING 레이블 */}
+            <div style={{
+              fontFamily: "'Space Mono', monospace",
+              fontSize: 9,
+              color: 'var(--amber)',
+              letterSpacing: '0.14em',
+              opacity: 0.35,
+              animation: 'devBlink 1.6s ease-in-out infinite',
+              position: 'relative',
+              zIndex: 1,
+            }}>
+              // DEVELOPING...
+            </div>
+          </div>
           <Perfs right />
         </div>
       </div>
