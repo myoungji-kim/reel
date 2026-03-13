@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
+import FilmPhoto from '../common/FilmPhoto'
 import { Bookmark, BookmarkCheck, Pencil, X } from 'lucide-react'
 import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
@@ -301,7 +302,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
                 <div style={styles.photoGrid}>
                   {visibleExisting.map((photo) => (
                     <div key={photo.id} style={styles.photoThumb}>
-                      <img
+                      <FilmPhoto
                         src={`${API_BASE}${photo.url}`}
                         alt="photo"
                         style={styles.thumbImg}
@@ -339,7 +340,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
               localPhotos.length > 0 && (
                 <div style={styles.photoStrip}>
                   {localPhotos.map((photo) => (
-                    <img
+                    <FilmPhoto
                       key={photo.id}
                       src={`${API_BASE}${photo.url}`}
                       alt="photo"

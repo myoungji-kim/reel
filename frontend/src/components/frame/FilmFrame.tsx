@@ -1,6 +1,7 @@
 import type { Frame } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
 import { getMoodToneStyle, MOOD_OPTIONS } from '../../utils/moodTone'
+import FilmPhoto from '../common/FilmPhoto'
 
 interface Props {
   frame: Frame
@@ -78,7 +79,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             {photos.length > 0 && (
               <div style={styles.photoStrip}>
                 {visiblePhotos.map((photo) => (
-                  <img
+                  <FilmPhoto
                     key={photo.id}
                     src={`${API_BASE}${photo.url}`}
                     alt="photo"
