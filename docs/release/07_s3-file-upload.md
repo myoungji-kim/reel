@@ -17,7 +17,7 @@ AWS S3로 교체하면 영구 저장 가능.
 ### 1. AWS S3 버킷 생성
 
 1. AWS Console → S3 → **Create bucket**
-2. Bucket name: `reel-film-uploads` (전 세계 유일해야 함)
+2. Bucket name: `reel-s3-bucket` (전 세계 유일해야 함)
 3. Region: `ap-northeast-2` (서울)
 4. **Block all public access**: 체크 해제 (퍼블릭 읽기 허용할 경우)
 5. 생성 완료
@@ -41,7 +41,7 @@ AWS S3로 교체하면 영구 저장 가능.
       "Effect": "Allow",
       "Principal": "*",
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::reel-film-uploads/*"
+      "Resource": "arn:aws:s3:::reel-s3-bucket/*"
     }
   ]
 }
@@ -63,7 +63,7 @@ Render Web Service → **Environment** 탭:
 |--------|-----|
 | `AWS_ACCESS_KEY_ID` | IAM Access Key ID |
 | `AWS_SECRET_ACCESS_KEY` | IAM Secret Access Key |
-| `AWS_S3_BUCKET` | `reel-film-uploads` |
+| `AWS_S3_BUCKET` | `reel-s3-bucket` |
 | `AWS_S3_REGION` | `ap-northeast-2` |
 
 ### 6. application-prod.yml 추가
