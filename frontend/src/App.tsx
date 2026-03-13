@@ -20,8 +20,15 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   const [initializing, setInitializing] = useState(true)
   const setAuth = useAuthStore((s) => s.setAuth)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
 
   useEffect(() => {
+    // localStorage에 유효한 토큰이 있으면 refresh 호출 생략
+    if (isAuthenticated) {
+      setInitializing(false)
+      return
+    }
+
     axios
       .post<{ data: { accessToken: string } }>(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/refresh`,
@@ -31,7 +38,18 @@ export default function App() {
       .then(({ data }) => setAuth(data.data.accessToken))
       .catch(() => {})
       .finally(() => setInitializing(false))
-  }, [setAuth])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // 다른 탭에서 로그아웃하면 이 탭도 로그아웃
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'reel_at' && e.newValue === null) {
+        useAuthStore.getState().clearAuth()
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
   if (initializing) return null
 
