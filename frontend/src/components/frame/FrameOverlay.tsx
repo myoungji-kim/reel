@@ -22,7 +22,6 @@ interface Props {
 const PERF_COUNT = 8
 const MAX_PHOTOS = 5
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
 export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Props) {
   const [isEditing, setIsEditing] = useState(false)

@@ -11,7 +11,6 @@ interface Props {
 
 const PERF_COUNT = 3
 const THUMB_VISIBLE = 3
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
 function Perfs({ right = false }: { right?: boolean }) {
   return (
