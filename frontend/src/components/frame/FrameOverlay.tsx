@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import axios from 'axios'
 import { Bookmark, BookmarkCheck, Pencil, X } from 'lucide-react'
 import type { Frame, Photo } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
@@ -117,8 +118,12 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
       setPendingDelete([])
       setIsEditing(false)
       showToast('수정됐어요.')
-    } catch {
-      showToast('수정에 실패했어요.', 'error')
+    } catch (err) {
+      const message =
+        axios.isAxiosError(err) && err.response?.data?.message
+          ? err.response.data.message
+          : '수정에 실패했어요.'
+      showToast(message, 'error')
     } finally {
       setIsSaving(false)
     }
