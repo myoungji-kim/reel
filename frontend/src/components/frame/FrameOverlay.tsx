@@ -303,7 +303,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
                   {visibleExisting.map((photo) => (
                     <div key={photo.id} style={styles.photoThumb}>
                       <FilmPhoto
-                        src={`${API_BASE}${photo.url}`}
+                        src={photo.url}
                         alt="photo"
                         style={styles.thumbImg}
                       />
@@ -342,7 +342,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
                   {localPhotos.map((photo) => (
                     <FilmPhoto
                       key={photo.id}
-                      src={`${API_BASE}${photo.url}`}
+                      src={photo.url}
                       alt="photo"
                       style={styles.stripImg}
                     />

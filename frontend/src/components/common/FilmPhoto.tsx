@@ -1,9 +1,17 @@
 import { useState } from 'react'
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
+
 interface Props {
+  /** photo.url 그대로 전달 — 절대 URL이면 API_BASE 없이, 상대 경로면 자동으로 붙임 */
   src: string
   alt?: string
   style?: React.CSSProperties
+}
+
+function resolveUrl(src: string): string {
+  if (src.startsWith('https://') || src.startsWith('http://')) return src
+  return `${API_BASE}${src}`
 }
 
 /** 이미지 로드 실패 시 "노출되지 않은 필름 프레임" 플레이스홀더를 표시 */
@@ -41,7 +49,7 @@ export default function FilmPhoto({ src, alt, style }: Props) {
 
   return (
     <img
-      src={src}
+      src={resolveUrl(src)}
       alt={alt}
       style={style}
       onError={() => setFailed(true)}

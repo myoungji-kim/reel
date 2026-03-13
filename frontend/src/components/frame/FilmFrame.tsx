@@ -127,7 +127,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                 {visiblePhotos.map((photo) => (
                   <FilmPhoto
                     key={photo.id}
-                    src={`${API_BASE}${photo.url}`}
+                    src={photo.url}
                     alt="photo"
                     style={styles.stripThumb}
                   />
