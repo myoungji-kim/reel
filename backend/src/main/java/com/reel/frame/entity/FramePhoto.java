@@ -44,6 +44,9 @@ public class FramePhoto {
     }
 
     public String getUrl() {
+        if (fileName.startsWith("https://")) {
+            return fileName;
+        }
         return "/uploads/photos/" + frame.getId() + "/" + fileName;
     }
 }
