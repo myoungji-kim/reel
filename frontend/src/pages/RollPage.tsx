@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Bookmark, BookmarkCheck, X } from 'lucide-react'
 import { getFrames, searchFrames } from '../api/frameApi'
 import { getRolls } from '../api/rollApi'
 import { useFrameStore } from '../stores/frameStore'
@@ -157,7 +158,7 @@ export default function RollPage() {
             <div style={styles.filterActions}>
               {viewMode === 'roll' && (
                 <>
-                  {/* ★ 북마크 필터 토글 */}
+                  {/* 북마크 필터 토글 */}
                   <button
                     style={{
                       ...styles.bookmarkBtn,
@@ -167,8 +168,11 @@ export default function RollPage() {
                     onClick={() => setActiveFilter(f => f === 'bookmark' ? 'all' : 'bookmark')}
                     aria-label="북마크 필터"
                   >
-                    ★
+                    {activeFilter === 'bookmark'
+                      ? <BookmarkCheck size={14} />
+                      : <Bookmark size={14} />}
                   </button>
+                  <div style={styles.actionDivider} />
                   <button style={styles.searchBtn} onClick={handleSearchToggle} aria-label="검색">
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <circle cx="5.5" cy="5.5" r="4" stroke="var(--cream-muted)" strokeWidth="1.4" />
@@ -184,6 +188,22 @@ export default function RollPage() {
           </>
         )}
       </div>
+
+      {activeFilter === 'bookmark' && (
+        <div style={styles.filterChipRow}>
+          <div style={styles.filterChip}>
+            <BookmarkCheck size={11} style={{ color: 'var(--amber)', flexShrink: 0 }} fill="currentColor" />
+            <span style={styles.filterChipText}>북마크만 보는 중</span>
+            <button
+              style={styles.filterChipClose}
+              onClick={() => setActiveFilter('all')}
+              aria-label="북마크 필터 해제"
+            >
+              <X size={10} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <RollProgressBar />
 
@@ -303,11 +323,48 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 12,
     padding: '4px 6px',
-    lineHeight: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     transition: 'color 0.15s, opacity 0.15s',
+  },
+  actionDivider: {
+    width: 1,
+    height: 12,
+    background: 'var(--cream-muted)',
+    opacity: 0.2,
+    marginInline: 2,
+    flexShrink: 0,
+  },
+  filterChipRow: {
+    flexShrink: 0,
+    padding: '6px 16px 2px',
+  },
+  filterChip: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 5,
+    padding: '3px 8px 3px 7px',
+    background: 'rgba(196, 160, 80, 0.10)',
+    border: '1px solid rgba(196, 160, 80, 0.30)',
+    borderRadius: 12,
+  },
+  filterChipText: {
+    fontFamily: "'Space Mono', monospace",
+    fontSize: 10,
+    color: 'var(--amber-light)',
+    letterSpacing: '0.04em',
+  },
+  filterChipClose: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: 0,
+    display: 'flex',
+    alignItems: 'center',
+    color: 'var(--cream-muted)',
+    opacity: 0.6,
   },
   searchBtn: {
     background: 'transparent',

@@ -1,3 +1,4 @@
+import { Bookmark } from 'lucide-react'
 import type { Frame } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
 import { getMoodToneStyle, MOOD_OPTIONS } from '../../utils/moodTone'
@@ -97,7 +98,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
       onTouchStart={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.985)' }}
       onTouchEnd={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
     >
-      <div style={{ ...styles.outer, ...(isRetro ? styles.outerRetro : {}) }}>
+      <div style={{ ...styles.outer, ...(isRetro ? styles.outerRetro : {}), ...(frame.isBookmarked ? styles.outerBookmarked : {}) }}>
         <Perfs />
         <div style={styles.body}>
           <div style={styles.tintOverlay} />
@@ -115,7 +116,13 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
                 {isRetro && (
                   <span style={styles.retroBadgeTop}>월간 회고</span>
                 )}
-                {frame.isBookmarked && <span style={styles.bookmarkIcon}>★</span>}
+                {frame.isBookmarked && (
+                  <Bookmark
+                    size={10}
+                    style={{ color: 'var(--amber)', opacity: 0.9, flexShrink: 0 }}
+                    fill="currentColor"
+                  />
+                )}
               </div>
             </div>
             <div style={{ ...styles.title, ...(isRetro ? styles.titleRetro : {}) }}>{frame.title}</div>
@@ -257,12 +264,8 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '1px 6px',
     letterSpacing: '0.04em',
   },
-  bookmarkIcon: {
-    fontSize: 10,
-    color: 'var(--amber)',
-    opacity: 0.8,
-    lineHeight: 1,
-    flexShrink: 0,
+  outerBookmarked: {
+    borderLeft: '3px solid rgba(196, 160, 80, 0.55)',
   },
   title: {
     fontFamily: "'Noto Serif KR', serif",
