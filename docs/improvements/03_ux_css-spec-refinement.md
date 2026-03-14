@@ -346,91 +346,93 @@ pill: {
 
 ## Step 8. `FilmFrame.tsx` — 카드 배경·타이포그래피 교정
 
-### 8-1. 카드 배경색 변경
+### 8-1. 카드 배경색 변경 (픽셀 추출 실측값 기준)
 
 카드는 `outer` + `body` + `perfs` 세 레이어로 구성된다.
-세 레이어를 모두 동일한 따뜻한 다크브라운 계열로 통일해야 한다.
-`body`에 gradient를 쓰면 실제 렌더링에서 너무 어둡게 보이므로 단색 사용.
+**outer, perfs, body 배경을 `#433b26` 으로 통일한다.** gradient 사용 금지.
+스프로켓 구멍(`perf`)은 `#211e19` (어두운 브라운).
 
 ```tsx
 outer: {
-  background: '#2c2820',   /* 따뜻한 다크브라운 — 스펙 기준값 */
+  background: '#433b26',   /* 실측값 — 따뜻한 브라운 */
   ...
 }
 
 perfs: {
-  background: '#221e18',   /* outer보다 약간 어둡게 — 퍼포레이션 영역 강조 */
-  borderRight: '1px solid #3a3228',
+  background: '#433b26',   /* outer와 동일 */
+  borderRight: '1px solid #393327',
   ...
 }
 
 perfsRight: {
-  borderLeft: '1px solid #3a3228',
+  borderLeft: '1px solid #393327',
   ...
 }
 
-perf: {  /* 구멍 = 앱 배경색 */
-  background: 'var(--surface-base)',   /* #f5f2ed */
-  border: '1px solid #3a3228',
+perf: {
+  width: 8,
+  height: 6,
+  background: '#211e19',   /* 실측값 — 어두운 구멍 */
+  border: 'none',
 }
 
 body: {
-  background: '#2c2820',   /* gradient 금지 — 어두워 보임 */
+  background: '#433b26',   /* gradient 절대 금지 */
   ...
 }
 ```
 
-> ⚠️ `#0f0c08`, `#161209`, `linear-gradient(#1e1a0f, #161209)` 사용 금지.
-> ⚠️ `#4b4a46` 같은 무채색 회색도 금지.
+> ⚠️ 금지값: `#0f0c08`, `#161209`, `#2c2820`, `linear-gradient(#1e1a0f, #161209)`
+> ⚠️ `#4b4a46` 같은 무채색 회색 금지.
 
-### 8-2. 카드 내부 텍스트 폰트 교정
+### 8-2. 카드 내부 텍스트 교정 (픽셀 추출 실측값 기준)
 
 ```tsx
-/* 날짜 레이블 — DM Mono, --text-xs (7px) */
 dateLabel: {
   fontFamily: "'DM Mono', monospace",
   fontSize: 'var(--text-xs)',   /* 7px */
-  color: '#e8c87a',
-  opacity: 0.7,
+  color: '#c6b683',             /* 실측 골드 */
   letterSpacing: '0.1em',
 },
 
-/* 제목 — Cormorant Garamond, 20px */
+frameNumInline: {
+  color: '#6b5c3e',             /* 날짜보다 어두운 골드브라운 */
+  letterSpacing: '0.08em',
+},
+
 title: {
   fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
   fontSize: 20,
-  color: '#e8e2d0',           /* 따뜻한 크림 화이트 */
+  color: '#e0d4b4',             /* 실측 크림 화이트 */
   fontWeight: 400,
-  lineHeight: 1.35,
-  marginBottom: 6,
+  lineHeight: 1.25,
+  marginBottom: 8,
 },
 
-/* 본문 미리보기 */
 preview: {
   fontSize: 'var(--text-base)',   /* 10px */
-  color: '#a09070',
-  lineHeight: 1.7,
+  color: '#9e8e6a',               /* 실측 따뜻한 브라운 */
+  lineHeight: 1.75,
   fontWeight: 300,
-  ...
 },
 
-/* 무드 텍스트 */
 mood: {
   fontSize: 'var(--text-sm)',   /* 8.5px */
-  color: '#b0a080',
-  ...
+  color: '#9e8e6a',
 },
 ```
 
-### 8-3. 색상 대조표 (카드 내부)
+### 8-3. 색상 대조표 (픽셀 추출 실측값)
 
 ```
-배경     #2c2820  ████  따뜻한 다크브라운
-제목     #e8e2d0  ████  크림 화이트
-날짜     #c8a96e  ████  골드 (브랜드 포인트)
-본문     #a09070  ████  따뜻한 중간 브라운
-서브     #6b5a3e  ████  어두운 골드브라운
-테두리   #3a3228  ████  다크 골드브라운
+앱 배경   #f3f2ee  ████  화면 전체 — 오프화이트
+카드 배경  #433b26  ████  따뜻한 브라운 (실측)
+구멍      #211e19  ████  거의 검정에 가까운 브라운
+제목      #e0d4b4  ████  크림 화이트 (실측)
+날짜      #c6b683  ████  골드 (실측)
+본문      #9e8e6a  ████  따뜻한 중간 브라운 (실측)
+서브넘    #6b5c3e  ████  어두운 골드브라운
+경계선    #393327  ████  다크 골드브라운
 ```
 
 ---
@@ -531,7 +533,8 @@ total: {
 [ ] 입력창 배경이 흰색(surface-card) 인가? (surface-muted 아님)
 [ ] 전송 버튼 아이콘이 크림/화이트색 인가? (골드 아님)
 [ ] DevelopBanner 버튼이 크림 배경(#e8e2d8) + 다크 텍스트 인가?
-[ ] FilmFrame outer·body 배경이 #2c2820 인가? (gradient, #0f0c08, 회색 절대 금지)
+[ ] FilmFrame outer·perfs·body 배경이 #433b26 인가? (gradient, 회색 절대 금지)
+[ ] 스프로켓 구멍(perf)이 #211e19 인가? (앱배경색 #f5f2ed 사용 금지)
 [ ] 카드 제목 폰트가 Cormorant Garamond 20px 인가?
 [ ] MonthDivider 텍스트가 DM Mono + accent-gold 인가? (Bebas Neue 아님)
 [ ] RollProgressBar 배경이 surface-base(#f5f2ed) 인가?
