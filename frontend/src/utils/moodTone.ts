@@ -31,6 +31,17 @@ export function getMoodDotColor(mood: string | null | undefined): string {
   }
 }
 
+export function getMoodBarColor(mood: string | null | undefined): string {
+  switch (mood) {
+    case '기쁨': case '설렘':          return '#c8a96e'
+    case '감사':                        return '#c4866a'
+    case '피곤': case '무기력':        return '#9a9a8e'
+    case '슬픔': case '외로움':        return '#7a8fa6'
+    case '평온':                        return '#8aaa8a'
+    default:                            return 'transparent'
+  }
+}
+
 export function getMoodToneStyle(mood: string | null | undefined): React.CSSProperties {
   if (!mood) return {}
 

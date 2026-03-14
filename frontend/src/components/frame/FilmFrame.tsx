@@ -1,7 +1,7 @@
 import { Bookmark } from 'lucide-react'
 import type { Frame } from '../../types/frame'
 import { formatChatDate } from '../../utils/dateFormat'
-import { getMoodToneStyle, MOOD_OPTIONS } from '../../utils/moodTone'
+import { getMoodBarColor, MOOD_OPTIONS } from '../../utils/moodTone'
 import FilmPhoto from '../common/FilmPhoto'
 
 interface Props {
@@ -28,6 +28,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
     return (
       <div style={{ ...styles.frame, cursor: 'default' }}>
         <div style={styles.outer}>
+          <div style={{ ...styles.emotionBar, background: 'var(--border-default)' }} />
           <Perfs />
           <div
             style={{
@@ -90,7 +91,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
 
   return (
     <div
-      style={{ ...styles.frame, ...getMoodToneStyle(frame.mood) }}
+      style={styles.frame}
       onClick={onClick}
       onMouseDown={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.985)' }}
       onMouseUp={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
@@ -99,63 +100,54 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
       onTouchEnd={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
     >
       <div style={{ ...styles.outer, ...(isRetro ? styles.outerRetro : {}), ...(frame.isBookmarked ? styles.outerBookmarked : {}) }}>
+        {/* 감정 컬러바 */}
+        <div style={{ ...styles.emotionBar, background: getMoodBarColor(frame.mood) }} />
         <Perfs />
         <div style={styles.body}>
-          <div style={styles.tintOverlay} />
-          <div style={{
-            ...styles.grainOverlay,
-            opacity: 'var(--film-grain-opacity)' as unknown as number,
-          }} />
-          <div style={styles.bodyContent}>
-            <div style={styles.metaRow}>
-              <span style={styles.dateLabel}>
-                {formatChatDate(new Date(frame.date))}
-                <span style={styles.frameNumInline}> · #{String(frame.frameNum).padStart(2, '0')}</span>
-              </span>
-              <div style={styles.metaRight}>
-                {isRetro && (
-                  <span style={styles.retroBadgeTop}>월간 회고</span>
-                )}
-                {frame.isBookmarked && (
-                  <Bookmark
-                    size={10}
-                    style={{ color: 'var(--amber)', opacity: 0.9, flexShrink: 0 }}
-                    fill="currentColor"
-                  />
-                )}
-              </div>
+          <div style={styles.metaRow}>
+            <span style={styles.dateLabel}>{formatChatDate(new Date(frame.date))}</span>
+            <div style={styles.metaRight}>
+              {isRetro && <span style={styles.retroBadgeTop}>월간 회고</span>}
+              {frame.isBookmarked && (
+                <Bookmark
+                  size={10}
+                  style={{ color: 'var(--accent-gold)', opacity: 0.9, flexShrink: 0 }}
+                  fill="currentColor"
+                />
+              )}
+              <span style={styles.frameNumInline}>#{String(frame.frameNum).padStart(2, '0')}</span>
             </div>
-            <div style={{ ...styles.title, ...(isRetro ? styles.titleRetro : {}) }}>{frame.title}</div>
-            <div style={styles.preview}>{frame.content}</div>
+          </div>
+          <div style={{ ...styles.title, ...(isRetro ? styles.titleRetro : {}) }}>{frame.title}</div>
+          <div style={styles.preview}>{frame.content}</div>
 
-            {photos.length > 0 && (
-              <div style={styles.photoStrip}>
-                {visiblePhotos.map((photo) => (
-                  <FilmPhoto
-                    key={photo.id}
-                    src={photo.url}
-                    alt="photo"
-                    style={styles.stripThumb}
-                  />
-                ))}
-                {extraCount > 0 && (
-                  <div style={styles.extraBadge}>+{extraCount}</div>
-                )}
-              </div>
-            )}
-
-            <div style={styles.footer}>
-              <div style={styles.mood}>
-                {frame.mood
-                  ? `${MOOD_OPTIONS.find((o) => o.value === frame.mood)?.emoji ?? ''} ${frame.mood}`
-                  : ''}
-              </div>
-              {isRetro ? null : frame.frameType === 'QUICK' ? (
-                <span style={{ ...styles.status, ...styles.statusQuick }}>✦ 노트</span>
-              ) : (
-                <span style={{ ...styles.status, ...styles.statusDone }}>◈ 현상</span>
+          {photos.length > 0 && (
+            <div style={styles.photoStrip}>
+              {visiblePhotos.map((photo) => (
+                <FilmPhoto
+                  key={photo.id}
+                  src={photo.url}
+                  alt="photo"
+                  style={styles.stripThumb}
+                />
+              ))}
+              {extraCount > 0 && (
+                <div style={styles.extraBadge}>+{extraCount}</div>
               )}
             </div>
+          )}
+
+          <div style={styles.footer}>
+            <div style={styles.mood}>
+              {frame.mood
+                ? `${MOOD_OPTIONS.find((o) => o.value === frame.mood)?.emoji ?? ''} ${frame.mood}`
+                : ''}
+            </div>
+            {isRetro ? null : frame.frameType === 'QUICK' ? (
+              <span style={{ ...styles.status, ...styles.statusQuick }}>✦ 노트</span>
+            ) : (
+              <span style={{ ...styles.status, ...styles.statusDone }}>◈ 현상</span>
+            )}
           </div>
         </div>
         <Perfs right />
@@ -178,50 +170,33 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     overflow: 'hidden',
   },
+  emotionBar: {
+    width: 3,
+    flexShrink: 0,
+  },
   perfs: {
-    width: 20,
+    width: 18,
     flexShrink: 0,
     background: 'var(--surface-muted)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-evenly',
-    padding: '10px 0',
+    padding: '8px 0',
   },
   perfsRight: {},
   perf: {
-    width: 8,
-    height: 6,
-    borderRadius: 1,
+    width: 9,
+    height: 7,
+    borderRadius: 2,
     background: 'var(--surface-base)',
+    border: '1px solid #ddd8d0',
     flexShrink: 0,
   },
   body: {
     flex: 1,
-    padding: '14px 14px 12px 10px',
+    padding: '12px 12px 10px 8px',
     background: 'var(--surface-muted)',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  tintOverlay: {
-    position: 'absolute',
-    inset: 0,
-    background: 'var(--film-tint)',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-  grainOverlay: {
-    position: 'absolute',
-    inset: 0,
-    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E")`,
-    backgroundSize: '200px 200px',
-    mixBlendMode: 'overlay',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-  bodyContent: {
-    position: 'relative',
-    zIndex: 1,
   },
   metaRow: {
     display: 'flex',
@@ -231,15 +206,15 @@ const styles: Record<string, React.CSSProperties> = {
   },
   dateLabel: {
     fontFamily: "var(--font-mono)",
-    fontSize: 'var(--text-xs)' as unknown as number,
+    fontSize: 8.5,
     color: 'var(--accent-gold)',
-    letterSpacing: '0.1em',
+    letterSpacing: '0.08em',
   },
   frameNumInline: {
     fontFamily: "var(--font-mono)",
-    fontSize: 'var(--text-xs)' as unknown as number,
+    fontSize: 8.5,
     color: 'var(--text-placeholder)',
-    letterSpacing: '0.08em',
+    letterSpacing: '0.06em',
   },
   metaRight: {
     display: 'flex',
@@ -263,17 +238,20 @@ const styles: Record<string, React.CSSProperties> = {
   },
   title: {
     fontFamily: "var(--font-display)",
-    fontSize: 20,
+    fontSize: 19,
     color: 'var(--text-primary)',
-    fontWeight: 400,
-    lineHeight: 1.25,
-    marginBottom: 8,
+    fontWeight: 600,
+    lineHeight: 1.2,
+    marginBottom: 6,
+    letterSpacing: '-0.01em',
   },
   preview: {
-    fontSize: 'var(--text-base)' as unknown as number,
+    fontFamily: "var(--font-body)",
+    fontSize: 10,
     color: 'var(--text-muted)',
     lineHeight: 1.75,
     fontWeight: 300,
+    marginBottom: 10,
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
@@ -322,19 +300,26 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 4,
   },
   status: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: 'var(--text-xs)' as unknown as number,
+    fontFamily: "var(--font-mono)",
+    fontSize: 8.5,
     letterSpacing: '0.08em',
-    padding: '2px 7px',
-    borderRadius: 2,
+    padding: '6px 12px',
+    borderRadius: 6,
+    minHeight: 28,
+    display: 'flex',
+    alignItems: 'center',
+    gap: 3,
+    cursor: 'default',
   },
   statusDone: {
-    color: '#7a9e8a',
-    border: '1px solid rgba(122,158,138,0.3)',
+    color: 'var(--accent-gold)',
+    border: '1px solid #d8cdb0',
+    background: 'transparent',
   },
   statusQuick: {
     color: 'var(--accent-gold)',
-    border: '1px solid rgba(200, 169, 110, 0.35)',
+    border: '1px solid #d8cdb0',
+    background: 'transparent',
   },
   statusRetro: {
     color: 'var(--fade-green)',

@@ -344,87 +344,120 @@ pill: {
 
 ---
 
-## Step 8. `FilmFrame.tsx` — 카드 배경·타이포그래피 교정
+## Step 8. `FilmFrame.tsx` — 카드 배경·감정컬러바·타이포그래피
 
 ### 핵심 원칙
-필름 카드는 **라이트 테마**다. 어두운 다크브라운 배경 사용 금지.
+- 카드 배경은 항상 `var(--surface-muted)` `#ede8e2` 고정. 감정에 따라 절대 바뀌지 않음.
+- 감정은 좌측 **3px 컬러바** 하나로만 표현.
 
-### 8-1. 카드 배경 및 구조
+### 8-1. 카드 구조 (좌→우 순서)
+
+```
+[emotionBar 3px] + [perfs 18px] + [body flex:1] + [perfs 18px]
+```
 
 ```tsx
 outer: {
-  background: 'var(--surface-muted)',   /* #ede8e2 밝은 베이지 */
+  background: 'var(--surface-muted)',
   border: '1px solid var(--border-default)',
   borderRadius: 10,
   display: 'flex',
   overflow: 'hidden',
 },
 
+emotionBar: {
+  width: 3,
+  flexShrink: 0,
+  /* background는 getMoodBarColor(frame.mood) 로 인라인 설정 */
+},
+
 perfs: {
-  width: 20,
-  background: 'var(--surface-muted)',   /* outer와 동일 */
-  display: 'flex',
-  flexDirection: 'column',
+  width: 18,
+  background: 'var(--surface-muted)',
+  padding: '8px 0',
   justifyContent: 'space-evenly',
-  alignItems: 'center',
-  padding: '10px 0',
 },
 
 perf: {
-  width: 8,
-  height: 6,
-  borderRadius: 1,
-  background: 'var(--surface-base)',    /* #f5f2ed 앱 배경색 = "구멍" */
+  width: 9,
+  height: 7,
+  borderRadius: 2,
+  background: 'var(--surface-base)',    /* 구멍 = 앱 배경색 */
+  border: '1px solid #ddd8d0',          /* 대비 강화 필수 */
 },
 
 body: {
-  background: 'var(--surface-muted)',   /* gradient 금지 */
-  padding: '14px 14px 12px 10px',
+  flex: 1,
+  padding: '12px 12px 10px 8px',
+  background: 'var(--surface-muted)',
 },
 ```
 
-> ⚠️ 금지값: `#433b26`, `#2c2820`, `#0f0c08`, 어떤 gradient도 금지.
+### 8-2. 감정 컬러 시스템 (`moodTone.ts`)
 
-### 8-2. 카드 내부 텍스트
+```ts
+export function getMoodBarColor(mood: string | null | undefined): string {
+  switch (mood) {
+    case '기쁨': case '설렘':   return '#c8a96e'  // 골드 — 브랜드 컬러
+    case '감사':                 return '#c4866a'  // 테라코타
+    case '피곤': case '무기력': return '#9a9a8e'  // 모스그레이
+    case '슬픔': case '외로움': return '#7a8fa6'  // 스틸블루
+    case '평온':                 return '#8aaa8a'  // 세이지그린
+    default:                     return 'transparent'
+  }
+}
+```
+
+### 8-3. 카드 내부 텍스트
 
 ```tsx
-dateLabel: {
-  color: 'var(--accent-gold)',        /* #c8a96e */
-},
-
-frameNumInline: {
-  color: 'var(--text-placeholder)',   /* #b0a898 */
-},
+/* 날짜 — 왼쪽, 프레임넘버 — 오른쪽 (space-between) */
+metaRow: { justifyContent: 'space-between' }
+dateLabel:      { fontSize: 8.5, color: 'var(--accent-gold)' }
+frameNumInline: { fontSize: 8.5, color: 'var(--text-placeholder)' }
 
 title: {
   fontFamily: "var(--font-display)",
-  fontSize: 20,
-  color: 'var(--text-primary)',       /* #1a1814 */
-  fontWeight: 400,
-  lineHeight: 1.25,
-},
+  fontSize: 19,
+  fontWeight: 600,
+  color: 'var(--text-primary)',
+  lineHeight: 1.2,
+  letterSpacing: '-0.01em',
+}
 
 preview: {
-  color: 'var(--text-muted)',         /* #7a6e5e */
+  fontSize: 10,
+  color: 'var(--text-muted)',
   lineHeight: 1.75,
   fontWeight: 300,
-},
+}
 
-mood: {
-  color: 'var(--text-muted)',
-},
+/* status 버튼 — 아웃라인 스타일 */
+status: {
+  fontSize: 8.5,
+  padding: '6px 12px',
+  minHeight: 28,
+  border: '1px solid #d8cdb0',
+  background: 'transparent',
+  color: 'var(--accent-gold)',
+}
 ```
 
-### 8-3. 색상 대조표 (확정)
+### 8-4. 색상 대조표 (확정)
 
 ```
 앱 배경   #f5f2ed  ████  --surface-base
-카드 배경  #ede8e2  ████  --surface-muted (밝은 베이지)
-구멍      #f5f2ed  ████  --surface-base (앱 배경과 동일 — 뚫린 느낌)
+카드 배경  #ede8e2  ████  --surface-muted
+구멍      #f5f2ed  ████  --surface-base + border #ddd8d0
 날짜      #c8a96e  ████  --accent-gold
 제목      #1a1814  ████  --text-primary
 본문      #7a6e5e  ████  --text-muted
 서브넘    #b0a898  ████  --text-placeholder
+감정-설렘  #c8a96e  ████  골드
+감정-감사  #c4866a  ████  테라코타
+감정-피곤  #9a9a8e  ████  모스그레이
+감정-슬픔  #7a8fa6  ████  스틸블루
+감정-평온  #8aaa8a  ████  세이지그린
 ```
 
 ---
@@ -525,9 +558,13 @@ total: {
 [ ] 입력창 배경이 흰색(surface-card) 인가? (surface-muted 아님)
 [ ] 전송 버튼 아이콘이 크림/화이트색 인가? (골드 아님)
 [ ] DevelopBanner 버튼이 크림 배경(#e8e2d8) + 다크 텍스트 인가?
-[ ] FilmFrame 카드 배경이 surface-muted(#ede8e2) 밝은 베이지인가? (어두운 브라운 절대 금지)
-[ ] 스프로켓 구멍이 surface-base(#f5f2ed)로 뚫려 보이는가?
-[ ] 카드 제목이 text-primary(#1a1814) 어두운 색으로 읽히는가?
+[ ] 카드 배경이 surface-muted(#ede8e2) 인가? 모든 카드 동일 — 감정에 따라 달라지면 안 됨
+[ ] 감정이 3px .emotionBar 하나로만 표현되는가?
+[ ] .perf에 border: 1px solid #ddd8d0 이 있는가?
+[ ] metaRow가 space-between (날짜 왼쪽, 넘버 오른쪽) 인가?
+[ ] 제목이 Cormorant Garamond 19px/600 인가?
+[ ] status 버튼 min-height 28px, 아웃라인 스타일인가?
+[ ] 빠른 현상 버튼이 outline 스타일(배경 없음)인가?
 [ ] 카드 제목 폰트가 Cormorant Garamond 20px 인가?
 [ ] MonthDivider 텍스트가 DM Mono + accent-gold 인가? (Bebas Neue 아님)
 [ ] RollProgressBar 배경이 surface-base(#f5f2ed) 인가?
