@@ -38,7 +38,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 5,
   },
   text: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 10,
     color: 'var(--amber)',
     opacity: 0.6,
@@ -49,7 +49,7 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 8,
     color: 'var(--cream-muted)',
     opacity: 0.4,

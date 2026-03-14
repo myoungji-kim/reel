@@ -173,7 +173,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   outer: {
     background: '#0f0c08',
-    border: '1.5px solid var(--border)',
+    border: '1.5px solid rgba(200, 169, 110, 0.22)',
     borderRadius: 3,
     display: 'flex',
     overflow: 'hidden',
@@ -236,14 +236,14 @@ const styles: Record<string, React.CSSProperties> = {
   dateLabel: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 10,
-    color: 'var(--amber-light)',
+    color: '#e8c87a',
     opacity: 0.65,
     letterSpacing: '0.06em',
   },
   frameNumInline: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 10,
-    color: 'var(--cream-muted)',
+    color: '#9a8a70',
     opacity: 0.5,
     letterSpacing: '0.04em',
   },
@@ -257,9 +257,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "'Noto Sans KR', sans-serif",
     fontSize: 10,
     fontWeight: 500,
-    color: 'var(--fade-green)',
+    color: '#7a9e8a',
     background: 'rgba(122,158,138,0.12)',
-    border: '1px solid rgba(122,158,138,0.4)',
+    border: '1px solid rgba(122,158,138,0.35)',
     borderRadius: 2,
     padding: '1px 6px',
     letterSpacing: '0.04em',
@@ -268,16 +268,16 @@ const styles: Record<string, React.CSSProperties> = {
     borderLeft: '3px solid rgba(196, 160, 80, 0.55)',
   },
   title: {
-    fontFamily: "'Noto Serif KR', serif",
-    fontSize: 15,
-    color: 'var(--cream)',
+    fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
+    fontSize: 16,
+    color: '#f2e8d0',
     fontWeight: 400,
     lineHeight: 1.4,
     marginBottom: 6,
   },
   preview: {
     fontSize: 12,
-    color: 'var(--cream-muted)',
+    color: '#9a8a70',
     lineHeight: 1.7,
     fontWeight: 300,
     display: '-webkit-box',
@@ -322,7 +322,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   mood: {
     fontSize: 12,
-    color: 'var(--cream-muted)',
+    color: '#9a8a70',
     display: 'flex',
     alignItems: 'center',
     gap: 4,
@@ -335,12 +335,12 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 2,
   },
   statusDone: {
-    color: 'var(--fade-green)',
+    color: '#7a9e8a',
     border: '1px solid rgba(122,158,138,0.3)',
   },
   statusQuick: {
-    color: 'var(--amber-light)',
-    border: '1px solid var(--amber-30)',
+    color: '#e8c87a',
+    border: '1px solid rgba(200, 169, 110, 0.3)',
   },
   statusRetro: {
     color: 'var(--fade-green)',
@@ -348,9 +348,9 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'rgba(122,158,138,0.1)',
   },
   outerRetro: {
-    border: '1.5px solid var(--fade-green)',
+    border: '1.5px solid rgba(74, 112, 64, 0.6)',
   },
   titleRetro: {
-    fontFamily: "'Noto Serif KR', serif",
+    fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
   },
 }

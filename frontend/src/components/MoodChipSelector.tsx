@@ -16,11 +16,11 @@ export default function MoodChipSelector({ value, onChange }: Props) {
             key={opt.value}
             style={{
               ...styles.chip,
-              background: selected ? tint : 'rgba(255,255,255,0.02)',
+              background: selected ? tint : 'transparent',
               border: selected
                 ? `1px solid ${tint.replace(/[\d.]+\)$/, '0.7)')}`
-                : '1px solid var(--border-light)',
-              color: selected ? 'var(--cream)' : 'var(--cream-muted)',
+                : '1px solid var(--border-default)',
+              color: selected ? 'var(--text-primary)' : 'var(--text-muted)',
             }}
             onClick={() => onChange(opt.value)}
             type="button"
@@ -58,7 +58,7 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1,
   },
   label: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 10,
     letterSpacing: '0.04em',
   },

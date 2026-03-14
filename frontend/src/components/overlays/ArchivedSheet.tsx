@@ -101,7 +101,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
   },
   title: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 10,
     color: 'var(--cream-muted)',
     letterSpacing: '0.12em',
@@ -131,7 +131,7 @@ const styles: Record<string, React.CSSProperties> = {
     paddingTop: 60,
   },
   emptyText: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 12,
     color: 'var(--amber)',
     letterSpacing: '0.1em',

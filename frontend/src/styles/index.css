@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=VT323&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400&display=swap');
 @import './tokens.css';
 
 @tailwind base;
@@ -21,9 +21,14 @@ body {
 }
 
 body {
-  background: var(--bg);
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--cream);
+  background: var(--surface-base);
+  font-family: var(--font-body);
+  color: var(--text-primary);
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: var(--text-placeholder);
 }
 
 /* 필름 그레인 오버레이 */
@@ -59,7 +64,7 @@ button:active:not(:disabled) {
   width: 3px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-light);
+  background: var(--border-default);
   border-radius: 2px;
 }
 
@@ -89,8 +94,8 @@ button:active:not(:disabled) {
 
 /* 현상 중 프레임 깜빡임 */
 @keyframes devFlash {
-  0%, 100% { opacity: 0.2; background: var(--bg-mid); }
-  50%       { opacity: 1;   background: rgba(212, 130, 42, 0.15); }
+  0%, 100% { opacity: 0.2; background: var(--surface-muted); }
+  50%       { opacity: 1;   background: rgba(200, 169, 110, 0.15); }
 }
 
 /* 현상 텍스트 깜빡임 */
