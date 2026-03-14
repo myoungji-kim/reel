@@ -32,51 +32,58 @@ export default function TopBar() {
   }
 
   return (
-    <div style={styles.topbar}>
-      <div style={styles.inner}>
-        <div style={styles.logo}>REEL</div>
-        <div style={styles.tabs}>
-          <button
-            style={{
-              ...styles.tab,
-              color: activeTab === 'chat' ? 'var(--amber-light)' : 'var(--cream-muted)',
-              borderBottom: activeTab === 'chat'
-                ? '2px solid var(--amber)'
-                : '2px solid transparent',
-            }}
-            onClick={() => setActiveTab('chat')}
-          >
-            ◈ 하루 현상
-          </button>
-          <button
-            style={{
-              ...styles.tab,
-              color: activeTab === 'roll' ? 'var(--amber-light)' : 'var(--cream-muted)',
-              borderBottom: activeTab === 'roll'
-                ? '2px solid var(--amber)'
-                : '2px solid transparent',
-            }}
-            onClick={() => setActiveTab('roll')}
-          >
-            ◆ 현상소
-          </button>
+    <div>
+      <div style={styles.topbar}>
+        <div style={styles.inner}>
+          <div style={styles.logo}>REEL</div>
+          <div style={styles.tabs}>
+            <button
+              style={{
+                ...styles.tab,
+                color: activeTab === 'chat' ? 'var(--text-primary)' : 'var(--text-muted)',
+                borderBottom: activeTab === 'chat'
+                  ? '1.5px solid var(--accent-gold)'
+                  : '1.5px solid transparent',
+              }}
+              onClick={() => setActiveTab('chat')}
+            >
+              ◈ 하루 현상
+            </button>
+            <button
+              style={{
+                ...styles.tab,
+                color: activeTab === 'roll' ? 'var(--text-primary)' : 'var(--text-muted)',
+                borderBottom: activeTab === 'roll'
+                  ? '1.5px solid var(--accent-gold)'
+                  : '1.5px solid transparent',
+              }}
+              onClick={() => setActiveTab('roll')}
+            >
+              ◆ 현상소
+            </button>
+          </div>
+          <div ref={menuRef} style={styles.menuWrapper}>
+            <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)} aria-label="메뉴">
+              <Settings size={16} />
+            </button>
+            {menuOpen && (
+              <div style={styles.dropdown}>
+                <button style={styles.dropdownItem} onClick={() => { setArchivedOpen(true); setMenuOpen(false) }}>
+                  보관된 필름
+                </button>
+                <div style={styles.dropdownDivider} />
+                <button style={styles.dropdownItem} onClick={handleLogout}>
+                  로그아웃
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <div ref={menuRef} style={styles.menuWrapper}>
-          <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)} aria-label="메뉴">
-            <Settings size={16} />
-          </button>
-          {menuOpen && (
-            <div style={styles.dropdown}>
-              <button style={styles.dropdownItem} onClick={() => { setArchivedOpen(true); setMenuOpen(false) }}>
-                보관된 필름
-              </button>
-              <div style={styles.dropdownDivider} />
-              <button style={styles.dropdownItem} onClick={handleLogout}>
-                로그아웃
-              </button>
-            </div>
-          )}
-        </div>
+      </div>
+      <div style={styles.filmStrip}>
+        {Array.from({ length: 40 }, (_, i) => (
+          <div key={i} style={styles.filmHole} />
+        ))}
       </div>
     </div>
   )
@@ -85,8 +92,7 @@ export default function TopBar() {
 const styles: Record<string, React.CSSProperties> = {
   topbar: {
     flexShrink: 0,
-    background: 'var(--bg)',
-    borderBottom: '1px solid var(--border)',
+    background: 'var(--surface-base)',
   },
   inner: {
     display: 'flex',
@@ -97,9 +103,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-display)",
     fontWeight: 600,
     fontStyle: 'italic',
-    fontSize: 28,
+    fontSize: 22,
     color: 'var(--text-primary)',
-    letterSpacing: '0.04em',
+    letterSpacing: '0.02em',
     marginRight: 16,
     lineHeight: 1,
   },
@@ -112,11 +118,31 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    fontFamily: "var(--font-mono)",
-    fontSize: 10,
-    letterSpacing: '0.08em',
+    fontFamily: "var(--font-body)",
+    fontSize: 'var(--text-sm)' as unknown as number,
+    letterSpacing: '0.04em',
     transition: 'all 0.2s',
     whiteSpace: 'nowrap',
+  },
+  filmStrip: {
+    height: 10,
+    background: 'var(--surface-base)',
+    borderTop: '1px solid var(--border-default)',
+    borderBottom: '1px solid var(--border-default)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 3,
+    padding: '0 8px',
+    overflow: 'hidden',
+    flexShrink: 0,
+  },
+  filmHole: {
+    width: 10,
+    height: 6,
+    border: '1px solid var(--border-default)',
+    borderRadius: 1,
+    background: 'var(--surface-base)',
+    flexShrink: 0,
   },
   menuWrapper: {
     position: 'relative',

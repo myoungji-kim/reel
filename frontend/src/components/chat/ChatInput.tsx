@@ -80,7 +80,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   input: {
     flex: 1,
-    background: 'var(--surface-muted)',
+    background: 'var(--surface-card)',
     border: '1px solid var(--border-default)',
     borderRadius: 'var(--radius-full)',
     padding: '10px 16px',
@@ -99,7 +99,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '50%',
     background: 'var(--surface-inverse)',
     border: 'none',
-    color: 'var(--accent-gold)',
+    color: 'var(--surface-base)',
     fontSize: 16,
     display: 'flex',
     alignItems: 'center',

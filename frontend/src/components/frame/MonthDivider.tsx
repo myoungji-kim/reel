@@ -31,19 +31,20 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 8,
   },
   text: {
-    fontFamily: "'Bebas Neue', sans-serif",
-    fontSize: 18,
-    color: 'var(--amber)',
+    fontFamily: "var(--font-mono)",
+    fontSize: 'var(--text-md)' as unknown as number,
+    fontWeight: 500,
+    color: 'var(--accent-gold)',
     letterSpacing: '0.1em',
   },
   line: {
     flex: 1,
     height: 1,
-    background: 'linear-gradient(90deg, var(--amber-25), transparent)',
+    background: 'linear-gradient(90deg, rgba(200,169,110,0.3), transparent)',
   },
   count: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: 'var(--cream-muted)',
+    fontFamily: "var(--font-mono)",
+    fontSize: 'var(--text-xs)' as unknown as number,
+    color: 'var(--text-placeholder)',
   },
 }

@@ -1,4 +1,3 @@
-import { Aperture } from 'lucide-react'
 import type { ChatMessage } from '../../types/chat'
 import { formatTime } from '../../utils/dateFormat'
 
@@ -29,7 +28,7 @@ export default function MessageBubble({ message, onRetry }: Props) {
               <span style={styles.failedText}>✕ 전송 실패</span>
             </div>
           ) : (
-            <div style={{ ...styles.time, textAlign: 'right' }}>{time}</div>
+            <div style={styles.timeUser}>{time}</div>
           )}
         </div>
       </div>
@@ -38,7 +37,7 @@ export default function MessageBubble({ message, onRetry }: Props) {
 
   return (
     <div style={styles.msgAi}>
-      <div style={styles.avatar}><Aperture size={14} /></div>
+      <div style={styles.avatar}><div style={styles.avatarRing} /></div>
       <div>
         <div style={styles.bubbleAi}>
           {message.content.split('\n').map((line, i) => (
@@ -67,8 +66,8 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: 4,
   },
   failedText: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
+    fontFamily: "var(--font-mono)",
+    fontSize: 'var(--text-base)' as unknown as number,
     color: 'rgba(200,60,60,0.85)',
   },
   retryBtn: {
@@ -94,20 +93,25 @@ const styles: Record<string, React.CSSProperties> = {
     alignSelf: 'flex-start',
   },
   avatar: {
-    width: 28,
-    height: 28,
+    width: 32,
+    height: 32,
     borderRadius: '50%',
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     background: 'var(--surface-inverse)',
-    color: 'var(--accent-gold)',
     marginTop: 2,
+  },
+  avatarRing: {
+    width: 14,
+    height: 14,
+    borderRadius: '50%',
+    border: '1.5px solid var(--accent-gold)',
   },
   bubbleUser: {
     padding: '10px 14px',
-    borderRadius: '16px 4px 16px 16px',
+    borderRadius: 'var(--radius-md) 2px var(--radius-md) var(--radius-md)',
     fontSize: 14,
     lineHeight: 1.65,
     fontWeight: 300,
@@ -117,7 +121,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   bubbleAi: {
     padding: '10px 14px',
-    borderRadius: '4px 16px 16px 16px',
+    borderRadius: '2px var(--radius-md) var(--radius-md) var(--radius-md)',
     fontSize: 14,
     lineHeight: 1.65,
     fontWeight: 300,
@@ -127,8 +131,16 @@ const styles: Record<string, React.CSSProperties> = {
   },
   time: {
     fontFamily: "var(--font-mono)",
-    fontSize: 10,
-    color: 'var(--text-muted)',
+    fontSize: 'var(--text-xs)' as unknown as number,
+    color: 'var(--text-placeholder)',
     marginTop: 4,
+    paddingLeft: 40,
+  },
+  timeUser: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 'var(--text-xs)' as unknown as number,
+    color: 'var(--text-placeholder)',
+    marginTop: 4,
+    textAlign: 'right' as const,
   },
 }

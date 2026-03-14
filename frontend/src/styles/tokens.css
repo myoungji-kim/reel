@@ -27,7 +27,7 @@
      ACCENT (브랜드 포인트)
   ───────────────────────────── */
   --accent-gold:        #c8a96e;
-  --accent-gold-light:  #e8c87a;
+  --accent-gold-light:  #ffe6a0;
   --accent-green-bg:    #e8f0e6;
   --accent-green-text:  #4a7040;
 
@@ -38,13 +38,31 @@
   --font-mono:    'DM Mono', monospace;
   --font-body:    'Noto Sans KR', sans-serif;
 
+  /* FONT SIZES */
+  --text-xs:   7px;
+  --text-sm:   8.5px;
+  --text-base: 10px;
+  --text-md:   12px;
+  --text-lg:   15px;
+  --text-xl:   18px;
+  --text-2xl:  22px;
+
+  /* SPACING */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+
   /* ─────────────────────────────
      RADIUS
   ───────────────────────────── */
-  --radius-sm:    8px;
-  --radius-md:    12px;
-  --radius-lg:    14px;
-  --radius-full:  9999px;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   14px;
+  --radius-full: 9999px;
+  --radius-pill: 9999px;
 
   /* ─────────────────────────────
      SHADOW
