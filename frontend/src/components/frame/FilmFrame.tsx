@@ -33,7 +33,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             style={{
               ...styles.body,
               minHeight: 90,
-              background: 'linear-gradient(90deg, #161209 0%, #161209 35%, rgba(212,130,42,0.07) 50%, #161209 65%, #161209 100%)',
+              background: 'linear-gradient(90deg, #2c2820 0%, #2c2820 35%, rgba(212,130,42,0.10) 50%, #2c2820 65%, #2c2820 100%)',
               backgroundSize: '250% 100%',
               animation: 'shimmer 2s ease-in-out infinite',
               display: 'flex',
@@ -64,7 +64,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             </div>
             {/* DEVELOPING 레이블 */}
             <div style={{
-              fontFamily: "'Space Mono', monospace",
+              fontFamily: "'DM Mono', monospace",
               fontSize: 9,
               color: 'var(--amber)',
               letterSpacing: '0.14em',
@@ -172,7 +172,7 @@ const styles: Record<string, React.CSSProperties> = {
     transition: 'transform 0.15s',
   },
   outer: {
-    background: '#2a2418',
+    background: '#2c2820',
     border: '1.5px solid rgba(200, 169, 110, 0.22)',
     borderRadius: 3,
     display: 'flex',
@@ -181,29 +181,29 @@ const styles: Record<string, React.CSSProperties> = {
   perfs: {
     width: 18,
     flexShrink: 0,
-    background: '#0a0806',
+    background: '#221e18',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-around',
     padding: '8px 0',
-    borderRight: '1px solid var(--border)',
+    borderRight: '1px solid #3a3228',
   },
   perfsRight: {
     borderRight: 'none',
-    borderLeft: '1px solid var(--border)',
+    borderLeft: '1px solid #3a3228',
   },
   perf: {
     width: 9,
     height: 6,
     borderRadius: 1,
-    background: 'var(--bg)',
-    border: '1px solid #2e2518',
+    background: 'var(--surface-base)',
+    border: '1px solid #3a3228',
   },
   body: {
     flex: 1,
     padding: '14px 16px',
-    background: 'linear-gradient(135deg, #1e1a0f, #161209)',
+    background: '#2c2820',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -270,7 +270,7 @@ const styles: Record<string, React.CSSProperties> = {
   title: {
     fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
     fontSize: 20,
-    color: '#e8e2d8',
+    color: '#e8e2d0',
     fontWeight: 400,
     lineHeight: 1.35,
     marginBottom: 6,

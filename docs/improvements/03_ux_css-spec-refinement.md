@@ -348,19 +348,40 @@ pill: {
 
 ### 8-1. 카드 배경색 변경
 
+카드는 `outer` + `body` + `perfs` 세 레이어로 구성된다.
+세 레이어를 모두 동일한 따뜻한 다크브라운 계열로 통일해야 한다.
+`body`에 gradient를 쓰면 실제 렌더링에서 너무 어둡게 보이므로 단색 사용.
+
 ```tsx
-/* Before */
 outer: {
-  background: '#0f0c08',   /* 너무 어두운 순수 블랙 계열 */
+  background: '#2c2820',   /* 따뜻한 다크브라운 — 스펙 기준값 */
   ...
 }
 
-/* After */
-outer: {
-  background: '#2a2418',   /* 따뜻한 올리브 브라운 — 스펙 지정값 */
+perfs: {
+  background: '#221e18',   /* outer보다 약간 어둡게 — 퍼포레이션 영역 강조 */
+  borderRight: '1px solid #3a3228',
+  ...
+}
+
+perfsRight: {
+  borderLeft: '1px solid #3a3228',
+  ...
+}
+
+perf: {  /* 구멍 = 앱 배경색 */
+  background: 'var(--surface-base)',   /* #f5f2ed */
+  border: '1px solid #3a3228',
+}
+
+body: {
+  background: '#2c2820',   /* gradient 금지 — 어두워 보임 */
   ...
 }
 ```
+
+> ⚠️ `#0f0c08`, `#161209`, `linear-gradient(#1e1a0f, #161209)` 사용 금지.
+> ⚠️ `#4b4a46` 같은 무채색 회색도 금지.
 
 ### 8-2. 카드 내부 텍스트 폰트 교정
 
@@ -378,7 +399,7 @@ dateLabel: {
 title: {
   fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
   fontSize: 20,
-  color: '#e8e2d8',
+  color: '#e8e2d0',           /* 따뜻한 크림 화이트 */
   fontWeight: 400,
   lineHeight: 1.35,
   marginBottom: 6,
@@ -399,6 +420,17 @@ mood: {
   color: '#b0a080',
   ...
 },
+```
+
+### 8-3. 색상 대조표 (카드 내부)
+
+```
+배경     #2c2820  ████  따뜻한 다크브라운
+제목     #e8e2d0  ████  크림 화이트
+날짜     #c8a96e  ████  골드 (브랜드 포인트)
+본문     #a09070  ████  따뜻한 중간 브라운
+서브     #6b5a3e  ████  어두운 골드브라운
+테두리   #3a3228  ████  다크 골드브라운
 ```
 
 ---
@@ -499,7 +531,7 @@ total: {
 [ ] 입력창 배경이 흰색(surface-card) 인가? (surface-muted 아님)
 [ ] 전송 버튼 아이콘이 크림/화이트색 인가? (골드 아님)
 [ ] DevelopBanner 버튼이 크림 배경(#e8e2d8) + 다크 텍스트 인가?
-[ ] FilmFrame 카드 배경이 #2a2418 인가? (#0f0c08 아님)
+[ ] FilmFrame outer·body 배경이 #2c2820 인가? (gradient, #0f0c08, 회색 절대 금지)
 [ ] 카드 제목 폰트가 Cormorant Garamond 20px 인가?
 [ ] MonthDivider 텍스트가 DM Mono + accent-gold 인가? (Bebas Neue 아님)
 [ ] RollProgressBar 배경이 surface-base(#f5f2ed) 인가?
