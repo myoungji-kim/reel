@@ -16,8 +16,11 @@
 3. 검정은 순수 검정이 아니다 → `#1a1814`
 4. 모든 border는 0.5~1px, 색은 `#e4dfd6`
 5. **box-shadow 사용 금지** → FAB 버튼 한 곳만 예외
-6. 폰트 굵기: body/mono는 400·500까지만, Cormorant Garamond(display)는 600까지 허용
-7. 제목/로고는 반드시 Cormorant Garamond italic
+6. 폰트 굵기: body/mono는 400·500까지만, display(Noto Serif KR)는 600까지 허용
+7. **한글 포함 텍스트에 DM Mono / Cormorant 단독 사용 금지**
+   - 한글 제목 → `'Noto Serif KR', serif`
+   - 한글 포함 버튼 → `'DM Mono', 'Noto Sans KR', monospace`
+8. **감정 컬러바 색상은 대비 기준 미적용 (장식 요소)** — 변경 금지
 
 ---
 
@@ -36,7 +39,7 @@
 
 ---
 
-## Step 1. `tokens.css` — 변수 스케일 추가
+## Step 1. `tokens.css` — 변수 스케일 추가 + 색상 교정
 
 기존 변수는 유지하고 아래 세 블록을 `:root`에 추가한다.
 
@@ -62,14 +65,23 @@
 --radius-pill: 9999px;
 ```
 
-`--accent-gold-light` 값도 스펙에 맞게 교정한다.
-```css
-/* Before */
---accent-gold-light: #e8c87a;
+대비율 AA 기준을 충족하도록 색상을 교정한다.
 
-/* After */
---accent-gold-light: #ffe6a0;
+```css
+/* --accent-gold: WCAG AA 대비율 5.2:1 달성 */
+--accent-gold: #7a5c20;         /* Before: #c8a96e */
+
+/* --text-muted: WCAG AA 대비율 5.8:1 달성 */
+--text-muted: #5a5048;          /* Before: #7a6e5e */
+
+/* --font-display: 한글 지원 Noto Serif KR */
+--font-display: 'Noto Serif KR', serif;   /* Before: 'Cormorant Garamond', serif */
+
+/* --accent-gold-light 교정 */
+--accent-gold-light: #ffe6a0;   /* Before: #e8c87a */
 ```
+
+> ⚠️ 감정 컬러바(`getMoodBarColor`)의 하드코딩된 색상은 장식 요소이므로 변경 금지.
 
 ---
 
@@ -77,15 +89,22 @@
 
 ```css
 /* Before */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@400;500&...');
+@import url('...Cormorant+Garamond...');
 
-/* After */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+/* After — Cormorant Garamond 제거, Noto Serif KR 추가 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=DM+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap');
 ```
 
-변경 내용:
-- Cormorant Garamond: 300 weight 제거, 500 weight 추가
-- DM Mono: 300 weight 추가
+### 폰트 사용 규칙
+
+| 텍스트 종류 | font-family |
+|---|---|
+| 영문·숫자만 (날짜, 넘버, 월헤더, 시간) | `'DM Mono', monospace` |
+| 한글 제목, 본문 입력 필드 | `'Noto Serif KR', serif` |
+| 한글 포함 버튼, 태그 | `'DM Mono', 'Noto Sans KR', monospace` |
+| 말풍선, 카드 본문, 일반 body | `'Noto Sans KR', sans-serif` |
+
+> ⚠️ 한글 텍스트에 DM Mono 단독 사용 시 궁서체/굴림체로 fallback됨 — 반드시 Noto Sans KR 혼합.
 
 ---
 
@@ -545,33 +564,34 @@ total: {
 구현 완료 후 아래 항목을 직접 확인한다.
 
 ```
-[ ] 배경이 순수 흰색(#fff)이 아닌 #f5f2ed 인가?
-[ ] 제목/로고가 Cormorant Garamond italic 22px 인가?
-[ ] 탭 폰트가 Noto Sans KR (font-body) 인가? (DM Mono 아님)
-[ ] 탭 active border-bottom이 1.5px solid accent-gold 인가?
-[ ] TopBar 하단에 10px 높이 필름스트립(구멍 포함)이 있는가?
-[ ] AI 아바타가 다크 원 + 골드 링 구조인가? (Aperture 아이콘 없음)
-[ ] AI 말풍선 border-radius 좌상단만 2px 인가?
-[ ] 유저 말풍선 border-radius 우상단만 2px 인가?
-[ ] AI 타임스탬프에 paddingLeft: 40px 들여쓰기가 있는가?
-[ ] 타임스탬프 폰트 사이즈가 7px (--text-xs) 인가?
-[ ] 입력창 배경이 흰색(surface-card) 인가? (surface-muted 아님)
-[ ] 전송 버튼 아이콘이 크림/화이트색 인가? (골드 아님)
-[ ] DevelopBanner 버튼이 크림 배경(#e8e2d8) + 다크 텍스트 인가?
-[ ] 카드 배경이 surface-muted(#ede8e2) 인가? 모든 카드 동일 — 감정에 따라 달라지면 안 됨
-[ ] 감정이 3px .emotionBar 하나로만 표현되는가?
+— 색상 —
+[ ] --accent-gold가 #7a5c20 인가? (#c8a96e 이면 교체)
+[ ] --text-muted가 #5a5048 인가? (#7a6e5e 이면 교체)
+[ ] 감정 컬러바(getMoodBarColor)의 #c8a96e, #c4866a 등은 변경되지 않았는가?
+
+— 폰트 —
+[ ] @import에 Cormorant Garamond가 없는가?
+[ ] @import에 Noto Serif KR이 있는가?
+[ ] --font-display가 'Noto Serif KR' 인가?
+[ ] 카드 제목 font-family가 var(--font-display) → Noto Serif KR 인가?
+[ ] 한글 포함 버튼이 'DM Mono', 'Noto Sans KR' 혼합인가?
+[ ] 굴림체·궁서체·바탕체가 화면 어디에도 보이지 않는가?
+
+— 카드 구조 —
+[ ] 배경이 #f5f2ed (surface-base) 인가?
+[ ] 탭 폰트가 Noto Sans KR (font-body) 인가?
+[ ] TopBar 하단에 10px 높이 필름스트립이 있는가?
+[ ] AI 아바타가 다크 원 + 골드 링 구조인가?
+[ ] 카드 배경이 surface-muted(#ede8e2) 로 고정인가? (감정에 따라 달라지면 안 됨)
+[ ] 감정이 3px emotionBar 하나로만 표현되는가?
 [ ] .perf에 border: 1px solid #ddd8d0 이 있는가?
 [ ] metaRow가 space-between (날짜 왼쪽, 넘버 오른쪽) 인가?
-[ ] 제목이 Cormorant Garamond 19px/600 인가?
+[ ] 제목이 Noto Serif KR 19px/600 인가?
 [ ] status 버튼 min-height 28px, 아웃라인 스타일인가?
-[ ] 빠른 현상 버튼이 outline 스타일(배경 없음)인가?
-[ ] 카드 제목 폰트가 Cormorant Garamond 20px 인가?
-[ ] MonthDivider 텍스트가 DM Mono + accent-gold 인가? (Bebas Neue 아님)
+[ ] MonthDivider 텍스트가 DM Mono + accent-gold 인가?
 [ ] RollProgressBar 배경이 surface-base(#f5f2ed) 인가?
 [ ] tokens.css에 --text-xs ~ --text-2xl 변수가 선언됐는가?
-[ ] tokens.css에 --space-1 ~ --space-6 변수가 선언됐는가?
 [ ] box-shadow가 FAB 버튼 외에 쓰이지 않는가?
-[ ] font-weight 600이 Cormorant Garamond 외에 쓰이지 않는가?
 ```
 
 ---

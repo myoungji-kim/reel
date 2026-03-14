@@ -300,7 +300,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 4,
   },
   status: {
-    fontFamily: "var(--font-mono)",
+    fontFamily: "'DM Mono', 'Noto Sans KR', monospace",
     fontSize: 8.5,
     letterSpacing: '0.08em',
     padding: '6px 12px',
@@ -330,6 +330,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1.5px solid rgba(74, 112, 64, 0.6)',
   },
   titleRetro: {
-    fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
+    fontFamily: "'Noto Serif KR', serif",
   },
 }

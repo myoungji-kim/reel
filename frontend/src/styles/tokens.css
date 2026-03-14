@@ -12,7 +12,7 @@
   ───────────────────────────── */
   --text-primary:       #1a1814;
   --text-secondary:     #3a3530;
-  --text-muted:         #7a6e5e;
+  --text-muted:         #5a5048;
   --text-placeholder:   #b0a898;
   --text-inverse:       #e8e2d8;
   --text-inverse-muted: #7a7060;
@@ -26,7 +26,7 @@
   /* ─────────────────────────────
      ACCENT (브랜드 포인트)
   ───────────────────────────── */
-  --accent-gold:        #c8a96e;
+  --accent-gold:        #7a5c20;
   --accent-gold-light:  #ffe6a0;
   --accent-green-bg:    #e8f0e6;
   --accent-green-text:  #4a7040;
@@ -34,7 +34,7 @@
   /* ─────────────────────────────
      TYPOGRAPHY
   ───────────────────────────── */
-  --font-display: 'Cormorant Garamond', serif;
+  --font-display: 'Noto Serif KR', serif;
   --font-mono:    'DM Mono', monospace;
   --font-body:    'Noto Sans KR', sans-serif;
 
