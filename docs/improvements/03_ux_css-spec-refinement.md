@@ -346,93 +346,85 @@ pill: {
 
 ## Step 8. `FilmFrame.tsx` — 카드 배경·타이포그래피 교정
 
-### 8-1. 카드 배경색 변경 (픽셀 추출 실측값 기준)
+### 핵심 원칙
+필름 카드는 **라이트 테마**다. 어두운 다크브라운 배경 사용 금지.
 
-카드는 `outer` + `body` + `perfs` 세 레이어로 구성된다.
-**outer, perfs, body 배경을 `#433b26` 으로 통일한다.** gradient 사용 금지.
-스프로켓 구멍(`perf`)은 `#211e19` (어두운 브라운).
+### 8-1. 카드 배경 및 구조
 
 ```tsx
 outer: {
-  background: '#433b26',   /* 실측값 — 따뜻한 브라운 */
-  ...
-}
+  background: 'var(--surface-muted)',   /* #ede8e2 밝은 베이지 */
+  border: '1px solid var(--border-default)',
+  borderRadius: 10,
+  display: 'flex',
+  overflow: 'hidden',
+},
 
 perfs: {
-  background: '#433b26',   /* outer와 동일 */
-  borderRight: '1px solid #393327',
-  ...
-}
-
-perfsRight: {
-  borderLeft: '1px solid #393327',
-  ...
-}
+  width: 20,
+  background: 'var(--surface-muted)',   /* outer와 동일 */
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-evenly',
+  alignItems: 'center',
+  padding: '10px 0',
+},
 
 perf: {
   width: 8,
   height: 6,
-  background: '#211e19',   /* 실측값 — 어두운 구멍 */
-  border: 'none',
-}
+  borderRadius: 1,
+  background: 'var(--surface-base)',    /* #f5f2ed 앱 배경색 = "구멍" */
+},
 
 body: {
-  background: '#433b26',   /* gradient 절대 금지 */
-  ...
-}
+  background: 'var(--surface-muted)',   /* gradient 금지 */
+  padding: '14px 14px 12px 10px',
+},
 ```
 
-> ⚠️ 금지값: `#0f0c08`, `#161209`, `#2c2820`, `linear-gradient(#1e1a0f, #161209)`
-> ⚠️ `#4b4a46` 같은 무채색 회색 금지.
+> ⚠️ 금지값: `#433b26`, `#2c2820`, `#0f0c08`, 어떤 gradient도 금지.
 
-### 8-2. 카드 내부 텍스트 교정 (픽셀 추출 실측값 기준)
+### 8-2. 카드 내부 텍스트
 
 ```tsx
 dateLabel: {
-  fontFamily: "'DM Mono', monospace",
-  fontSize: 'var(--text-xs)',   /* 7px */
-  color: '#c6b683',             /* 실측 골드 */
-  letterSpacing: '0.1em',
+  color: 'var(--accent-gold)',        /* #c8a96e */
 },
 
 frameNumInline: {
-  color: '#6b5c3e',             /* 날짜보다 어두운 골드브라운 */
-  letterSpacing: '0.08em',
+  color: 'var(--text-placeholder)',   /* #b0a898 */
 },
 
 title: {
-  fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
+  fontFamily: "var(--font-display)",
   fontSize: 20,
-  color: '#e0d4b4',             /* 실측 크림 화이트 */
+  color: 'var(--text-primary)',       /* #1a1814 */
   fontWeight: 400,
   lineHeight: 1.25,
-  marginBottom: 8,
 },
 
 preview: {
-  fontSize: 'var(--text-base)',   /* 10px */
-  color: '#9e8e6a',               /* 실측 따뜻한 브라운 */
+  color: 'var(--text-muted)',         /* #7a6e5e */
   lineHeight: 1.75,
   fontWeight: 300,
 },
 
 mood: {
-  fontSize: 'var(--text-sm)',   /* 8.5px */
-  color: '#9e8e6a',
+  color: 'var(--text-muted)',
 },
 ```
 
-### 8-3. 색상 대조표 (픽셀 추출 실측값)
+### 8-3. 색상 대조표 (확정)
 
 ```
-앱 배경   #f3f2ee  ████  화면 전체 — 오프화이트
-카드 배경  #433b26  ████  따뜻한 브라운 (실측)
-구멍      #211e19  ████  거의 검정에 가까운 브라운
-제목      #e0d4b4  ████  크림 화이트 (실측)
-날짜      #c6b683  ████  골드 (실측)
-본문      #9e8e6a  ████  따뜻한 중간 브라운 (실측)
-서브넘    #6b5c3e  ████  어두운 골드브라운
-경계선    #393327  ████  다크 골드브라운
+앱 배경   #f5f2ed  ████  --surface-base
+카드 배경  #ede8e2  ████  --surface-muted (밝은 베이지)
+구멍      #f5f2ed  ████  --surface-base (앱 배경과 동일 — 뚫린 느낌)
+날짜      #c8a96e  ████  --accent-gold
+제목      #1a1814  ████  --text-primary
+본문      #7a6e5e  ████  --text-muted
+서브넘    #b0a898  ████  --text-placeholder
 ```
 
 ---
@@ -533,8 +525,9 @@ total: {
 [ ] 입력창 배경이 흰색(surface-card) 인가? (surface-muted 아님)
 [ ] 전송 버튼 아이콘이 크림/화이트색 인가? (골드 아님)
 [ ] DevelopBanner 버튼이 크림 배경(#e8e2d8) + 다크 텍스트 인가?
-[ ] FilmFrame outer·perfs·body 배경이 #433b26 인가? (gradient, 회색 절대 금지)
-[ ] 스프로켓 구멍(perf)이 #211e19 인가? (앱배경색 #f5f2ed 사용 금지)
+[ ] FilmFrame 카드 배경이 surface-muted(#ede8e2) 밝은 베이지인가? (어두운 브라운 절대 금지)
+[ ] 스프로켓 구멍이 surface-base(#f5f2ed)로 뚫려 보이는가?
+[ ] 카드 제목이 text-primary(#1a1814) 어두운 색으로 읽히는가?
 [ ] 카드 제목 폰트가 Cormorant Garamond 20px 인가?
 [ ] MonthDivider 텍스트가 DM Mono + accent-gold 인가? (Bebas Neue 아님)
 [ ] RollProgressBar 배경이 surface-base(#f5f2ed) 인가?

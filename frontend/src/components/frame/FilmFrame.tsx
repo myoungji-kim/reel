@@ -33,7 +33,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             style={{
               ...styles.body,
               minHeight: 90,
-              background: 'linear-gradient(90deg, #433b26 0%, #433b26 35%, rgba(212,130,42,0.12) 50%, #433b26 65%, #433b26 100%)',
+              background: 'linear-gradient(90deg, var(--surface-muted) 0%, var(--surface-muted) 35%, rgba(200,169,110,0.18) 50%, var(--surface-muted) 65%, var(--surface-muted) 100%)',
               backgroundSize: '250% 100%',
               animation: 'shimmer 2s ease-in-out infinite',
               display: 'flex',
@@ -46,19 +46,19 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
               <div style={{
                 width: 72, height: 8, borderRadius: 2,
-                background: 'rgba(212,130,42,0.08)',
+                background: 'rgba(200,169,110,0.25)',
               }} />
               <div style={{
                 width: '55%', height: 11, borderRadius: 2,
-                background: 'rgba(242,232,208,0.06)',
+                background: 'rgba(26,24,20,0.12)',
               }} />
               <div style={{
                 width: '80%', height: 8, borderRadius: 2,
-                background: 'rgba(242,232,208,0.04)',
+                background: 'rgba(26,24,20,0.07)',
               }} />
               <div style={{
                 width: '65%', height: 8, borderRadius: 2,
-                background: 'rgba(242,232,208,0.04)',
+                background: 'rgba(26,24,20,0.07)',
                 marginBottom: 10,
               }} />
             </div>
@@ -66,9 +66,9 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
             <div style={{
               fontFamily: "'DM Mono', monospace",
               fontSize: 9,
-              color: 'var(--amber)',
+              color: 'var(--accent-gold)',
               letterSpacing: '0.14em',
-              opacity: 0.35,
+              opacity: 0.4,
               animation: 'devBlink 1.6s ease-in-out infinite',
               position: 'relative',
               zIndex: 1,
@@ -172,38 +172,34 @@ const styles: Record<string, React.CSSProperties> = {
     transition: 'transform 0.15s',
   },
   outer: {
-    background: '#433b26',
-    border: '1.5px solid rgba(200, 169, 110, 0.22)',
-    borderRadius: 3,
+    background: 'var(--surface-muted)',
+    border: '1px solid var(--border-default)',
+    borderRadius: 10,
     display: 'flex',
     overflow: 'hidden',
   },
   perfs: {
-    width: 18,
+    width: 20,
     flexShrink: 0,
-    background: '#433b26',
+    background: 'var(--surface-muted)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    padding: '8px 0',
-    borderRight: '1px solid #393327',
+    justifyContent: 'space-evenly',
+    padding: '10px 0',
   },
-  perfsRight: {
-    borderRight: 'none',
-    borderLeft: '1px solid #393327',
-  },
+  perfsRight: {},
   perf: {
     width: 8,
     height: 6,
     borderRadius: 1,
-    background: '#211e19',
-    border: 'none',
+    background: 'var(--surface-base)',
+    flexShrink: 0,
   },
   body: {
     flex: 1,
-    padding: '14px 16px',
-    background: '#433b26',
+    padding: '14px 14px 12px 10px',
+    background: 'var(--surface-muted)',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -234,15 +230,15 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 6,
   },
   dateLabel: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 'var(--text-xs)' as unknown as number,
-    color: '#c6b683',
+    color: 'var(--accent-gold)',
     letterSpacing: '0.1em',
   },
   frameNumInline: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 'var(--text-xs)' as unknown as number,
-    color: '#6b5c3e',
+    color: 'var(--text-placeholder)',
     letterSpacing: '0.08em',
   },
   metaRight: {
@@ -266,16 +262,16 @@ const styles: Record<string, React.CSSProperties> = {
     borderLeft: '3px solid rgba(196, 160, 80, 0.55)',
   },
   title: {
-    fontFamily: "'Cormorant Garamond', 'Noto Serif KR', serif",
+    fontFamily: "var(--font-display)",
     fontSize: 20,
-    color: '#e0d4b4',
+    color: 'var(--text-primary)',
     fontWeight: 400,
     lineHeight: 1.25,
     marginBottom: 8,
   },
   preview: {
     fontSize: 'var(--text-base)' as unknown as number,
-    color: '#9e8e6a',
+    color: 'var(--text-muted)',
     lineHeight: 1.75,
     fontWeight: 300,
     display: '-webkit-box',
@@ -302,14 +298,14 @@ const styles: Record<string, React.CSSProperties> = {
     width: 44,
     height: 34,
     borderRadius: 2,
-    border: '1px solid var(--border)',
-    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid var(--border-default)',
+    background: 'var(--surface-card)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 'var(--text-xs)' as unknown as number,
-    color: '#9e8e6a',
+    color: 'var(--text-muted)',
     flexShrink: 0,
   },
   footer: {
@@ -320,7 +316,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   mood: {
     fontSize: 'var(--text-sm)' as unknown as number,
-    color: '#9e8e6a',
+    color: 'var(--text-muted)',
     display: 'flex',
     alignItems: 'center',
     gap: 4,
@@ -337,8 +333,8 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid rgba(122,158,138,0.3)',
   },
   statusQuick: {
-    color: '#c6b683',
-    border: '1px solid rgba(198, 182, 131, 0.35)',
+    color: 'var(--accent-gold)',
+    border: '1px solid rgba(200, 169, 110, 0.35)',
   },
   statusRetro: {
     color: 'var(--fade-green)',
