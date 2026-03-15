@@ -353,7 +353,7 @@ const styles: Record<string, React.CSSProperties> = {
   filterChipText: {
     fontFamily: "var(--font-mono)",
     fontSize: 10,
-    color: 'var(--amber-light)',
+    color: '#c8a96e',
     letterSpacing: '0.04em',
   },
   filterChipClose: {

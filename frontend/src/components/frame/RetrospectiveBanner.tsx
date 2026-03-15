@@ -72,13 +72,13 @@ const styles: Record<string, React.CSSProperties> = {
   diamond: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 9,
-    color: 'var(--amber-light)',
+    color: '#c8a96e',
     flexShrink: 0,
   },
   label: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 11,
-    color: 'var(--amber-light)',
+    color: '#c8a96e',
     letterSpacing: '0.08em',
     flex: 1,
   },
@@ -88,7 +88,7 @@ const styles: Record<string, React.CSSProperties> = {
   arrow: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 12,
-    color: 'var(--amber-light)',
+    color: '#c8a96e',
     opacity: 0.6,
     flexShrink: 0,
   },

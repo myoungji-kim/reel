@@ -93,7 +93,7 @@ const styles: Record<string, React.CSSProperties> = {
     textOverflow: 'ellipsis',
   },
   frameRef: {
-    color: 'var(--amber-light)',
+    color: '#c8a96e',
     opacity: 0.7,
   },
 }
