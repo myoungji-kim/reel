@@ -67,6 +67,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
       if (photos.length > 0) {
         await uploadPhotos(frameId, photos)
       }
+      queryClient.invalidateQueries({ queryKey: ['rolls'] })
       queryClient.invalidateQueries({ queryKey: ['streak'] })
       reset()
       onSaved()
