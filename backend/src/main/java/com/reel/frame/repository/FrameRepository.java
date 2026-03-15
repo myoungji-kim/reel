@@ -86,13 +86,15 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
             @Param("month") int month
     );
 
-    List<Frame> findByUserId(Long userId);
+    @Query("SELECT f FROM Frame f WHERE f.user.id = :userId")
+    List<Frame> findAllByUserId(@Param("userId") Long userId);
 
     @org.springframework.data.jpa.repository.Modifying
-    @org.springframework.data.jpa.repository.Query("DELETE FROM Frame f WHERE f.user.id = :userId")
+    @Query("DELETE FROM Frame f WHERE f.user.id = :userId")
     void deleteAllByUserId(@Param("userId") Long userId);
 
-    List<Frame> findByUserIdAndIsArchivedFalse(Long userId);
+    @Query("SELECT f FROM Frame f WHERE f.user.id = :userId AND f.isArchived = false")
+    List<Frame> findAllByUserIdNotArchived(@Param("userId") Long userId);
 
     @Query("SELECT f.date FROM Frame f " +
            "WHERE f.user.id = :userId AND f.frameNum BETWEEN :start AND :end")

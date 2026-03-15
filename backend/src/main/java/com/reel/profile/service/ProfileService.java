@@ -54,7 +54,7 @@ public class ProfileService {
         int completedRolls = totalFrames / 24;
         int bestStreak = user.getBestStreak();
 
-        List<Frame> allFrames = frameRepository.findByUserIdAndIsArchivedFalse(userId);
+        List<Frame> allFrames = frameRepository.findAllByUserIdNotArchived(userId);
         Map<String, Long> moodCount = allFrames.stream()
                 .filter(f -> f.getMood() != null && !f.getMood().isBlank())
                 .collect(Collectors.groupingBy(Frame::getMood, Collectors.counting()));
