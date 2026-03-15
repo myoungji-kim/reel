@@ -4,27 +4,29 @@ type Tab = 'home' | 'roll' | 'favorites' | 'profile'
 
 interface Props {
   activeTab: Tab
+  homeView: 'bento' | 'chat'
   onTabChange: (tab: Tab) => void
   onFabClick: () => void
 }
 
-export default function BottomNav({ activeTab, onTabChange, onFabClick }: Props) {
+export default function BottomNav({ activeTab, homeView, onTabChange, onFabClick }: Props) {
+  const isHomeActive = activeTab === 'home' && homeView === 'bento'
   return (
     <div style={styles.nav}>
       <div style={styles.blur} />
 
       {/* 현상소 — 홈 벤토 */}
       <button
-        style={{ ...styles.navItem, ...(activeTab === 'home' ? styles.navItemActive : {}) }}
+        style={{ ...styles.navItem, ...(isHomeActive ? styles.navItemActive : {}) }}
         onClick={() => onTabChange('home')}
         aria-label="현상소"
       >
         <div style={styles.navIcon}>
-          <svg viewBox="0 0 20 20" style={activeTab === 'home' ? iconActiveStyle : iconStyle}>
+          <svg viewBox="0 0 20 20" style={isHomeActive ? iconActiveStyle : iconStyle}>
             <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
           </svg>
         </div>
-        <span style={{ ...styles.navLabel, ...(activeTab === 'home' ? styles.navLabelActive : {}) }}>현상소</span>
+        <span style={{ ...styles.navLabel, ...(isHomeActive ? styles.navLabelActive : {}) }}>현상소</span>
       </button>
 
       {/* 필름롤 — 현상된 프레임 목록 */}

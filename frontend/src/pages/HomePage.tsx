@@ -92,6 +92,7 @@ export default function HomePage() {
       {renderContent()}
       <BottomNav
         activeTab={activeTab}
+        homeView={homeView}
         onTabChange={handleTabChange}
         onFabClick={handleFabClick}
       />
