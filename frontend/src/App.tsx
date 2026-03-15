@@ -8,13 +8,13 @@ import AuthCallbackPage from './pages/AuthCallbackPage'
 import Toast from './components/Toast'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
-  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />
+  const accessToken = useAuthStore((s) => s.accessToken)
+  return accessToken ? <>{children}</> : <Navigate to="/" replace />
 }
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
-  return isAuthenticated ? <Navigate to="/home" replace /> : <>{children}</>
+  const accessToken = useAuthStore((s) => s.accessToken)
+  return accessToken ? <Navigate to="/home" replace /> : <>{children}</>
 }
 
 export default function App() {
