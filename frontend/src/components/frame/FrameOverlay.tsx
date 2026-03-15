@@ -19,7 +19,7 @@ interface Props {
   onUnarchive?: (frame: Frame) => void
 }
 
-const PERF_COUNT = 22
+const PERF_COUNT = 14
 const MAX_PHOTOS = 5
 
 
@@ -454,13 +454,13 @@ const styles: Record<string, React.CSSProperties> = {
   frameTop: {
     flex: 1,
     height: 28,
-    background: '#2c2418',
-    border: '1px solid #3a3028',
+    background: '#7a6a58',
+    border: '1px solid #a09080',
     borderRadius: 2,
     display: 'flex',
     alignItems: 'center',
     gap: 5,
-    padding: '0 4px',
+    padding: '0 6px',
     overflow: 'hidden',
     position: 'relative',
   },
@@ -468,8 +468,8 @@ const styles: Record<string, React.CSSProperties> = {
     width: 10,
     height: 7,
     borderRadius: 1,
-    background: '#c8b898',
-    border: '1px solid #3a3028',
+    background: '#c8bfaa',
+    border: '1px solid #a09080',
     flexShrink: 0,
   },
   recapLabel: {
@@ -492,7 +492,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'baseline',
     gap: 3,
-    background: 'rgba(44,36,24,0.85)',
+    background: 'rgba(122,106,88,0.9)',
     padding: '0 4px',
     borderRadius: 2,
   },
