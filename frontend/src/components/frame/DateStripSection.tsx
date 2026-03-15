@@ -406,7 +406,7 @@ export default function DateStripSection({
             </span>
           )}
           <button style={sectionStyles.iconBtn} onClick={onSearchClick} aria-label="검색">
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <svg width="15" height="15" viewBox="0 0 13 13" fill="none">
               <circle cx="5" cy="5" r="3.5" stroke="var(--text-muted)" strokeWidth="1.3" />
               <line x1="7.8" y1="7.8" x2="11.5" y2="11.5" stroke="var(--text-muted)" strokeWidth="1.3" strokeLinecap="round" />
             </svg>
@@ -466,11 +466,11 @@ const sectionStyles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '8px 14px 4px',
+    padding: '12px 16px 8px',
   },
   monthBtn: {
     fontFamily: "var(--font-mono)",
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: 500,
     color: 'var(--gold)',
     letterSpacing: '0.1em',
@@ -485,11 +485,11 @@ const sectionStyles: Record<string, React.CSSProperties> = {
   headerRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
   },
   rollIndicator: {
     fontFamily: "var(--font-mono)",
-    fontSize: 9,
+    fontSize: 11,
     color: 'var(--text-muted)',
     letterSpacing: '0.06em',
     whiteSpace: 'nowrap' as const,
@@ -498,7 +498,7 @@ const sectionStyles: Record<string, React.CSSProperties> = {
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    padding: '2px 4px',
+    padding: '4px 8px',
     display: 'flex',
     alignItems: 'center',
     WebkitTapHighlightColor: 'transparent',
@@ -508,10 +508,10 @@ const sectionStyles: Record<string, React.CSSProperties> = {
     border: '1px solid var(--gold)',
     cursor: 'pointer',
     fontFamily: "var(--font-mono)",
-    fontSize: 8,
+    fontSize: 9,
     color: 'var(--gold)',
     letterSpacing: '0.04em',
-    padding: '4px 8px',
+    padding: '5px 10px',
     borderRadius: 6,
     whiteSpace: 'nowrap' as const,
     WebkitTapHighlightColor: 'transparent',
@@ -519,8 +519,8 @@ const sectionStyles: Record<string, React.CSSProperties> = {
   strip: {
     display: 'flex',
     overflowX: 'auto',
-    padding: '2px 10px 6px',
-    gap: 2,
+    padding: '6px 12px 10px',
+    gap: 4,
     scrollbarWidth: 'none' as const,
     msOverflowStyle: 'none' as const,
   },
