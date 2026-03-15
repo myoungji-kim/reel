@@ -416,3 +416,54 @@ CalendarView:
 ```
 ux: improve calendar view with preview card, today highlight, and contextual filterbar
 ```
+
+---
+
+## 추가 개선: 그리드 스타일 전면 개편 (Calendar Grid Style Overhaul)
+
+> 기준 파일: `reel-calendar-grid-spec.md` (2026-03-15 적용)
+
+### 핵심 변경사항
+
+| 항목 | 이전 | 이후 |
+|------|------|------|
+| 캘린더 카드 배경 | `var(--bg-card)` 다크 | `#ede8e2` (필름롤 카드와 동일) |
+| 오늘 날짜 원 배경 | `var(--amber)` | `#7a5c20` (브랜드 골드) |
+| 오늘 날짜 텍스트 | `var(--bg)` 어두운 역전 | `#f5eed8` 크림 |
+| 기록 있는 날 배경 | 없음 | `#f5eed8` + 텍스트 `#7a5c20` |
+| 미래 날짜 색 | `opacity: 0.2` | `#c8c0b4` 명시 |
+| 일요일 색 | 없음 | `#c4866a` |
+| 토요일 색 | 없음 | `#7a8fa6` |
+| 월 헤더 폰트 | `Bebas Neue` | `DM Mono` 13px, letterSpacing 0.14em |
+| 월 화살표 버튼 | 텍스트 버튼 | 24px 원형 버튼, border `#d0c8b8` |
+| 날짜 숫자 폰트 | `Space Mono` | `DM Mono` 11px |
+| 날짜 원 크기 | 26px | 28px |
+| 통계 표시 | `N일 기록` 텍스트 | 칩 형태: `N frames` + `연속 N일` |
+| 프리뷰 날짜 스타일 | `Space Mono` 9px | `DM Mono` 8px, `#7a5c20` |
+| 프리뷰 제목 폰트 | `Space Mono` 12px | `Noto Serif KR` 13px 600 `#1a1814` |
+| 프리뷰 본문 폰트 | `Noto Sans KR` 12px | `Noto Sans KR` 9px 300 |
+| 프리뷰 하단 버튼 | `전체 보기 →` 텍스트 | `◆ 현상 보기` 테두리 버튼 |
+| 프리뷰 감정 표시 | 없음 | 6px 도트 + 감정명 추가 |
+| NO RECORDS 영역 | 그리드 하단 중앙 | border-top 구분선 + 레이블/설명 분리 |
+| 회고 구분선 | 그라디언트 선 | 단색 `#d8d2c8` 선 |
+
+### stat-chip 동작 규칙
+
+- 기록 **없을 때**: `0 frames` (기본 칩) + `이번 달 기록 없음` (기본 칩)
+- 기록 **있을 때**: `N frames` (active 칩, `#f5eed8` bg) + `연속 N일` (streak 칩, 2일 이상일 때만)
+- 연속 일수: 클라이언트에서 `regularFrames` 날짜 정렬 후 최장 연속 구간 계산
+
+### 체크리스트
+
+- [x] 캘린더 카드 배경 `#ede8e2` (흰색 금지)
+- [x] 월 헤더·화살표 색 `#7a5c20`
+- [x] 오늘 날짜 원 배경 `#7a5c20`, 텍스트 `#f5eed8`
+- [x] 기록 있는 날 배경 `#f5eed8`, 텍스트 `#7a5c20`
+- [x] 기록 있는 날 아래 감정 도트(4px 원)
+- [x] 미래 날짜 색 `#c8c0b4`
+- [x] 일요일 `#c4866a`, 토요일 `#7a8fa6`
+- [x] 월 헤더·날짜 폰트 DM Mono
+- [x] 프리뷰 제목 Noto Serif KR
+- [x] stat-chip.active 배경 `#f5eed8`, 텍스트 `#7a5c20`
+- [x] NO RECORDS 영역 border-top 구분선 포함
+- [x] 날짜 탭 시 record-preview (감정 도트 + 현상 보기 버튼) 표시
