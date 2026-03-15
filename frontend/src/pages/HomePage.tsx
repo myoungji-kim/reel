@@ -1,27 +1,36 @@
+import type React from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import TopBar from '../components/layout/TopBar'
 import FilmBar from '../components/layout/FilmBar'
 import BottomNav from '../components/layout/BottomNav'
+import HomeBentoPage from './HomeBentoPage'
 import ChatPage from './ChatPage'
 import RollPage from './RollPage'
 import FavoritesPage from './FavoritesPage'
 import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
 import ArchivedSheet from '../components/overlays/ArchivedSheet'
 import RollTitleSheet from '../components/overlays/RollTitleSheet'
+import FrameOverlay from '../components/frame/FrameOverlay'
 import { useUIStore } from '../stores/uiStore'
 import { useFrameStore } from '../stores/frameStore'
 import { getRolls } from '../api/rollApi'
-import { getFrames } from '../api/frameApi'
+import { getFrames, getFrame } from '../api/frameApi'
+import type { Frame } from '../types/frame'
 
 export default function HomePage() {
   const {
     activeTab, setActiveTab,
+    homeView, setHomeView,
     isQuickNoteOpen, setQuickNoteOpen,
     isArchivedOpen, setArchivedOpen,
     isRollTitleOpen, setRollTitleOpen,
     pendingRollNum, setPendingRollNum,
   } = useUIStore()
   const { setFrames } = useFrameStore()
+
+  const [bentoSelectedFrame, setBentoSelectedFrame] = useState<Frame | null>(null)
+  const [isBentoFrameOpen, setIsBentoFrameOpen] = useState(false)
 
   const { data: rolls = [] } = useQuery({
     queryKey: ['rolls'],
@@ -31,12 +40,59 @@ export default function HomePage() {
 
   const pendingRollTitle = rolls.find(r => r.rollNum === pendingRollNum)?.title ?? null
 
+  const handleFabClick = () => {
+    if (activeTab === 'home') {
+      setHomeView('chat')
+    } else {
+      setActiveTab('home')
+      setHomeView('chat')
+    }
+  }
+
+  const handleTabChange = (tab: 'home' | 'roll' | 'favorites') => {
+    setActiveTab(tab)
+    if (tab === 'home') {
+      setHomeView('bento')
+    }
+  }
+
+  const handleBentoFrameClick = async (id: number) => {
+    try {
+      const { data } = await getFrame(id)
+      setBentoSelectedFrame(data.data)
+      setIsBentoFrameOpen(true)
+    } catch {
+      // 실패 시 무시
+    }
+  }
+
+  const renderContent = () => {
+    if (activeTab === 'home') {
+      if (homeView === 'chat') {
+        return <ChatPage onBack={() => setHomeView('bento')} />
+      }
+      return (
+        <HomeBentoPage
+          onFrameClick={handleBentoFrameClick}
+          onPlusClick={() => setQuickNoteOpen(true)}
+          onChatClick={() => setHomeView('chat')}
+        />
+      )
+    }
+    if (activeTab === 'favorites') return <FavoritesPage />
+    return <RollPage />
+  }
+
   return (
     <div style={styles.container}>
       <TopBar />
       <FilmBar />
-      {activeTab === 'chat' ? <ChatPage /> : activeTab === 'favorites' ? <FavoritesPage /> : <RollPage />}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      {renderContent()}
+      <BottomNav
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        onFabClick={handleFabClick}
+      />
       <QuickNoteSheet
         isOpen={isQuickNoteOpen}
         onClose={() => setQuickNoteOpen(false)}
@@ -58,6 +114,11 @@ export default function HomePage() {
           setRollTitleOpen(false)
           setPendingRollNum(null)
         }}
+      />
+      <FrameOverlay
+        isOpen={isBentoFrameOpen}
+        frame={bentoSelectedFrame}
+        onClose={() => setIsBentoFrameOpen(false)}
       />
     </div>
   )

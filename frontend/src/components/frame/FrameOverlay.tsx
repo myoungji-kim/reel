@@ -29,6 +29,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
   const [content, setContent] = useState('')
   const [mood, setMood] = useState<string | null>(null)
   const [localPhotos, setLocalPhotos] = useState<Photo[]>([])
+  const [localBookmarked, setLocalBookmarked] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
   // 편집 모드 사진 상태
@@ -61,6 +62,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
       setContent(frame.content)
       setMood(frame.mood ?? null)
       setLocalPhotos(frame.photos ?? [])
+      setLocalBookmarked(frame.isBookmarked)
     }
   }, [frame])
 
@@ -131,12 +133,15 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
 
   const handleToggleBookmark = async () => {
     if (!frame) return
-    const prev = frame.isBookmarked
+    const prev = localBookmarked
+    setLocalBookmarked(!prev)
     toggleBookmarkFrame(frame.id, !prev)
     try {
       const result = await toggleBookmark(frame.id)
+      setLocalBookmarked(result.isBookmarked)
       toggleBookmarkFrame(frame.id, result.isBookmarked)
     } catch {
+      setLocalBookmarked(prev)
       toggleBookmarkFrame(frame.id, prev)
       showToast('북마크 변경에 실패했어요.', 'error')
     }
@@ -243,12 +248,12 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
                   <button
                     style={{
                       ...styles.iconBtn,
-                      color: frame.isBookmarked ? 'var(--gold)' : 'var(--text-muted)',
+                      color: localBookmarked ? 'var(--gold)' : 'var(--text-muted)',
                     }}
                     onClick={handleToggleBookmark}
-                    aria-label={frame.isBookmarked ? '북마크 해제' : '북마크'}
+                    aria-label={localBookmarked ? '북마크 해제' : '북마크'}
                   >
-                    {frame.isBookmarked
+                    {localBookmarked
                       ? <BookmarkCheck size={14} />
                       : <Bookmark size={14} />}
                   </button>

@@ -1,10 +1,13 @@
 import { create } from 'zustand'
 
-type Tab = 'chat' | 'roll' | 'favorites'
+type Tab = 'home' | 'roll' | 'favorites'
+type HomeView = 'bento' | 'chat'
 
 interface UIStore {
   activeTab: Tab
   setActiveTab: (tab: Tab) => void
+  homeView: HomeView
+  setHomeView: (view: HomeView) => void
   isDevelopingOpen: boolean
   setDevelopingOpen: (open: boolean) => void
   isPreviewOpen: boolean
@@ -22,8 +25,10 @@ interface UIStore {
 }
 
 export const useUIStore = create<UIStore>((set) => ({
-  activeTab: 'chat',
+  activeTab: 'home',
   setActiveTab: (tab) => set({ activeTab: tab }),
+  homeView: 'bento',
+  setHomeView: (view) => set({ homeView: view }),
   isDevelopingOpen: false,
   setDevelopingOpen: (open) => set({ isDevelopingOpen: open }),
   isPreviewOpen: false,

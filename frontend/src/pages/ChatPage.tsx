@@ -19,7 +19,11 @@ import { developPreview, saveFrame, getRollStats } from '../api/frameApi'
 import { uploadPhotos } from '../api/photoApi'
 import { useQueryClient } from '@tanstack/react-query'
 
-export default function ChatPage() {
+interface Props {
+  onBack?: () => void
+}
+
+export default function ChatPage({ onBack }: Props) {
   const {
     messages, isTyping, userMsgCount, developed, newMsgSinceDevelop,
     sendMessage, retryMessage, resetNewMsgSinceDevelop, sessionId,
@@ -281,6 +285,15 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.08em',
     padding: '8px 20px',
     borderRadius: 8,
+  },
+  backBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '2px 4px',
+    display: 'flex',
+    alignItems: 'center',
+    WebkitTapHighlightColor: 'transparent',
   },
   messages: {
     flex: 1,

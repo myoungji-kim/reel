@@ -1,29 +1,30 @@
 import type React from 'react'
 
-type Tab = 'chat' | 'roll' | 'favorites'
+type Tab = 'home' | 'roll' | 'favorites'
 
 interface Props {
   activeTab: Tab
   onTabChange: (tab: Tab) => void
+  onFabClick: () => void
 }
 
-export default function BottomNav({ activeTab, onTabChange }: Props) {
+export default function BottomNav({ activeTab, onTabChange, onFabClick }: Props) {
   return (
     <div style={styles.nav}>
       <div style={styles.blur} />
 
-      {/* 현상소 — 하루 현상 (채팅) */}
+      {/* 현상소 — 홈 벤토 */}
       <button
-        style={{ ...styles.navItem, ...(activeTab === 'chat' ? styles.navItemActive : {}) }}
-        onClick={() => onTabChange('chat')}
+        style={{ ...styles.navItem, ...(activeTab === 'home' ? styles.navItemActive : {}) }}
+        onClick={() => onTabChange('home')}
         aria-label="현상소"
       >
         <div style={styles.navIcon}>
-          <svg viewBox="0 0 20 20" style={activeTab === 'chat' ? iconActiveStyle : iconStyle}>
+          <svg viewBox="0 0 20 20" style={activeTab === 'home' ? iconActiveStyle : iconStyle}>
             <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
           </svg>
         </div>
-        <span style={{ ...styles.navLabel, ...(activeTab === 'chat' ? styles.navLabelActive : {}) }}>현상소</span>
+        <span style={{ ...styles.navLabel, ...(activeTab === 'home' ? styles.navLabelActive : {}) }}>현상소</span>
       </button>
 
       {/* 필름롤 — 현상된 프레임 목록 */}
@@ -44,7 +45,7 @@ export default function BottomNav({ activeTab, onTabChange }: Props) {
       {/* FAB — 현상 */}
       <button
         style={styles.fab}
-        onClick={() => onTabChange('chat')}
+        onClick={onFabClick}
         aria-label="하루 현상"
       >
         <div style={styles.fabCircle}>
