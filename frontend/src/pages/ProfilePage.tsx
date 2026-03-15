@@ -184,10 +184,6 @@ export default function ProfilePage() {
             <div style={styles.profileSince}>
               SINCE {user.joinedAt.replace(/-/g, '.')}
             </div>
-            {user.bio
-              ? <div style={styles.profileBio}>{user.bio}</div>
-              : <div style={{ ...styles.profileBio, color: '#b0a898' }}>한 줄 소개를 입력해보세요</div>
-            }
           </div>
         </div>
 
@@ -423,10 +419,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "'DM Mono', monospace",
     fontSize: 10, color: '#b0a898', letterSpacing: '0.06em', marginBottom: 3,
   },
-  profileBio: {
-    fontSize: 11, color: '#5a5248', fontWeight: 300,
-  },
-
   // 섹션
   section: { padding: '16px 16px 4px' },
   secLabel: {
@@ -435,8 +427,8 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: 4,
   },
   secSublabel: {
-    fontFamily: "'DM Mono', monospace",
-    fontSize: 10, color: '#b0a898', letterSpacing: '0.06em',
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 11, color: '#b0a898', fontWeight: 300,
     marginBottom: 12,
     display: 'flex', alignItems: 'center', gap: 6,
   },
