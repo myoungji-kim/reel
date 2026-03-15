@@ -23,11 +23,12 @@ export function getMoodTintColor(mood: string | null | undefined): string {
 
 export function getMoodDotColor(mood: string | null | undefined): string {
   switch (mood) {
-    case '기쁨': case '설렘':   return 'var(--amber)'
-    case '슬픔': case '외로움': return '#607d8b'
-    case '평온': case '감사':   return 'var(--fade-green)'
-    case '피곤': case '무기력': return 'var(--cream-muted)'
-    default:                   return 'var(--border-light)'
+    case '기쁨': case '설렘':   return 'var(--emotion-joy)'
+    case '감사':                return 'var(--emotion-warm)'
+    case '슬픔': case '외로움': return 'var(--emotion-sad)'
+    case '평온':                return 'var(--emotion-calm)'
+    case '피곤': case '무기력': return 'var(--emotion-tired)'
+    default:                   return 'var(--border-default)'
   }
 }
 

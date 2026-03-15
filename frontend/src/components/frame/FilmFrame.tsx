@@ -190,7 +190,7 @@ const styles: Record<string, React.CSSProperties> = {
     height: 7,
     borderRadius: 2,
     background: 'var(--surface-base)',
-    border: '1px solid #ddd8d0',
+    border: '1px solid rgba(42,38,32,0.15)',
     flexShrink: 0,
   },
   body: {
@@ -248,7 +248,7 @@ const styles: Record<string, React.CSSProperties> = {
   preview: {
     fontFamily: "var(--font-body)",
     fontSize: 10,
-    color: 'var(--text-muted)',
+    color: 'var(--text-secondary)',
     lineHeight: 1.75,
     fontWeight: 300,
     marginBottom: 10,
@@ -313,12 +313,12 @@ const styles: Record<string, React.CSSProperties> = {
   },
   statusDone: {
     color: 'var(--accent-gold)',
-    border: '1px solid #d8cdb0',
+    border: '1px solid rgba(122,92,32,0.35)',
     background: 'transparent',
   },
   statusQuick: {
     color: 'var(--accent-gold)',
-    border: '1px solid #d8cdb0',
+    border: '1px solid rgba(122,92,32,0.35)',
     background: 'transparent',
   },
   statusRetro: {
