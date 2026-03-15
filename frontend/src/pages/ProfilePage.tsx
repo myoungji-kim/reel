@@ -178,7 +178,6 @@ export default function ProfilePage() {
               ? <img src={user.avatarUrl} alt="avatar" style={styles.avatarImg} />
               : <span style={styles.avatarText}>{user.initial}</span>
             }
-            <div style={styles.avatarEdit}>+</div>
           </div>
           <div>
             <div style={styles.profileName}>{user.nickname}</div>
@@ -408,7 +407,7 @@ const styles: Record<string, React.CSSProperties> = {
     width: 52, height: 52, borderRadius: '50%',
     background: '#2a2620',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0, position: 'relative', cursor: 'pointer',
+    flexShrink: 0, position: 'relative',
   },
   avatarImg: {
     width: 52, height: 52, borderRadius: '50%', objectFit: 'cover',
@@ -416,13 +415,6 @@ const styles: Record<string, React.CSSProperties> = {
   avatarText: {
     fontFamily: "'Noto Serif KR', serif",
     fontSize: 18, fontWeight: 600, fontStyle: 'italic', color: '#F0EEE9',
-  },
-  avatarEdit: {
-    position: 'absolute', bottom: -1, right: -1,
-    width: 16, height: 16, borderRadius: '50%',
-    background: '#c8a96e', border: '1.5px solid #F0EEE9',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    fontSize: 9, color: '#fff',
   },
   profileName: {
     fontSize: 15, fontWeight: 500, color: '#2a2620', marginBottom: 4,
