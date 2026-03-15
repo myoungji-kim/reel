@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import TopBar from '../components/layout/TopBar'
 import FilmBar from '../components/layout/FilmBar'
+import BottomNav from '../components/layout/BottomNav'
 import ChatPage from './ChatPage'
 import RollPage from './RollPage'
 import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
@@ -34,6 +35,7 @@ export default function HomePage() {
       <TopBar />
       <FilmBar />
       {activeTab === 'chat' ? <ChatPage /> : <RollPage />}
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <QuickNoteSheet
         isOpen={isQuickNoteOpen}
         onClose={() => setQuickNoteOpen(false)}

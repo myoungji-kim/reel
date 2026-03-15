@@ -6,7 +6,7 @@ import { useAuthStore } from '../../stores/authStore'
 import { logout } from '../../api/authApi'
 
 export default function TopBar() {
-  const { activeTab, setActiveTab, setArchivedOpen } = useUIStore()
+  const { setArchivedOpen } = useUIStore()
   const clearAuth = useAuthStore((s) => s.clearAuth)
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -35,33 +35,7 @@ export default function TopBar() {
     <div>
       <div style={styles.topbar}>
         <div style={styles.inner}>
-          <div style={styles.logo}>REEL</div>
-          <div style={styles.tabs}>
-            <button
-              style={{
-                ...styles.tab,
-                color: activeTab === 'chat' ? 'var(--text-primary)' : 'var(--text-muted)',
-                borderBottom: activeTab === 'chat'
-                  ? '1.5px solid var(--accent-gold)'
-                  : '1.5px solid transparent',
-              }}
-              onClick={() => setActiveTab('chat')}
-            >
-              ◈ 하루 현상
-            </button>
-            <button
-              style={{
-                ...styles.tab,
-                color: activeTab === 'roll' ? 'var(--text-primary)' : 'var(--text-muted)',
-                borderBottom: activeTab === 'roll'
-                  ? '1.5px solid var(--accent-gold)'
-                  : '1.5px solid transparent',
-              }}
-              onClick={() => setActiveTab('roll')}
-            >
-              ◆ 현상소
-            </button>
-          </div>
+          <div style={styles.logo}>reel</div>
           <div ref={menuRef} style={styles.menuWrapper}>
             <button style={styles.settingsBtn} onClick={() => setMenuOpen((v) => !v)} aria-label="메뉴">
               <Settings size={16} />
@@ -88,40 +62,24 @@ const styles: Record<string, React.CSSProperties> = {
   topbar: {
     flexShrink: 0,
     background: 'var(--surface-base)',
+    borderBottom: '1px solid var(--border-default)',
   },
   inner: {
     display: 'flex',
     alignItems: 'center',
-    padding: '14px 20px 0',
+    justifyContent: 'space-between',
+    padding: '12px 16px',
   },
   logo: {
     fontFamily: "var(--font-display)",
     fontWeight: 600,
     fontStyle: 'italic',
-    fontSize: 22,
+    fontSize: 20,
     color: 'var(--text-primary)',
-    letterSpacing: '0.02em',
-    marginRight: 16,
     lineHeight: 1,
-  },
-  tabs: {
-    display: 'flex',
-    flex: 1,
-  },
-  tab: {
-    padding: '8px 16px 12px',
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: "var(--font-body)",
-    fontSize: 'var(--text-sm)' as unknown as number,
-    letterSpacing: '0.04em',
-    transition: 'all 0.2s',
-    whiteSpace: 'nowrap',
   },
   menuWrapper: {
     position: 'relative',
-    paddingBottom: 12,
   },
   settingsBtn: {
     background: 'transparent',
