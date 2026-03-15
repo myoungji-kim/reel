@@ -85,4 +85,17 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
             @Param("year") int year,
             @Param("month") int month
     );
+
+    List<Frame> findByUserId(Long userId);
+
+    List<Frame> findByUserIdAndIsArchivedFalse(Long userId);
+
+    @Query("SELECT f.date FROM Frame f " +
+           "WHERE f.user.id = :userId AND f.frameNum BETWEEN :start AND :end")
+    List<LocalDate> findDatesByRollNum(
+            @Param("userId") Long userId,
+            @Param("start") int start,
+            @Param("end") int end
+    );
+
 }

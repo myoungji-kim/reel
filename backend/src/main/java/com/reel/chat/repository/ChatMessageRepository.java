@@ -11,4 +11,9 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     List<ChatMessage> findBySessionIdOrderByCreatedAtAsc(Long sessionId);
 
     long countBySessionIdAndRole(Long sessionId, MessageRole role);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM ChatMessage m WHERE m.session.id IN " +
+            "(SELECT s.id FROM ChatSession s WHERE s.user.id = :userId)")
+    void deleteAllByUserId(@org.springframework.data.repository.query.Param("userId") Long userId);
 }

@@ -8,6 +8,7 @@ import HomeBentoPage from './HomeBentoPage'
 import ChatPage from './ChatPage'
 import RollPage from './RollPage'
 import FavoritesPage from './FavoritesPage'
+import ProfilePage from './ProfilePage'
 import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
 import ArchivedSheet from '../components/overlays/ArchivedSheet'
 import RollTitleSheet from '../components/overlays/RollTitleSheet'
@@ -49,7 +50,7 @@ export default function HomePage() {
     }
   }
 
-  const handleTabChange = (tab: 'home' | 'roll' | 'favorites') => {
+  const handleTabChange = (tab: 'home' | 'roll' | 'favorites' | 'profile') => {
     setActiveTab(tab)
     if (tab === 'home') {
       setHomeView('bento')
@@ -80,12 +81,13 @@ export default function HomePage() {
       )
     }
     if (activeTab === 'favorites') return <FavoritesPage />
+    if (activeTab === 'profile') return <ProfilePage />
     return <RollPage />
   }
 
   return (
     <div style={styles.container}>
-      <TopBar />
+      <TopBar label={activeTab === 'profile' ? 'MY PAGE' : undefined} />
       <FilmBar />
       {renderContent()}
       <BottomNav

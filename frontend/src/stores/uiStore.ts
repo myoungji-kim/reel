@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type Tab = 'home' | 'roll' | 'favorites'
+type Tab = 'home' | 'roll' | 'favorites' | 'profile'
 type HomeView = 'bento' | 'chat'
 
 interface UIStore {

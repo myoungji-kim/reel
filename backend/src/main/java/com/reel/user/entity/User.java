@@ -41,8 +41,14 @@ public class User extends BaseTimeEntity {
     @Column(name = "streak_count", nullable = false, columnDefinition = "INT DEFAULT 0")
     private int streakCount = 0;
 
+    @Column(name = "best_streak", nullable = false, columnDefinition = "INT DEFAULT 0")
+    private int bestStreak = 0;
+
     @Column(name = "last_frame_date")
     private LocalDate lastFrameDate;
+
+    @Column(length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
+    private String bio = "";
 
     public static User of(OAuthProvider provider, OAuthUserInfo info) {
         User user = new User();
@@ -70,6 +76,7 @@ public class User extends BaseTimeEntity {
         } else {
             streakCount = 1;
         }
+        if (streakCount > bestStreak) bestStreak = streakCount;
         lastFrameDate = today;
     }
 }
