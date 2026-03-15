@@ -82,7 +82,7 @@ function SettingItem({
 const si: Record<string, React.CSSProperties> = {
   item: {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    padding: '11px 16px',
+    padding: '13px 16px',
     borderBottom: '1px solid rgba(42,38,32,0.06)',
     cursor: 'pointer',
     WebkitTapHighlightColor: 'transparent',
@@ -90,18 +90,18 @@ const si: Record<string, React.CSSProperties> = {
   danger: {},
   left: { display: 'flex', alignItems: 'center', gap: 10 },
   icon: {
-    width: 28, height: 28, borderRadius: 8,
+    width: 30, height: 30, borderRadius: 8,
     background: '#E4E1DA',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
   },
   dangerIcon: { background: 'rgba(196,134,106,0.1)' },
-  label: { fontSize: 11, color: '#2a2620' },
+  label: { fontSize: 13, color: '#2a2620' },
   dangerLabel: { color: '#c4866a' },
-  sub: { fontSize: 9, color: '#b0a898', fontWeight: 300, marginTop: 1 },
+  sub: { fontSize: 10, color: '#b0a898', fontWeight: 300, marginTop: 2 },
   right: { display: 'flex', alignItems: 'center', gap: 6 },
-  val: { fontFamily: "'DM Mono', monospace", fontSize: 9, color: '#b0a898' },
-  arr: { fontSize: 12, color: '#c8c0b4' },
+  val: { fontFamily: "'DM Mono', monospace", fontSize: 10, color: '#b0a898' },
+  arr: { fontSize: 14, color: '#b0a898' },
 }
 
 function IconSvg({ d, stroke = '#7a6e5e' }: { d: string; stroke?: string }) {
@@ -187,7 +187,7 @@ export default function ProfilePage() {
             </div>
             {user.bio
               ? <div style={styles.profileBio}>{user.bio}</div>
-              : <div style={{ ...styles.profileBio, color: '#c8c0b4' }}>한 줄 소개를 입력해보세요</div>
+              : <div style={{ ...styles.profileBio, color: '#b0a898' }}>한 줄 소개를 입력해보세요</div>
             }
           </div>
         </div>
@@ -398,11 +398,11 @@ const styles: Record<string, React.CSSProperties> = {
 
   // 프로필 카드
   profileCard: {
-    padding: '18px 18px 14px',
+    padding: '20px 18px 16px',
     borderBottom: '1px solid rgba(42,38,32,0.08)',
     display: 'flex',
     alignItems: 'center',
-    gap: 14,
+    gap: 16,
   },
   avatar: {
     width: 52, height: 52, borderRadius: '50%',
@@ -425,27 +425,27 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 9, color: '#fff',
   },
   profileName: {
-    fontSize: 14, fontWeight: 500, color: '#2a2620', marginBottom: 3,
+    fontSize: 15, fontWeight: 500, color: '#2a2620', marginBottom: 4,
   },
   profileSince: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 8.5, color: '#b0a898', letterSpacing: '0.06em', marginBottom: 2,
+    fontSize: 10, color: '#b0a898', letterSpacing: '0.06em', marginBottom: 3,
   },
   profileBio: {
-    fontSize: 9, color: '#9a9080', fontWeight: 300,
+    fontSize: 11, color: '#5a5248', fontWeight: 300,
   },
 
   // 섹션
-  section: { padding: '14px 16px 0' },
+  section: { padding: '16px 16px 4px' },
   secLabel: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 9, color: '#b0a898', letterSpacing: '0.1em',
+    fontSize: 10, color: '#9a9080', letterSpacing: '0.1em',
     marginBottom: 4, textTransform: 'uppercase',
   },
   secSublabel: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 7.5, color: '#c8c0b4', letterSpacing: '0.08em',
-    marginBottom: 10,
+    fontSize: 9, color: '#b0a898', letterSpacing: '0.08em',
+    marginBottom: 12,
     display: 'flex', alignItems: 'center', gap: 6,
   },
 
@@ -453,13 +453,13 @@ const styles: Record<string, React.CSSProperties> = {
   bentoGrid: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: 6,
-    marginBottom: 6,
+    gap: 8,
+    marginBottom: 10,
   },
   bc: {
     background: '#E4E1DA',
     borderRadius: 10,
-    padding: '10px 10px 8px',
+    padding: '12px 12px 10px',
     border: '1px solid rgba(42,38,32,0.08)',
     position: 'relative',
     overflow: 'hidden',
@@ -469,39 +469,39 @@ const styles: Record<string, React.CSSProperties> = {
   badge: {
     display: 'inline-block',
     fontFamily: "'DM Mono', monospace",
-    fontSize: 7,
+    fontSize: 8,
     padding: '1px 5px',
     borderRadius: 4,
     background: 'rgba(42,38,32,0.08)',
     color: '#9a9080',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   badgeDark: { background: 'rgba(240,238,233,0.1)', color: 'rgba(240,238,233,0.4)' },
   badgeGold: { background: 'rgba(200,169,110,0.15)', color: '#c8a96e' },
   bcLabel: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 7,
-    color: '#b0a898',
+    fontSize: 8,
+    color: '#9a9080',
     letterSpacing: '0.08em',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   bcVal: {
     fontFamily: "'Noto Serif KR', serif",
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 600,
     color: '#2a2620',
     lineHeight: 1.1,
   },
   bcSub: {
-    fontSize: 8,
+    fontSize: 9,
     color: '#9a9080',
-    marginTop: 2,
+    marginTop: 4,
     fontWeight: 300,
   },
   moodBarMini: {
     display: 'flex',
     gap: 3,
-    marginTop: 5,
+    marginTop: 6,
     alignItems: 'flex-end',
     height: 18,
   },
@@ -515,9 +515,9 @@ const styles: Record<string, React.CSSProperties> = {
   rollItem: {
     background: '#E4E1DA',
     borderRadius: 10,
-    padding: '10px 12px',
+    padding: '12px 14px',
     border: '1px solid rgba(42,38,32,0.08)',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   rollItemActive: {
     borderColor: 'rgba(122,92,32,0.3)',
@@ -527,27 +527,27 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  riLeft: { display: 'flex', alignItems: 'center', gap: 7 },
+  riLeft: { display: 'flex', alignItems: 'center', gap: 8 },
   riNum: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 8,
+    fontSize: 9,
     color: '#c8a96e',
     background: 'rgba(200,169,110,0.12)',
-    padding: '2px 6px',
+    padding: '2px 7px',
     borderRadius: 4,
   },
-  riStatus: { fontSize: 8, fontWeight: 500 },
-  riActions: { display: 'flex', gap: 5 },
+  riStatus: { fontSize: 9, fontWeight: 500 },
+  riActions: { display: 'flex', gap: 6 },
   riBtn: {
     fontFamily: "'DM Mono', 'Noto Sans KR', monospace",
-    fontSize: 7.5,
+    fontSize: 9,
     color: '#9a9080',
     border: '1px solid rgba(42,38,32,0.15)',
     background: 'transparent',
     borderRadius: 4,
-    padding: '2px 7px',
+    padding: '4px 9px',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
   },
@@ -556,18 +556,18 @@ const styles: Record<string, React.CSSProperties> = {
     borderColor: 'rgba(122,92,32,0.3)',
   },
   riTitle: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: 500,
     color: '#2a2620',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   riMeta: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 8,
+    fontSize: 9,
     color: '#b0a898',
-    marginTop: 2,
+    marginTop: 4,
   },
-  progressWrap: { marginTop: 6 },
+  progressWrap: { marginTop: 8 },
   progressBar: {
     width: '100%', height: 3,
     background: 'rgba(42,38,32,0.1)',
@@ -581,16 +581,16 @@ const styles: Record<string, React.CSSProperties> = {
   },
   progressLabel: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 7.5,
+    fontSize: 9,
     color: '#b0a898',
     display: 'flex',
     justifyContent: 'space-between',
-    marginTop: 3,
+    marginTop: 5,
   },
 
   // 설정
   divider: {
-    height: 6,
+    height: 10,
     background: 'rgba(42,38,32,0.04)',
   },
 
@@ -603,10 +603,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
   withdrawConfirmText: {
     display: 'block',
-    fontSize: 10,
+    fontSize: 12,
     color: '#c4866a',
     fontWeight: 300,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   withdrawBtns: {
     display: 'flex',
@@ -615,22 +615,22 @@ const styles: Record<string, React.CSSProperties> = {
   },
   withdrawCancel: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: '#9a9080',
     border: '1px solid rgba(42,38,32,0.15)',
     background: 'transparent',
     borderRadius: 6,
-    padding: '5px 14px',
+    padding: '6px 16px',
     cursor: 'pointer',
   },
   withdrawOk: {
     fontFamily: "'DM Mono', monospace",
-    fontSize: 9,
+    fontSize: 10,
     color: '#fff',
     background: '#c4866a',
     border: 'none',
     borderRadius: 6,
-    padding: '5px 14px',
+    padding: '6px 16px',
     cursor: 'pointer',
   },
 }
