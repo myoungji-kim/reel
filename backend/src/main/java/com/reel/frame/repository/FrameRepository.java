@@ -88,6 +88,10 @@ public interface FrameRepository extends JpaRepository<Frame, Long> {
 
     List<Frame> findByUserId(Long userId);
 
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM Frame f WHERE f.user.id = :userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
+
     List<Frame> findByUserIdAndIsArchivedFalse(Long userId);
 
     @Query("SELECT f.date FROM Frame f " +

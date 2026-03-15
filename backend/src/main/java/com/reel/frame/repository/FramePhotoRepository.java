@@ -13,4 +13,10 @@ public interface FramePhotoRepository extends JpaRepository<FramePhoto, Long> {
     int countByFrameId(Long frameId);
 
     Optional<FramePhoto> findByIdAndFrameId(Long id, Long frameId);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query(
+        "DELETE FROM FramePhoto p WHERE p.frame.id IN " +
+        "(SELECT f.id FROM Frame f WHERE f.user.id = :userId)")
+    void deleteAllByUserId(@org.springframework.data.repository.query.Param("userId") Long userId);
 }
