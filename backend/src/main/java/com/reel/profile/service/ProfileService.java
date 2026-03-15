@@ -118,15 +118,17 @@ public class ProfileService {
 
     @Transactional
     public void withdraw(Long userId) {
-        // 순서: 메시지 → 세션 → 사진 → 프레임 → 롤 → 유저
-        // 1. 채팅 메시지/세션 삭제 (JPQL 벌크 OK — Frame FK 없음)
+        // 순서: 메시지 → 프레임(사진 cascade) → 세션 → 롤 → 유저
+        // frames.session_id → chat_sessions FK 때문에 프레임을 먼저 삭제해야 함
+        // 1. 채팅 메시지 삭제
         chatMessageRepository.deleteAllByUserId(userId);
-        chatSessionRepository.deleteAllByUserId(userId);
         // 2. 프레임 전체 로드 후 deleteAll → CascadeType.ALL로 FramePhoto cascade 삭제
         frameRepository.deleteAll(frameRepository.findByUserId(userId));
-        // 3. 롤 삭제
+        // 3. 채팅 세션 삭제 (이제 frames FK 없음)
+        chatSessionRepository.deleteAllByUserId(userId);
+        // 4. 롤 삭제
         rollRepository.deleteAll(rollRepository.findByUserIdOrderByRollNumAsc(userId));
-        // 4. 유저 삭제
+        // 5. 유저 삭제
         userRepository.deleteById(userId);
     }
 }
