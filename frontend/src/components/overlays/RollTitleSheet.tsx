@@ -230,7 +230,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "var(--font-mono)",
     fontSize: 11,
     letterSpacing: '0.06em',
-    fontWeight: 700,
+    fontWeight: 600,
     boxShadow: '0 3px 12px var(--amber-35)',
     transition: 'opacity 0.2s',
   },

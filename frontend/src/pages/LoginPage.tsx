@@ -173,7 +173,7 @@ const styles: Record<string, React.CSSProperties> = {
   btnIcon: {
     fontFamily: "var(--font-mono)",
     fontSize: 14,
-    fontWeight: 700,
+    fontWeight: 600,
     lineHeight: 1,
   },
 }
