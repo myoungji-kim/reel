@@ -109,6 +109,38 @@ npm run dev
 
 ---
 
+## 안드로이드에서 로컬 서버 접근 (ADB Reverse)
+
+USB 디버깅이 활성화된 안드로이드 기기를 연결한 후, PC의 로컬 서버를 기기에서 `localhost`로 접근할 수 있습니다.
+
+### 설정
+
+```bash
+# 프론트엔드 (Vite dev server)
+adb reverse tcp:5173 tcp:5173
+
+# 백엔드 (Spring Boot)
+adb reverse tcp:8080 tcp:8080
+```
+
+### 접속
+
+안드로이드 브라우저에서 아래 주소로 접속:
+
+```
+http://localhost:5173
+```
+
+### 사전 조건
+
+- Android 기기에서 **USB 디버깅** 활성화 (설정 → 개발자 옵션)
+- USB 또는 Wi-Fi ADB로 기기 연결
+- `adb devices` 로 기기 인식 확인
+
+> `vite.config.ts`에 `host: '0.0.0.0'` 설정이 되어 있어야 adb reverse가 정상 동작합니다.
+
+---
+
 ## 필요한 환경변수
 
 ### 백엔드
