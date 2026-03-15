@@ -208,7 +208,7 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
 
         {/* 필름스트립 + 액션 버튼 (같은 행) */}
         <div style={styles.headerRow}>
-          <div style={{ ...styles.frameTop, background: '#131008' }}>
+          <div style={styles.frameTop}>
             {Array.from({ length: PERF_COUNT }, (_, i) => (
               <div key={i} style={styles.overlayPerf} />
             ))}
@@ -456,21 +456,20 @@ const styles: Record<string, React.CSSProperties> = {
   frameTop: {
     flex: 1,
     height: 28,
-    background: '#131008',
-    border: '1px solid #2e2518',
+    background: '#2c2418',
+    border: '1px solid #3a3028',
     borderRadius: 2,
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-evenly',
     overflow: 'hidden',
-    padding: '0 8px',
-    gap: 6,
   },
   overlayPerf: {
     width: 10,
     height: 7,
     borderRadius: 1,
-    background: '#1a1510',
-    border: '1px solid #2e2518',
+    background: '#f5f2ed',
+    border: '1px solid #3a3028',
     flexShrink: 0,
   },
   recapLabel: {
