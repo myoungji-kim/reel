@@ -52,7 +52,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    background: 'rgba(26,21,16,0.92)',
+    background: 'var(--surface-card)',
     backdropFilter: 'blur(16px)',
     WebkitBackdropFilter: 'blur(16px)',
     border: '1px solid',
@@ -60,7 +60,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '12px 18px',
     minWidth: 160,
     maxWidth: 280,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
   },
   icon: {
     fontSize: 10,
@@ -70,7 +70,7 @@ const styles: Record<string, React.CSSProperties> = {
   message: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 11,
-    color: 'var(--cream-dim)',
+    color: 'var(--text-secondary)',
     letterSpacing: '0.04em',
     lineHeight: 1.5,
     flex: 1,
