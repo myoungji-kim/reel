@@ -146,7 +146,7 @@ export default function RollPage() {
                 key={tab}
                 style={{
                   ...styles.filterTab,
-                  color: viewMode === tab ? 'var(--amber-light)' : 'var(--cream-muted)',
+                  color: viewMode === tab ? '#c8a96e' : 'var(--cream-muted)',
                   borderBottom: viewMode === tab ? '2px solid var(--amber)' : '2px solid transparent',
                   opacity: viewMode === tab ? 1 : 0.45,
                 }}
