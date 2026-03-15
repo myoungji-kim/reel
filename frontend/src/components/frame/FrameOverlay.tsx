@@ -19,7 +19,7 @@ interface Props {
   onUnarchive?: (frame: Frame) => void
 }
 
-const PERF_COUNT = 8
+const PERF_COUNT = 22
 const MAX_PHOTOS = 5
 
 
@@ -213,15 +213,13 @@ export default function FrameOverlay({ isOpen, frame, onClose, onUnarchive }: Pr
               <div key={i} style={styles.overlayPerf} />
             ))}
             {frame && (
-              <>
+              <span style={styles.overlayNum}>
                 {frame.frameType === 'RETROSPECTIVE' && (
                   <span style={styles.recapLabel}>월간 회고</span>
                 )}
-                <span style={styles.overlayNum}>
-                  <span style={styles.overlayNumLabel}>FR.</span>
-                  {String(frame.frameNum).padStart(2, '0')}
-                </span>
-              </>
+                <span style={styles.overlayNumLabel}>FR.</span>
+                {String(frame.frameNum).padStart(2, '0')}
+              </span>
             )}
           </div>
 
@@ -461,14 +459,16 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: 2,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-evenly',
+    gap: 5,
+    padding: '0 4px',
     overflow: 'hidden',
+    position: 'relative',
   },
   overlayPerf: {
     width: 10,
     height: 7,
     borderRadius: 1,
-    background: '#f5f2ed',
+    background: '#c8b898',
     border: '1px solid #3a3028',
     flexShrink: 0,
   },
@@ -484,20 +484,22 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   overlayNum: {
+    position: 'absolute',
+    right: 8,
     fontFamily: "var(--font-mono)",
-    fontSize: 14,
+    fontSize: 13,
     color: '#e8c87a',
-    marginLeft: 'auto',
-    opacity: 0.8,
     display: 'flex',
     alignItems: 'baseline',
-    gap: 2,
+    gap: 3,
+    background: 'rgba(44,36,24,0.85)',
+    padding: '0 4px',
+    borderRadius: 2,
   },
   overlayNumLabel: {
     fontFamily: "var(--font-mono)",
-    fontSize: 10,
-    color: '#e8c87a',
-    opacity: 0.6,
+    fontSize: 9,
+    color: '#c8a96e',
     letterSpacing: '0.06em',
   },
   title: {
