@@ -240,7 +240,7 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.04em',
   },
   outerBookmarked: {
-    borderLeft: '3px solid rgba(196, 160, 80, 0.55)',
+    background: 'rgba(200,169,110,0.06)',
   },
   title: {
     fontFamily: "var(--font-display)",
