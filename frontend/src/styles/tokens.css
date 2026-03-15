@@ -2,34 +2,42 @@
   /* ─────────────────────────────
      SURFACE (배경 계층)
   ───────────────────────────── */
-  --surface-base:       #f5f2ed;
-  --surface-card:       #ffffff;
-  --surface-muted:      #ede9e2;
-  --surface-inverse:    #1a1814;
+  --surface-base:    #F0EEE9;   /* 앱 전체 배경 */
+  --surface-card:    #ffffff;   /* AI 말풍선, 흰 카드 */
+  --surface-muted:   #E4E1DA;   /* 벤토 셀, 필름 카드 */
+  --surface-inverse: #2a2620;   /* 유저 말풍선, FAB, CTA */
 
   /* ─────────────────────────────
      TEXT (텍스트 계층)
   ───────────────────────────── */
-  --text-primary:       #1a1814;
-  --text-secondary:     #3a3530;
-  --text-muted:         #5a5048;
-  --text-placeholder:   #b0a898;
-  --text-inverse:       #e8e2d8;
+  --text-primary:       #2a2620;
+  --text-secondary:     #5a5248;
+  --text-muted:         #9a9080;
+  --text-placeholder:   #b8b0a4;
+  --text-inverse:       #F0EEE9;
   --text-inverse-muted: #7a7060;
 
   /* ─────────────────────────────
      BORDER (선)
   ───────────────────────────── */
-  --border-default:     #e4dfd6;
-  --border-muted:       #2a2318;
+  --border-default: rgba(42,38,32,0.12);
+  --border-mid:     rgba(42,38,32,0.20);
 
   /* ─────────────────────────────
-     ACCENT (브랜드 포인트)
+     BRAND (골드)
   ───────────────────────────── */
-  --accent-gold:        #7a5c20;
-  --accent-gold-light:  #ffe6a0;
-  --accent-green-bg:    #e8f0e6;
-  --accent-green-text:  #4a7040;
+  --gold:       #7a5c20;   /* 텍스트용 — 대비 확보 */
+  --gold-light: #c8a96e;   /* 장식용 (컬러바, 도트, 뱃지) */
+  --gold-pale:  #f5eed8;   /* 골드 배경 틴트 */
+
+  /* ─────────────────────────────
+     EMOTION (감정 컬러 — 컬러바 전용)
+  ───────────────────────────── */
+  --emotion-joy:   #c8a96e;
+  --emotion-warm:  #c4866a;
+  --emotion-tired: #9a9a8e;
+  --emotion-sad:   #7a8fa6;
+  --emotion-calm:  #8aaa8a;
 
   /* ─────────────────────────────
      TYPOGRAPHY
@@ -47,7 +55,9 @@
   --text-xl:   18px;
   --text-2xl:  22px;
 
-  /* SPACING */
+  /* ─────────────────────────────
+     SPACING
+  ───────────────────────────── */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -62,39 +72,36 @@
   --radius-md:   12px;
   --radius-lg:   14px;
   --radius-full: 9999px;
-  --radius-pill: 9999px;
 
   /* ─────────────────────────────
-     SHADOW
+     SHADOW (FAB 전용)
   ───────────────────────────── */
-  --shadow-fab: 0 2px 10px rgba(0, 0, 0, 0.15);
+  --shadow-fab: 0 2px 10px rgba(42,38,32,0.22);
 
   /* ─────────────────────────────
-     LEGACY ALIASES
-     기존 컴포넌트 코드와의 호환성 유지
+     LEGACY ALIASES (기존 컴포넌트 호환)
   ───────────────────────────── */
 
   /* 배경 */
-  --bg:          var(--surface-base);
-  --bg-mid:      var(--surface-muted);
-  --bg-card:     var(--surface-card);
+  --bg:      var(--surface-base);
+  --bg-mid:  var(--surface-muted);
+  --bg-card: var(--surface-card);
 
   /* 테두리 */
   --border:       var(--border-default);
-  --border-light: #d4cfc6;
+  --border-light: rgba(42,38,32,0.16);
 
-  /* 앰버 */
-  --amber:        var(--accent-gold);
-  --amber-light:  var(--accent-gold-light);
-  --amber-pale:   #f0dfa0;
+  /* 앰버 → 골드로 통일 */
+  --amber:       var(--gold);
+  --amber-light: var(--gold-light);
+  --amber-pale:  var(--gold-pale);
 
-  /* 앰버 알파 변형 — accent-gold RGB(200,169,110) 기반 */
-  --amber-07:  rgba(200, 169, 110, 0.07);
-  --amber-15:  rgba(200, 169, 110, 0.15);
-  --amber-20:  rgba(200, 169, 110, 0.20);
-  --amber-25:  rgba(200, 169, 110, 0.25);
-  --amber-30:  rgba(200, 169, 110, 0.30);
-  --amber-35:  rgba(200, 169, 110, 0.35);
+  --amber-07:  rgba(122,92,32,0.07);
+  --amber-15:  rgba(122,92,32,0.15);
+  --amber-20:  rgba(122,92,32,0.20);
+  --amber-25:  rgba(122,92,32,0.25);
+  --amber-30:  rgba(122,92,32,0.30);
+  --amber-35:  rgba(122,92,32,0.35);
 
   /* 텍스트 */
   --cream:       var(--text-primary);
@@ -102,18 +109,18 @@
   --cream-muted: var(--text-muted);
 
   /* 기타 */
-  --fade-green:  var(--accent-green-text);
+  --accent-gold:       var(--gold);
+  --accent-gold-light: var(--gold-light);
+  --fade-green:  #4a7040;
   --error:       #c0624a;
-  --error-border: rgba(192, 98, 74, 0.4);
+  --error-border: rgba(192,98,74,0.4);
 
-  --redevelop-bg:     rgba(100, 120, 180, 0.07);
-  --redevelop-border: rgba(100, 120, 180, 0.3);
+  --redevelop-bg:     rgba(100,120,180,0.07);
+  --redevelop-border: rgba(100,120,180,0.3);
 
-  /* 오버레이 배경 — 라이트 테마에서도 backdrop은 어둡게 유지 */
-  --overlay-bg:  rgba(10, 8, 5, 0.72);
-  --overlay-dim: rgba(10, 8, 5, 0.75);
+  --overlay-bg:  rgba(10,8,5,0.72);
+  --overlay-dim: rgba(10,8,5,0.75);
 
-  /* 필름 */
-  --film-tint:          rgba(245, 242, 237, 0.02);
+  --film-tint:          rgba(240,238,233,0.02);
   --film-grain-opacity: 0.18;
 }
