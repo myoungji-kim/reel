@@ -125,7 +125,7 @@ public class FrameService {
         int frameNum = (int) frameRepository.countByUserId(userId) + 1;
         LocalDate date = request.date() != null ? request.date() : LocalDate.now();
 
-        Frame frame = frameRepository.save(Frame.quick(user, frameNum, request.title(), request.content(), date));
+        Frame frame = frameRepository.save(Frame.quick(user, frameNum, request.title(), request.content(), request.mood(), date));
 
         if (frameNum % 24 == 0) {
             rollService.ensureRollCreated(user, frameNum / 24);

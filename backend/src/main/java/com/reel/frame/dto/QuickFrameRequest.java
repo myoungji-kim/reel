@@ -7,5 +7,6 @@ import java.time.LocalDate;
 public record QuickFrameRequest(
         @NotBlank String title,
         @NotBlank String content,
-        LocalDate date
+        LocalDate date,
+        @NotBlank String mood
 ) {}

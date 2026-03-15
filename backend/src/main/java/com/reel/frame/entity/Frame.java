@@ -91,12 +91,13 @@ public class Frame {
         return frame;
     }
 
-    public static Frame quick(User user, int frameNum, String title, String content, LocalDate date) {
+    public static Frame quick(User user, int frameNum, String title, String content, String mood, LocalDate date) {
         Frame frame = new Frame();
         frame.user = user;
         frame.frameNum = frameNum;
         frame.title = title;
         frame.content = content;
+        frame.mood = mood;
         frame.date = date;
         frame.frameType = FrameType.QUICK;
         return frame;
