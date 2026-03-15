@@ -2,10 +2,10 @@
   /* ─────────────────────────────
      SURFACE (배경 계층)
   ───────────────────────────── */
-  --surface-base:    #F0EEE9;   /* 앱 전체 배경 */
-  --surface-card:    #ffffff;   /* AI 말풍선, 흰 카드 */
-  --surface-muted:   #E4E1DA;   /* 벤토 셀, 필름 카드 */
-  --surface-inverse: #2a2620;   /* 유저 말풍선, FAB, CTA */
+  --surface-base:    #EDE8DF;   /* 앱 전체 배경 — Cloud Dancer 2026 */
+  --surface-card:    #F7F4EF;   /* AI 말풍선, 흰 카드 */
+  --surface-muted:   #E1DBD1;   /* 벤토 셀, 필름 카드 */
+  --surface-inverse: #2a2520;   /* 유저 말풍선, FAB, CTA */
 
   /* ─────────────────────────────
      TEXT (텍스트 계층)
@@ -14,7 +14,7 @@
   --text-secondary:     #5a5248;
   --text-muted:         #9a9080;
   --text-placeholder:   #b8b0a4;
-  --text-inverse:       #F0EEE9;
+  --text-inverse:       #EDE8DF;
   --text-inverse-muted: #7a7060;
 
   /* ─────────────────────────────
@@ -121,6 +121,6 @@
   --overlay-bg:  rgba(10,8,5,0.72);
   --overlay-dim: rgba(10,8,5,0.75);
 
-  --film-tint:          rgba(240,238,233,0.02);
+  --film-tint:          rgba(237,232,223,0.02);
   --film-grain-opacity: 0.18;
 }
