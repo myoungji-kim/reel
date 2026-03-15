@@ -7,9 +7,9 @@ export default function LoginPage() {
 
   return (
     <div style={styles.root}>
-      {/* 필름 퍼포레이션 */}
-      <div style={styles.filmStrip}>
-        {Array.from({ length: 24 }).map((_, i) => (
+      {/* 상단 필름 퍼포레이션 */}
+      <div style={styles.filmStripTop}>
+        {Array.from({ length: 60 }).map((_, i) => (
           <div key={i} style={styles.hole} />
         ))}
       </div>
@@ -38,8 +38,8 @@ export default function LoginPage() {
       </div>
 
       {/* 하단 필름 퍼포레이션 */}
-      <div style={styles.filmStrip}>
-        {Array.from({ length: 24 }).map((_, i) => (
+      <div style={styles.filmStripBottom}>
+        {Array.from({ length: 60 }).map((_, i) => (
           <div key={i} style={styles.hole} />
         ))}
       </div>
@@ -55,16 +55,32 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     background: 'var(--bg)',
+  },
+  filmStripTop: {
+    flexShrink: 0,
+    height: 'calc(20px + env(safe-area-inset-top))',
+    paddingTop: 'env(safe-area-inset-top)',
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingBottom: 4,
+    background: '#2c2418',
+    borderBottom: '1px solid #3a3028',
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: 6,
     overflow: 'hidden',
   },
-  filmStrip: {
+  filmStripBottom: {
     flexShrink: 0,
-    height: 20,
-    background: '#1a1510',
-    borderBottom: '1px solid #2e2518',
+    height: 'calc(20px + env(safe-area-inset-bottom))',
+    paddingBottom: 'env(safe-area-inset-bottom)',
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 4,
+    background: '#2c2418',
+    borderTop: '1px solid #3a3028',
     display: 'flex',
-    alignItems: 'center',
-    padding: '0 8px',
+    alignItems: 'flex-start',
     gap: 6,
     overflow: 'hidden',
   },
@@ -72,8 +88,8 @@ const styles: Record<string, React.CSSProperties> = {
     width: 10,
     height: 7,
     borderRadius: 1,
-    background: '#0f0c08',
-    border: '1px solid #2e2518',
+    background: '#f5f2ed',
+    border: '1px solid #3a3028',
     flexShrink: 0,
   },
   content: {
@@ -139,20 +155,19 @@ const styles: Record<string, React.CSSProperties> = {
   btnKakao: {
     width: '100%',
     padding: '14px 20px',
-    background: 'var(--surface-inverse)',
+    background: '#c8a96e',
     border: 'none',
     borderRadius: 'var(--radius-md)',
-    color: 'var(--accent-gold)',
+    color: '#1a1814',
     fontFamily: "var(--font-mono)",
     fontSize: 12,
-    fontWeight: 500,
+    fontWeight: 600,
     letterSpacing: '0.04em',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
-    boxShadow: 'var(--shadow-fab)',
     transition: 'opacity 0.2s',
   },
   btnIcon: {

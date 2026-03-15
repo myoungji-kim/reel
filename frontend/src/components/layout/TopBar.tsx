@@ -80,11 +80,6 @@ export default function TopBar() {
           </div>
         </div>
       </div>
-      <div style={styles.filmStrip}>
-        {Array.from({ length: 40 }, (_, i) => (
-          <div key={i} style={styles.filmHole} />
-        ))}
-      </div>
     </div>
   )
 }
@@ -123,26 +118,6 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: '0.04em',
     transition: 'all 0.2s',
     whiteSpace: 'nowrap',
-  },
-  filmStrip: {
-    height: 10,
-    background: 'var(--surface-base)',
-    borderTop: '1px solid var(--border-default)',
-    borderBottom: '1px solid var(--border-default)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: 3,
-    padding: '0 8px',
-    overflow: 'hidden',
-    flexShrink: 0,
-  },
-  filmHole: {
-    width: 10,
-    height: 6,
-    border: '1px solid var(--border-default)',
-    borderRadius: 1,
-    background: 'var(--surface-base)',
-    flexShrink: 0,
   },
   menuWrapper: {
     position: 'relative',

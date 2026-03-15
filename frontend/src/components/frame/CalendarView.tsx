@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getCalendarFrames, checkRetrospectiveAvailable, createRetrospective } from '../../api/frameApi'
-import { getMoodDotColor } from '../../utils/moodTone'
+import { getMoodBarColor } from '../../utils/moodTone'
 import type { CalendarFrame } from '../../types/frame'
 import { useToast } from '../../hooks/useToast'
 
@@ -15,6 +15,34 @@ const MONTH_NAMES = [
   'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
   'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER',
 ]
+
+const DOW_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+
+/** calendarFrames 에서 이 달의 최장 연속 기록일 수 계산 */
+function computeLongestStreak(frames: CalendarFrame[]): number {
+  if (frames.length === 0) return 0
+  const dates = frames.map(f => f.date).sort()
+  let max = 1
+  let cur = 1
+  for (let i = 1; i < dates.length; i++) {
+    const prev = new Date(dates[i - 1])
+    const curr = new Date(dates[i])
+    const diff = (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
+    if (diff === 1) { cur++; max = Math.max(max, cur) }
+    else cur = 1
+  }
+  return max
+}
+
+/** "YYYY-MM-DD" → "YYYY.MM.DD — DOW" */
+function formatPreviewDate(dateStr: string): string {
+  const d = new Date(dateStr + 'T00:00:00')
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  const dow = DOW_SHORT[d.getDay()]
+  return `${yyyy}.${mm}.${dd} — ${dow}`
+}
 
 export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
   const today = new Date()
@@ -44,12 +72,10 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
     else setMonth(m => m + 1)
   }
 
-  // month 변경 시 선택 초기화
   useEffect(() => {
     setSelectedDate(null)
   }, [year, month])
 
-  // 개선6: isFetching으로 로딩 상태 표현
   const { data: calendarFrames = [], isFetching } = useQuery({
     queryKey: ['calendarFrames', year, month],
     queryFn: () => getCalendarFrames(year, month),
@@ -81,14 +107,7 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
 
   const retrospectiveCf = calendarFrames.find(cf => cf.frameType === 'RETROSPECTIVE')
   const regularFrames = calendarFrames.filter(cf => cf.frameType !== 'RETROSPECTIVE')
-
-  const retroSectionDivider = (
-    <div style={styles.retroDivider}>
-      <div style={styles.retroDividerLine} />
-      <span style={styles.retroDividerLabel}>월간 회고</span>
-      <div style={styles.retroDividerLine} />
-    </div>
-  )
+  const streak = computeLongestStreak(regularFrames)
 
   const frameByDate = new Map<string, CalendarFrame>()
   for (const cf of regularFrames) {
@@ -107,39 +126,70 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
   const handleDayClick = (day: number) => {
     const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
     if (dateStr > todayStr) return
+    const cf = frameByDate.get(dateStr)
+    if (!cf) { setSelectedDate(null); return }
     setSelectedDate(prev => (prev === dateStr ? null : dateStr))
   }
 
-  // 개선1: 선택된 날짜의 프레임 미리보기
   const selectedCf = selectedDate ? frameByDate.get(selectedDate) : undefined
+
+  // 회고 섹션 구분선
+  const retroSectionDivider = (
+    <div style={styles.retroDivider}>
+      <div style={styles.retroDividerLine} />
+      <span style={styles.retroDividerLabel}>월간 회고</span>
+      <div style={styles.retroDividerLine} />
+    </div>
+  )
 
   return (
     <div style={styles.container}>
-      {/* 월 네비게이션 헤더 */}
-      <div style={styles.header}>
-        <button style={styles.navBtn} onClick={handlePrevMonth} aria-label="이전 달">◀</button>
-        <span style={styles.monthLabel}>{MONTH_NAMES[month - 1]} {year}</span>
+
+      {/* 월 네비게이션 */}
+      <div style={styles.calNav}>
+        <button style={styles.calNavArrow} onClick={handlePrevMonth} aria-label="이전 달">‹</button>
+        <span style={styles.calMonthTitle}>{MONTH_NAMES[month - 1]} {year}</span>
         <button
-          style={{ ...styles.navBtn, opacity: isCurrentMonth ? 0.2 : 0.7, cursor: isCurrentMonth ? 'default' : 'pointer' }}
+          style={{ ...styles.calNavArrow, opacity: isCurrentMonth ? 0.3 : 1, cursor: isCurrentMonth ? 'default' : 'pointer' }}
           onClick={handleNextMonth}
           aria-label="다음 달"
           disabled={isCurrentMonth}
-        >▶</button>
+        >›</button>
       </div>
 
-      {/* 개선4: 월간 통계 */}
-      <div style={styles.statsRow}>
-        <span style={styles.statsText}>{calendarFrames.length}일 기록</span>
+      {/* 통계 칩 */}
+      <div style={styles.calStatRow}>
+        {regularFrames.length === 0 ? (
+          <>
+            <span style={styles.statChip}>0 frames</span>
+            <span style={styles.statChip}>이번 달 기록 없음</span>
+          </>
+        ) : (
+          <>
+            <span style={{ ...styles.statChip, ...styles.statChipActive }}>{regularFrames.length} frames</span>
+            {streak >= 2 && (
+              <span style={{ ...styles.statChip, ...styles.statChipStreak }}>연속 {streak}일</span>
+            )}
+          </>
+        )}
       </div>
 
-      {/* 개선6: 로딩 중 그리드 흐리게 */}
+      {/* 요일 헤더 + 날짜 그리드 */}
       <div style={{ ...styles.grid, opacity: isFetching ? 0.35 : 1, transition: 'opacity 0.2s' }}>
-        {WEEKDAYS.map(day => (
-          <div key={day} style={styles.weekdayCell}>{day}</div>
+        {WEEKDAYS.map((day, i) => (
+          <div
+            key={day}
+            style={{
+              ...styles.dowCell,
+              color: i === 0 ? '#c4866a' : i === 6 ? '#7a8fa6' : '#b0a898',
+            }}
+          >
+            {day}
+          </div>
         ))}
 
         {cells.map((day, idx) => {
-          if (day === null) return <div key={`empty-${idx}`} style={styles.cell} />
+          if (day === null) return <div key={`empty-${idx}`} style={styles.dayCell} />
 
           const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
           const cf = frameByDate.get(dateStr)
@@ -148,15 +198,32 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
           const hasRecord = !!cf
           const isSelected = dateStr === selectedDate
           const isPressed = dateStr === pressedDate
+          const dow = idx % 7  // 0=SUN, 6=SAT
+          const isSun = dow === 0
+          const isSat = dow === 6
+
+          // 날짜 숫자 색상
+          let numColor = '#5a5048'
+          if (isToday) numColor = '#f5eed8'
+          else if (hasRecord) numColor = '#7a5c20'
+          else if (isFuture && isSun) numColor = '#e4c8b8'
+          else if (isFuture && isSat) numColor = '#b8c8d8'
+          else if (isFuture) numColor = '#c8c0b4'
+          else if (isSun) numColor = '#c4866a'
+          else if (isSat) numColor = '#7a8fa6'
+
+          // 날짜 원 배경
+          let circleBackground = 'transparent'
+          if (isToday) circleBackground = '#7a5c20'
+          else if (isSelected && hasRecord) circleBackground = 'rgba(122,92,32,0.14)'
+          else if (hasRecord) circleBackground = '#f5eed8'
 
           return (
             <div
               key={dateStr}
               style={{
-                ...styles.cell,
+                ...styles.dayCell,
                 cursor: isFuture ? 'default' : 'pointer',
-                opacity: isFuture ? 0.2 : 1,
-                // 개선5: 탭 피드백
                 transform: isPressed ? 'scale(0.90)' : 'scale(1)',
                 transition: 'transform 0.1s',
               }}
@@ -167,33 +234,22 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
               onTouchStart={() => !isFuture && setPressedDate(dateStr)}
               onTouchEnd={() => setPressedDate(null)}
             >
-              {/* 개선2: 오늘 날짜 앰버 원형 / 개선1: 선택된 날짜 반투명 원형 */}
               <div
                 style={{
-                  ...styles.dayCircle,
-                  background: isToday
-                    ? 'var(--amber)'
-                    : isSelected
-                    ? 'rgba(212,130,42,0.18)'
-                    : 'transparent',
+                  ...styles.dayNum,
+                  background: circleBackground,
+                  color: numColor,
+                  fontWeight: isToday || hasRecord ? 500 : 400,
                 }}
               >
-                <span
-                  style={{
-                    ...styles.dayNum,
-                    color: isToday ? 'var(--bg)' : hasRecord ? 'var(--cream)' : 'var(--cream-muted)',
-                    opacity: !hasRecord && !isToday ? 0.4 : 1,
-                    fontWeight: isToday ? 700 : 400,
-                  }}
-                >
-                  {day}
-                </span>
+                {day}
               </div>
-              {hasRecord && !isToday && (
+              {hasRecord && (
                 <span
                   style={{
-                    ...styles.dot,
-                    background: getMoodDotColor(cf.mood),
+                    ...styles.emotionDot,
+                    background: getMoodBarColor(cf.mood),
+                    opacity: isToday ? 0.7 : 1,
                   }}
                 />
               )}
@@ -202,40 +258,40 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
         })}
       </div>
 
-      {/* 개선1: 날짜 선택 시 프레임 미리보기 카드 */}
+      {/* 날짜 탭 시 프리뷰 */}
       {selectedDate && selectedCf && (
-        <div style={styles.previewCard} onClick={() => onFrameSelect(selectedCf.frameId)}>
-          <div style={styles.previewBody}>
-            <div style={styles.previewText}>
-              <span style={styles.previewDate}>{selectedDate}</span>
-              <span style={styles.previewTitle}>{selectedCf.title}</span>
-              {selectedCf.contentPreview && (
-                <span style={styles.previewContent}>{selectedCf.contentPreview}</span>
+        <div style={styles.recordPreview}>
+          <div style={styles.previewDate}>{formatPreviewDate(selectedDate)}</div>
+          <div style={styles.previewTitle}>{selectedCf.title}</div>
+          {selectedCf.contentPreview && (
+            <div style={styles.previewBody}>{selectedCf.contentPreview}</div>
+          )}
+          <div style={styles.previewFooter}>
+            <span style={styles.previewEmotion}>
+              {selectedCf.mood && (
+                <>
+                  <span style={{ ...styles.previewEmotionDot, background: getMoodBarColor(selectedCf.mood) }} />
+                  {selectedCf.mood}
+                </>
               )}
-            </div>
-            {selectedCf.thumbnailUrl && (
-              <img
-                src={selectedCf.thumbnailUrl}
-                alt=""
-                style={styles.previewThumb}
-              />
-            )}
+            </span>
+            <button style={styles.previewBtn} onClick={() => onFrameSelect(selectedCf.frameId)}>
+              ◆ 현상 보기
+            </button>
           </div>
-          <span style={styles.previewArrow}>전체 보기 →</span>
         </div>
       )}
 
-      {/* 빈 상태 */}
+      {/* 빈 달 — NO RECORDS */}
       {!isFetching && regularFrames.length === 0 && !retrospectiveCf && (
-        <div style={styles.emptyState}>
-          <p style={styles.emptyText}>// NO RECORDS</p>
-          <p style={styles.emptySub}>이 달에 현상된 프레임이 없어요</p>
+        <div style={styles.noRecords}>
+          <div style={styles.noRecordsLabel}>// NO RECORDS</div>
+          <div style={styles.noRecordsSub}>이 달에 현상된 프레임이 없어요</div>
         </div>
       )}
 
       {/* 월간 회고 섹션 — 날짜 미선택 + 현재 달 아닐 때만 표시 */}
       {!isFetching && !selectedDate && !isCurrentMonth && (() => {
-        // 생성 완료
         if (retrospectiveCf) {
           return (
             <div style={styles.retroSection}>
@@ -254,10 +310,8 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
           )
         }
 
-        // 기록 0개 → 섹션 숨김
         if (!retroAvail || retroAvail.frameCount === 0) return null
 
-        // 기록 1~2개 → 조용한 안내
         if (retroAvail.frameCount < 3) {
           return (
             <div style={styles.retroSection}>
@@ -267,7 +321,6 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
           )
         }
 
-        // 기록 ≥ 3 + 미생성 → CTA
         return (
           <div style={styles.retroSection}>
             {retroSectionDivider}
@@ -286,168 +339,207 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
 }
 
 const styles: Record<string, React.CSSProperties> = {
+  // ── 컨테이너 ──────────────────────────────────
   container: {
-    background: 'var(--bg-card)',
-    border: '1px solid var(--border)',
-    margin: '12px 16px 0',
-    padding: '12px 8px 16px',
+    margin: '0 14px 14px',
+    background: '#ede8e2',
+    borderRadius: 12,
+    overflow: 'hidden',
+    padding: '14px 14px 16px',
   },
-  header: {
+
+  // ── 월 네비게이션 ──────────────────────────────
+  calNav: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0 4px 12px',
+    marginBottom: 14,
   },
-  monthLabel: {
-    fontFamily: "'Bebas Neue', cursive",
-    fontSize: 18,
-    color: 'var(--cream)',
-    letterSpacing: '0.1em',
-  },
-  navBtn: {
+  calNavArrow: {
+    width: 24,
+    height: 24,
+    borderRadius: '50%',
     background: 'transparent',
-    border: 'none',
+    border: '1px solid #d0c8b8',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: 'var(--cream-muted)',
-    opacity: 0.7,
-    padding: '4px 8px',
+    fontSize: 14,
+    color: '#7a5c20',
     lineHeight: 1,
+    padding: 0,
   },
-  statsRow: {
-    padding: '0 4px 8px',
+  calMonthTitle: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: 13,
+    fontWeight: 500,
+    color: '#7a5c20',
+    letterSpacing: '0.14em',
+    textTransform: 'uppercase' as const,
   },
-  statsText: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
-    color: 'var(--amber)',
-    letterSpacing: '0.08em',
-    opacity: 0.75,
+
+  // ── 통계 칩 ───────────────────────────────────
+  calStatRow: {
+    display: 'flex',
+    gap: 6,
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingBottom: 10,
+    borderBottom: '1px solid #d8d2c8',
   },
+  statChip: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: 8,
+    color: '#b0a898',
+    background: '#f5f2ed',
+    border: '1px solid #d8d2c8',
+    borderRadius: 8,
+    padding: '3px 8px',
+    letterSpacing: '0.06em',
+  },
+  statChipActive: {
+    color: '#7a5c20',
+    background: '#f5eed8',
+    borderColor: '#c8a96e',
+  },
+  statChipStreak: {
+    background: '#f0ece4',
+    borderColor: '#d8cdb0',
+    color: '#5a5048',
+  },
+
+  // ── 요일 헤더 + 날짜 그리드 ───────────────────
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(7, 1fr)',
+    gap: '2px 0',
   },
-  weekdayCell: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
-    color: 'var(--cream-muted)',
-    letterSpacing: '0.05em',
-    textAlign: 'center',
-    padding: '4px 0 8px',
-    opacity: 0.5,
+  dowCell: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: 7.5,
+    textAlign: 'center' as const,
+    letterSpacing: '0.06em',
+    padding: '2px 0 6px',
   },
-  cell: {
+  dayCell: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     alignItems: 'center',
-    justifyContent: 'center',
-    height: 44,
-    gap: 3,
-  },
-  dayCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
+    padding: '3px 0',
+    position: 'relative' as const,
   },
   dayNum: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 11,
+    width: 28,
+    height: 28,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    transition: 'background 0.15s',
+    flexShrink: 0,
     lineHeight: 1,
   },
-  dot: {
+  emotionDot: {
     width: 4,
     height: 4,
     borderRadius: '50%',
+    marginTop: 2,
     flexShrink: 0,
   },
-  previewCard: {
-    margin: '12px 4px 0',
-    padding: '12px 14px',
-    border: '1px solid var(--amber-35)',
-    background: 'rgba(212,130,42,0.05)',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 10,
-  },
-  previewBody: {
-    display: 'flex',
-    gap: 12,
-    alignItems: 'flex-start',
-  },
-  previewText: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 5,
-    minWidth: 0,
+
+  // ── 날짜 탭 프리뷰 ────────────────────────────
+  recordPreview: {
+    marginTop: 10,
+    borderTop: '1px solid #d8d2c8',
+    paddingTop: 10,
   },
   previewDate: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 9,
-    color: 'var(--cream-muted)',
-    letterSpacing: '0.06em',
-    opacity: 0.6,
+    fontFamily: "'DM Mono', monospace",
+    fontSize: 8,
+    color: '#7a5c20',
+    letterSpacing: '0.08em',
+    marginBottom: 4,
   },
   previewTitle: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 12,
-    color: 'var(--cream)',
-    letterSpacing: '0.04em',
+    fontFamily: "'Noto Serif KR', serif",
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#1a1814',
+    marginBottom: 4,
+    lineHeight: 1.3,
   },
-  previewContent: {
+  previewBody: {
     fontFamily: "'Noto Sans KR', sans-serif",
-    fontSize: 12,
-    color: 'var(--cream-muted)',
-    fontWeight: 300,
-    lineHeight: 1.6,
-    opacity: 0.8,
-    wordBreak: 'keep-all' as const,
-  },
-  previewThumb: {
-    width: 80,
-    height: 80,
-    objectFit: 'cover' as const,
-    flexShrink: 0,
-    border: '1px solid var(--border)',
-    filter: 'sepia(0.3) brightness(0.85)',
-  },
-  previewArrow: {
-    fontFamily: "'Space Mono', monospace",
     fontSize: 9,
-    color: 'var(--amber)',
-    letterSpacing: '0.06em',
-    opacity: 0.7,
-    alignSelf: 'flex-end',
-  },
-  emptyState: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 8,
-    padding: '32px 0 16px',
-  },
-  emptyText: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 12,
-    color: 'var(--amber)',
-    letterSpacing: '0.1em',
-  },
-  emptySub: {
-    fontFamily: "'Noto Sans KR', sans-serif",
-    fontSize: 12,
-    color: 'var(--cream-muted)',
     fontWeight: 300,
+    color: '#5a5048',
+    lineHeight: 1.6,
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical' as const,
+    overflow: 'hidden',
+    marginBottom: 8,
   },
+  previewFooter: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  previewEmotion: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 9,
+    color: '#5a5048',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+  },
+  previewEmotionDot: {
+    width: 6,
+    height: 6,
+    borderRadius: '50%',
+    flexShrink: 0,
+  },
+  previewBtn: {
+    fontFamily: "'DM Mono', 'Noto Sans KR', monospace",
+    fontSize: 8,
+    color: '#7a5c20',
+    border: '1px solid #c8a96e',
+    background: 'transparent',
+    borderRadius: 5,
+    padding: '4px 10px',
+    cursor: 'pointer',
+    letterSpacing: '0.05em',
+    whiteSpace: 'nowrap' as const,
+  },
+
+  // ── NO RECORDS 빈 상태 ────────────────────────
+  noRecords: {
+    textAlign: 'center' as const,
+    padding: '20px 0 8px',
+    borderTop: '1px solid #d8d2c8',
+    marginTop: 8,
+  },
+  noRecordsLabel: {
+    fontFamily: "'DM Mono', monospace",
+    fontSize: 10,
+    color: '#c8b898',
+    letterSpacing: '0.12em',
+    marginBottom: 6,
+  },
+  noRecordsSub: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 9.5,
+    fontWeight: 300,
+    color: '#b0a898',
+  },
+
+  // ── 월간 회고 섹션 ────────────────────────────
   retroSection: {
     marginTop: 20,
-    padding: '0 4px',
+    padding: '0 2px',
   },
   retroDivider: {
     display: 'flex',
@@ -458,25 +550,24 @@ const styles: Record<string, React.CSSProperties> = {
   retroDividerLine: {
     flex: 1,
     height: 1,
-    background: 'linear-gradient(90deg, transparent, rgba(122,158,138,0.3))',
+    background: '#d8d2c8',
   },
   retroDividerLabel: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 9,
-    color: 'var(--fade-green)',
+    color: '#8aaa8a',
     letterSpacing: '0.12em',
-    opacity: 0.7,
     flexShrink: 0,
   },
   retroCard: {
     padding: '14px 16px',
     border: '1px solid rgba(122,158,138,0.35)',
-    background: 'rgba(122,158,138,0.05)',
+    background: 'rgba(138,170,138,0.06)',
     cursor: 'pointer',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column' as const,
     gap: 8,
-    borderRadius: 2,
+    borderRadius: 8,
   },
   retroCardHeader: {
     display: 'flex',
@@ -484,44 +575,42 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
   },
   retroCardBadge: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 9,
-    color: 'var(--fade-green)',
+    color: '#5a8a5a',
     letterSpacing: '0.1em',
-    opacity: 0.8,
   },
   retroCardArrow: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 9,
-    color: 'var(--fade-green)',
-    opacity: 0.5,
+    color: '#7a9a7a',
     letterSpacing: '0.06em',
+    opacity: 0.6,
   },
   retroCardTitle: {
     fontFamily: "'Noto Serif KR', serif",
     fontSize: 15,
-    color: 'var(--cream)',
+    color: '#2a2420',
     fontWeight: 400,
     lineHeight: 1.4,
   },
   retroCardContent: {
     fontFamily: "'Noto Serif KR', serif",
     fontSize: 12,
-    color: 'var(--cream-muted)',
+    color: '#5a5048',
     lineHeight: 1.8,
     fontWeight: 300,
     display: '-webkit-box',
     WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical',
+    WebkitBoxOrient: 'vertical' as const,
     overflow: 'hidden',
   },
   retroHint: {
     fontFamily: "'Noto Sans KR', sans-serif",
     fontSize: 11,
-    color: 'var(--cream-muted)',
+    color: '#8a8278',
     fontWeight: 300,
     textAlign: 'center' as const,
-    opacity: 0.45,
     padding: '8px 0 4px',
     lineHeight: 1.6,
   },
@@ -531,23 +620,23 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 6,
     width: '100%',
     height: 38,
-    background: 'var(--bg-card)',
-    border: '1px solid var(--border-light)',
-    borderRadius: 3,
+    background: '#f5f2ed',
+    border: '1px solid #c8a96e',
+    borderRadius: 6,
     padding: '0 12px',
     cursor: 'pointer',
     textAlign: 'left' as const,
   },
   retroCtaDiamond: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 9,
-    color: 'var(--amber-light)',
+    color: '#7a5c20',
     flexShrink: 0,
   },
   retroCtaLabel: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 11,
-    color: 'var(--amber-light)',
+    color: '#7a5c20',
     letterSpacing: '0.08em',
     flex: 1,
   },
@@ -555,9 +644,9 @@ const styles: Record<string, React.CSSProperties> = {
     animation: 'devBlink 1s ease-in-out infinite',
   },
   retroCtaArrow: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "'DM Mono', monospace",
     fontSize: 12,
-    color: 'var(--amber-light)',
+    color: '#7a5c20',
     opacity: 0.6,
     flexShrink: 0,
   },
