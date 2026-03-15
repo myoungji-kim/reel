@@ -150,7 +150,7 @@ export default function ProfilePage() {
       clearAuth()
       queryClient.clear()
       showToast('정상적으로 탈퇴 처리가 완료되었습니다.')
-      setTimeout(() => navigate('/', { replace: true }), 1800)
+      navigate('/', { replace: true })
     } catch {
       showToast('탈퇴 처리에 실패했어요.', 'error')
       setIsConfirmingDelete(false)
