@@ -202,7 +202,7 @@ export default function ChatPage({ onBack: _onBack }: Props) {
         <ChatInput
           onSend={sendMessage}
           disabled={isTyping}
-          onDevelop={handleDevelop}
+          onDevelop={userMsgCount >= 3 ? handleDevelop : undefined}
           suggestActive={showSuggest}
           stage={suggestCooldownUntil > 0 || showSuggest ? 2 : 1}
         />
@@ -281,19 +281,19 @@ const sb: Record<string, React.CSSProperties> = {
     border: '1.5px solid #c8a96e',
   },
   bubble: {
-    padding: '12px 12px 10px',
+    padding: '9px 11px 10px',
     borderRadius: '2px 12px 12px 12px',
     background: '#fdf8ee',
-    border: '1px solid rgba(200,169,110,0.4)',
+    border: '1px solid rgba(200,169,110,0.3)',
     display: 'inline-block',
   },
   summary: {
     fontFamily: "'Noto Sans KR', sans-serif",
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: 400,
-    color: '#3a3020',
+    color: '#5a5248',
     lineHeight: 1.65,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   btns: {
     display: 'flex',

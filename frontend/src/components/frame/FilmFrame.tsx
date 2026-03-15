@@ -165,7 +165,7 @@ export default function FilmFrame({ frame, onClick, skeleton = false, isHighligh
 const styles: Record<string, React.CSSProperties> = {
   frame: {
     position: 'relative',
-    marginBottom: 14,
+    marginBottom: 8,
     cursor: 'pointer',
     transition: 'transform 0.15s',
   },
@@ -201,7 +201,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   body: {
     flex: 1,
-    padding: '12px 12px 10px 8px',
+    padding: '10px 10px 8px 7px',
     background: 'var(--surface-muted)',
   },
   metaRow: {
@@ -244,20 +244,20 @@ const styles: Record<string, React.CSSProperties> = {
   },
   title: {
     fontFamily: "var(--font-display)",
-    fontSize: 19,
+    fontSize: 17,
     color: 'var(--text-primary)',
     fontWeight: 600,
     lineHeight: 1.2,
-    marginBottom: 6,
+    marginBottom: 5,
     letterSpacing: '-0.01em',
   },
   preview: {
     fontFamily: "var(--font-body)",
     fontSize: 10,
     color: 'var(--text-secondary)',
-    lineHeight: 1.75,
+    lineHeight: 1.65,
     fontWeight: 300,
-    marginBottom: 10,
+    marginBottom: 8,
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',

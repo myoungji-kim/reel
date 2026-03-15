@@ -387,24 +387,17 @@ export default function DateStripSection({
 
   return (
     <div style={sectionStyles.wrap}>
-      {/* 헤더: 월 탭 + ROLL 인디케이터 + 액션 */}
+      {/* 헤더: 월 탭 + 액션 */}
       <div style={sectionStyles.header}>
         <button
           style={sectionStyles.monthBtn}
           onClick={() => setSheetOpen(true)}
         >
           {monthLabel}
-          <span style={{ fontSize: 9, color: 'var(--gold)', marginLeft: 3 }}>▾</span>
+          <span style={{ fontSize: 9, color: 'var(--gold)', marginLeft: 4 }}>▾</span>
         </button>
 
         <div style={sectionStyles.headerRight}>
-          {rollStats && (
-            <span style={sectionStyles.rollIndicator}>
-              ROLL {String(rollStats.currentRollNum).padStart(2, '0')}
-              <span style={{ opacity: 0.4, margin: '0 4px' }}>──</span>
-              {rollStats.currentRollProgress}/{rollStats.rollSize}
-            </span>
-          )}
           <button style={sectionStyles.iconBtn} onClick={onSearchClick} aria-label="검색">
             <svg width="15" height="15" viewBox="0 0 13 13" fill="none">
               <circle cx="5" cy="5" r="3.5" stroke="var(--text-muted)" strokeWidth="1.3" />
@@ -416,6 +409,24 @@ export default function DateStripSection({
           </button>
         </div>
       </div>
+
+      {/* 롤 진행 바 */}
+      {rollStats && (
+        <div style={sectionStyles.rollRow}>
+          <span style={sectionStyles.rollNum}>
+            ROLL {String(rollStats.currentRollNum).padStart(2, '0')}
+          </span>
+          <div style={sectionStyles.rollTrack}>
+            <div style={{
+              ...sectionStyles.rollFill,
+              width: `${(rollStats.currentRollProgress / rollStats.rollSize) * 100}%`,
+            }} />
+          </div>
+          <span style={sectionStyles.rollText}>
+            {rollStats.currentRollProgress}/{rollStats.rollSize}
+          </span>
+        </div>
+      )}
 
       {/* 날짜 스트립 */}
       <div ref={stripRef} style={sectionStyles.strip}>
@@ -474,42 +485,72 @@ const sectionStyles: Record<string, React.CSSProperties> = {
     fontWeight: 500,
     color: 'var(--gold)',
     letterSpacing: '0.1em',
-    background: 'transparent',
-    border: 'none',
+    background: 'var(--surface-muted)',
+    border: '1px solid rgba(42,38,32,0.12)',
+    borderRadius: 8,
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    padding: 0,
+    padding: '4px 10px 4px 8px',
     WebkitTapHighlightColor: 'transparent',
   },
   headerRight: {
     display: 'flex',
     alignItems: 'center',
+    gap: 6,
+  },
+  rollRow: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 16px 6px',
     gap: 8,
   },
-  rollIndicator: {
+  rollNum: {
     fontFamily: "var(--font-mono)",
-    fontSize: 11,
+    fontSize: 9,
+    color: '#c8a96e',
+    letterSpacing: '0.08em',
+    flexShrink: 0,
+    background: 'rgba(200,169,110,0.1)',
+    padding: '2px 6px',
+    borderRadius: 4,
+  },
+  rollTrack: {
+    flex: 1,
+    height: 3,
+    background: 'rgba(42,38,32,0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  rollFill: {
+    height: '100%',
+    background: '#7a5c20',
+    borderRadius: 2,
+    transition: 'width 0.4s ease',
+  },
+  rollText: {
+    fontFamily: "var(--font-mono)",
+    fontSize: 9,
     color: 'var(--text-muted)',
-    letterSpacing: '0.06em',
     whiteSpace: 'nowrap' as const,
+    flexShrink: 0,
   },
   iconBtn: {
     background: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    padding: '4px 8px',
+    padding: '4px 6px',
     display: 'flex',
     alignItems: 'center',
     WebkitTapHighlightColor: 'transparent',
   },
   quickBtn: {
     background: 'transparent',
-    border: '1px solid var(--gold)',
+    border: '1px solid rgba(122,92,32,0.4)',
     cursor: 'pointer',
     fontFamily: "var(--font-mono)",
-    fontSize: 9,
-    color: 'var(--gold)',
+    fontSize: 10,
+    color: '#7a5c20',
     letterSpacing: '0.04em',
     padding: '5px 10px',
     borderRadius: 6,

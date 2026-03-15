@@ -44,13 +44,15 @@ export default function ChatInput({ onSend, disabled = false, onDevelop, suggest
   return (
     <div style={styles.area}>
       <div style={styles.row}>
-        {/* 현상 아이콘 — 1단계: 조용히, 2단계(suggestActive): 골드 */}
+        {/* 현상 아이콘 — disabled: 대화 없음, 1단계: 조용히, 2단계: 골드 */}
         <button
           style={{
             ...styles.developIcon,
             ...(suggestActive ? styles.developIconActive : {}),
+            ...(!onDevelop ? styles.developIconDisabled : {}),
           }}
           onClick={onDevelop}
+          disabled={!onDevelop}
           aria-label="현상하기"
           type="button"
         >
@@ -121,6 +123,10 @@ const styles: Record<string, React.CSSProperties> = {
   developIconActive: {
     borderColor: 'rgba(200,169,110,0.6)',
     background: '#fdf8ee',
+  },
+  developIconDisabled: {
+    opacity: 0.3,
+    cursor: 'not-allowed',
   },
   input: {
     flex: 1,

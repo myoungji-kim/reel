@@ -24,7 +24,7 @@ export default function MonthDivider({ label, count, year, month }: Props) {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    padding: '20px 0 12px',
+    padding: '16px 0 8px',
   },
   wrap: {
     display: 'flex',
