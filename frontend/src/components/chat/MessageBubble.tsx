@@ -134,7 +134,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 'var(--text-xs)' as unknown as number,
     color: 'var(--text-placeholder)',
     marginTop: 4,
-    paddingLeft: 40,
   },
   timeUser: {
     fontFamily: "var(--font-mono)",

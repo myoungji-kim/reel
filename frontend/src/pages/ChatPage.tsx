@@ -217,12 +217,12 @@ const styles: Record<string, React.CSSProperties> = {
   developedBadge: {
     fontFamily: "'Space Mono', monospace",
     fontSize: 10,
-    color: 'var(--amber)',
+    color: 'var(--amber-pale)',
     border: '1px solid var(--amber-35)',
     borderRadius: 3,
-    padding: '3px 8px',
+    padding: '4px 10px',
     letterSpacing: '0.05em',
-    opacity: 0.8,
+    background: 'rgba(212,130,42,0.08)',
   },
   emptyState: {
     flex: 1,
