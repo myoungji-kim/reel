@@ -5,6 +5,7 @@ import { uploadPhotos } from '../../api/photoApi'
 import { useToast } from '../../hooks/useToast'
 import { useQueryClient } from '@tanstack/react-query'
 import OverlaySheet from './OverlaySheet'
+import MoodChipSelector from '../MoodChipSelector'
 
 interface Props {
   isOpen: boolean
@@ -20,6 +21,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [date, setDate] = useState(today())
+  const [mood, setMood] = useState<string | null>(null)
   const [photos, setPhotos] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
@@ -30,6 +32,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
     setTitle('')
     setContent('')
     setDate(today())
+    setMood(null)
     previewUrls.forEach((url) => URL.revokeObjectURL(url))
     setPhotos([])
     setPreviewUrls([])
@@ -57,10 +60,10 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
   }
 
   const handleSave = async () => {
-    if (!title.trim() || !content.trim() || saving) return
+    if (!title.trim() || !content.trim() || !mood || saving) return
     setSaving(true)
     try {
-      const { frameId } = await createQuickFrame({ title: title.trim(), content: content.trim(), date })
+      const { frameId } = await createQuickFrame({ title: title.trim(), content: content.trim(), date, mood })
       if (photos.length > 0) {
         await uploadPhotos(frameId, photos)
       }
@@ -73,7 +76,7 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
     }
   }
 
-  const canSave = title.trim().length > 0 && content.trim().length > 0 && !saving
+  const canSave = title.trim().length > 0 && content.trim().length > 0 && !!mood && !saving
 
   return (
     <OverlaySheet isOpen={isOpen} zIndex={400}>
@@ -113,6 +116,10 @@ export default function QuickNoteSheet({ isOpen, onClose, onSaved }: Props) {
             placeholder="지금 이 순간을 기록하세요"
             rows={4}
           />
+
+          {/* 기분 */}
+          <div style={{ ...styles.fieldTag, marginTop: 16 }}>기분 <span style={styles.required}>*</span></div>
+          <MoodChipSelector value={mood} onChange={setMood} />
 
           {/* 사진 */}
           <div style={{ ...styles.fieldTag, marginTop: 16 }}>
@@ -300,6 +307,10 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     fontFamily: "var(--font-mono)",
+  },
+  required: {
+    color: '#c8a96e',
+    fontStyle: 'normal',
   },
   footer: {
     flexShrink: 0,

@@ -36,7 +36,7 @@ export const searchFrames = (q: string, page = 0) =>
   axios.get<ApiResponse<PageResponse<Frame>>>('/api/frames/search', { params: { q, page, size: 20 } })
     .then(r => r.data.data.content)
 
-export const createQuickFrame = (data: { title: string; content: string; date: string }) =>
+export const createQuickFrame = (data: { title: string; content: string; date: string; mood: string }) =>
   axios.post<ApiResponse<{ frameId: number; frameNum: number; title: string; frameType: string }>>('/api/frames/quick', data)
     .then(r => r.data.data)
 
