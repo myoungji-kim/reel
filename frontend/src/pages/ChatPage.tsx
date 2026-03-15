@@ -120,12 +120,15 @@ export default function ChatPage() {
       <div style={styles.view}>
         {/* 헤더 */}
         <div style={styles.header}>
-          <span style={styles.date}>{formatChatDate(new Date())}</span>
-          {developed ? (
-            <span style={styles.developedBadge}>◈ 현상 완료</span>
-          ) : userMsgCount > 0 ? (
-            <span style={styles.count}>{userMsgCount} lines</span>
-          ) : null}
+          <span style={styles.logo}>reel</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {developed ? (
+              <span style={styles.developedBadge}>◈ 현상 완료</span>
+            ) : userMsgCount > 0 ? (
+              <span style={styles.count}>{userMsgCount} lines</span>
+            ) : null}
+            <span style={styles.date}>{formatChatDate(new Date())}</span>
+          </div>
         </div>
 
         {/* 이날의 기억 배너 */}
@@ -197,32 +200,44 @@ const styles: Record<string, React.CSSProperties> = {
   },
   header: {
     flexShrink: 0,
-    padding: '12px 20px',
-    borderBottom: '1px solid var(--border)',
+    padding: '10px 16px 9px',
+    borderBottom: '1px solid var(--border-default)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  logo: {
+    fontFamily: "var(--font-display)",
+    fontSize: 18,
+    fontWeight: 600,
+    fontStyle: 'italic',
+    color: 'var(--text-primary)',
+  },
   date: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 11,
-    color: 'var(--amber)',
-    letterSpacing: '0.1em',
+    fontFamily: "var(--font-mono)",
+    fontSize: 9,
+    color: 'var(--text-muted)',
+    background: 'var(--surface-muted)',
+    border: '1px solid var(--border-default)',
+    padding: '3px 8px',
+    borderRadius: 8,
+    letterSpacing: '0.04em',
   },
   count: {
-    fontFamily: "'VT323', monospace",
-    fontSize: 18,
-    color: 'var(--cream-muted)',
+    fontFamily: "var(--font-mono)",
+    fontSize: 9,
+    color: 'var(--text-muted)',
+    letterSpacing: '0.06em',
   },
   developedBadge: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: '#c8a96e',
-    border: '1px solid rgba(200,169,110,0.45)',
-    borderRadius: 3,
-    padding: '4px 10px',
-    letterSpacing: '0.05em',
-    background: 'rgba(200,169,110,0.1)',
+    fontFamily: "var(--font-mono)",
+    fontSize: 9,
+    color: 'var(--gold)',
+    border: '1px solid rgba(122,92,32,0.35)',
+    borderRadius: 6,
+    padding: '3px 8px',
+    letterSpacing: '0.06em',
+    background: 'rgba(122,92,32,0.07)',
   },
   emptyState: {
     flex: 1,
@@ -234,40 +249,38 @@ const styles: Record<string, React.CSSProperties> = {
     paddingBottom: 40,
   },
   emptyDate: {
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: 'var(--amber)',
-    letterSpacing: '0.15em',
-    opacity: 0.5,
+    fontFamily: "var(--font-mono)",
+    fontSize: 9,
+    color: 'var(--text-muted)',
+    letterSpacing: '0.1em',
     marginBottom: 12,
   },
   emptyTitle: {
-    fontFamily: "'Noto Serif KR', serif",
+    fontFamily: "var(--font-display)",
     fontSize: 20,
-    color: 'var(--cream-dim)',
+    color: 'var(--text-primary)',
     fontWeight: 300,
     lineHeight: 1.6,
     letterSpacing: '0.02em',
   },
   emptyDesc: {
-    fontFamily: "'Noto Sans KR', sans-serif",
-    fontSize: 12,
-    color: 'var(--cream-muted)',
+    fontFamily: "var(--font-body)",
+    fontSize: 11,
+    color: 'var(--text-muted)',
     fontWeight: 300,
     marginTop: 8,
     marginBottom: 20,
-    opacity: 0.7,
   },
   emptyQuickBtn: {
     background: 'transparent',
-    border: '1px solid var(--amber-35)',
+    border: '1px solid var(--border-mid)',
     cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
-    fontSize: 10,
-    color: 'var(--amber)',
-    letterSpacing: '0.1em',
+    fontFamily: "var(--font-mono)",
+    fontSize: 9,
+    color: 'var(--text-muted)',
+    letterSpacing: '0.08em',
     padding: '8px 20px',
-    borderRadius: 2,
+    borderRadius: 8,
   },
   messages: {
     flex: 1,

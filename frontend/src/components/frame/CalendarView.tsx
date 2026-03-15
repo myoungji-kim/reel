@@ -181,7 +181,7 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
             key={day}
             style={{
               ...styles.dowCell,
-              color: i === 0 ? '#c4866a' : i === 6 ? '#7a8fa6' : '#b0a898',
+              color: i === 0 ? 'var(--emotion-warm)' : i === 6 ? 'var(--emotion-sad)' : 'var(--text-muted)',
             }}
           >
             {day}
@@ -203,20 +203,20 @@ export default function CalendarView({ onFrameSelect }: CalendarViewProps) {
           const isSat = dow === 6
 
           // 날짜 숫자 색상
-          let numColor = '#5a5048'
-          if (isToday) numColor = '#f5eed8'
-          else if (hasRecord) numColor = '#7a5c20'
+          let numColor = 'var(--text-secondary)'
+          if (isToday) numColor = 'var(--gold-pale)'
+          else if (hasRecord) numColor = 'var(--gold)'
           else if (isFuture && isSun) numColor = '#e4c8b8'
           else if (isFuture && isSat) numColor = '#b8c8d8'
           else if (isFuture) numColor = '#c8c0b4'
-          else if (isSun) numColor = '#c4866a'
-          else if (isSat) numColor = '#7a8fa6'
+          else if (isSun) numColor = 'var(--emotion-warm)'
+          else if (isSat) numColor = 'var(--emotion-sad)'
 
           // 날짜 원 배경
           let circleBackground = 'transparent'
-          if (isToday) circleBackground = '#7a5c20'
+          if (isToday) circleBackground = 'var(--gold)'
           else if (isSelected && hasRecord) circleBackground = 'rgba(122,92,32,0.14)'
-          else if (hasRecord) circleBackground = '#f5eed8'
+          else if (hasRecord) circleBackground = 'var(--gold-pale)'
 
           return (
             <div
@@ -342,7 +342,7 @@ const styles: Record<string, React.CSSProperties> = {
   // ── 컨테이너 ──────────────────────────────────
   container: {
     margin: '0 14px 14px',
-    background: '#ede8e2',
+    background: 'var(--surface-muted)',
     borderRadius: 12,
     overflow: 'hidden',
     padding: '14px 14px 16px',
@@ -360,21 +360,21 @@ const styles: Record<string, React.CSSProperties> = {
     height: 24,
     borderRadius: '50%',
     background: 'transparent',
-    border: '1px solid #d0c8b8',
+    border: '1px solid rgba(42,38,32,0.2)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'pointer',
     fontSize: 14,
-    color: '#7a5c20',
+    color: 'var(--gold)',
     lineHeight: 1,
     padding: 0,
   },
   calMonthTitle: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 13,
     fontWeight: 500,
-    color: '#7a5c20',
+    color: 'var(--gold)',
     letterSpacing: '0.14em',
     textTransform: 'uppercase' as const,
   },
@@ -386,27 +386,27 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     marginBottom: 12,
     paddingBottom: 10,
-    borderBottom: '1px solid #d8d2c8',
+    borderBottom: '1px solid var(--border-default)',
   },
   statChip: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 8,
-    color: '#b0a898',
-    background: '#f5f2ed',
-    border: '1px solid #d8d2c8',
+    color: 'var(--text-muted)',
+    background: 'var(--surface-base)',
+    border: '1px solid var(--border-default)',
     borderRadius: 8,
     padding: '3px 8px',
     letterSpacing: '0.06em',
   },
   statChipActive: {
-    color: '#7a5c20',
-    background: '#f5eed8',
-    borderColor: '#c8a96e',
+    color: 'var(--gold)',
+    background: 'var(--gold-pale)',
+    borderColor: 'var(--gold-light)',
   },
   statChipStreak: {
-    background: '#f0ece4',
-    borderColor: '#d8cdb0',
-    color: '#5a5048',
+    color: 'var(--text-secondary)',
+    background: 'var(--surface-base)',
+    borderColor: 'var(--border-default)',
   },
 
   // ── 요일 헤더 + 날짜 그리드 ───────────────────
@@ -416,7 +416,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '2px 0',
   },
   dowCell: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 7.5,
     textAlign: 'center' as const,
     letterSpacing: '0.06em',
@@ -430,7 +430,7 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'relative' as const,
   },
   dayNum: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 11,
     width: 28,
     height: 28,
@@ -453,29 +453,29 @@ const styles: Record<string, React.CSSProperties> = {
   // ── 날짜 탭 프리뷰 ────────────────────────────
   recordPreview: {
     marginTop: 10,
-    borderTop: '1px solid #d8d2c8',
+    borderTop: '1px solid var(--border-default)',
     paddingTop: 10,
   },
   previewDate: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 8,
-    color: '#7a5c20',
+    color: 'var(--gold)',
     letterSpacing: '0.08em',
     marginBottom: 4,
   },
   previewTitle: {
-    fontFamily: "'Noto Serif KR', serif",
+    fontFamily: "var(--font-display)",
     fontSize: 13,
     fontWeight: 600,
-    color: '#1a1814',
+    color: 'var(--text-primary)',
     marginBottom: 4,
     lineHeight: 1.3,
   },
   previewBody: {
-    fontFamily: "'Noto Sans KR', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 9,
     fontWeight: 300,
-    color: '#5a5048',
+    color: 'var(--text-secondary)',
     lineHeight: 1.6,
     display: '-webkit-box',
     WebkitLineClamp: 2,
@@ -489,9 +489,9 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
   },
   previewEmotion: {
-    fontFamily: "'Noto Sans KR', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 9,
-    color: '#5a5048',
+    color: 'var(--text-secondary)',
     display: 'flex',
     alignItems: 'center',
     gap: 4,
@@ -503,10 +503,10 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   previewBtn: {
-    fontFamily: "'DM Mono', 'Noto Sans KR', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 8,
-    color: '#7a5c20',
-    border: '1px solid #c8a96e',
+    color: 'var(--gold)',
+    border: '1px solid var(--gold-light)',
     background: 'transparent',
     borderRadius: 5,
     padding: '4px 10px',
@@ -519,21 +519,21 @@ const styles: Record<string, React.CSSProperties> = {
   noRecords: {
     textAlign: 'center' as const,
     padding: '20px 0 8px',
-    borderTop: '1px solid #d8d2c8',
+    borderTop: '1px solid var(--border-default)',
     marginTop: 8,
   },
   noRecordsLabel: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 10,
-    color: '#c8b898',
+    color: 'var(--text-placeholder)',
     letterSpacing: '0.12em',
     marginBottom: 6,
   },
   noRecordsSub: {
-    fontFamily: "'Noto Sans KR', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 9.5,
     fontWeight: 300,
-    color: '#b0a898',
+    color: 'var(--text-muted)',
   },
 
   // ── 월간 회고 섹션 ────────────────────────────
@@ -550,10 +550,10 @@ const styles: Record<string, React.CSSProperties> = {
   retroDividerLine: {
     flex: 1,
     height: 1,
-    background: '#d8d2c8',
+    background: 'var(--border-default)',
   },
   retroDividerLabel: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 9,
     color: '#8aaa8a',
     letterSpacing: '0.12em',
@@ -575,29 +575,29 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
   },
   retroCardBadge: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 9,
     color: '#5a8a5a',
     letterSpacing: '0.1em',
   },
   retroCardArrow: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 9,
     color: '#7a9a7a',
     letterSpacing: '0.06em',
     opacity: 0.6,
   },
   retroCardTitle: {
-    fontFamily: "'Noto Serif KR', serif",
+    fontFamily: "var(--font-display)",
     fontSize: 15,
-    color: '#2a2420',
+    color: 'var(--text-primary)',
     fontWeight: 400,
     lineHeight: 1.4,
   },
   retroCardContent: {
-    fontFamily: "'Noto Serif KR', serif",
+    fontFamily: "var(--font-display)",
     fontSize: 12,
-    color: '#5a5048',
+    color: 'var(--text-secondary)',
     lineHeight: 1.8,
     fontWeight: 300,
     display: '-webkit-box',
@@ -606,9 +606,9 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: 'hidden',
   },
   retroHint: {
-    fontFamily: "'Noto Sans KR', sans-serif",
+    fontFamily: "var(--font-body)",
     fontSize: 11,
-    color: '#8a8278',
+    color: 'var(--text-muted)',
     fontWeight: 300,
     textAlign: 'center' as const,
     padding: '8px 0 4px',
@@ -620,23 +620,23 @@ const styles: Record<string, React.CSSProperties> = {
     gap: 6,
     width: '100%',
     height: 38,
-    background: '#f5f2ed',
-    border: '1px solid #c8a96e',
+    background: 'var(--surface-base)',
+    border: '1px solid var(--gold-light)',
     borderRadius: 6,
     padding: '0 12px',
     cursor: 'pointer',
     textAlign: 'left' as const,
   },
   retroCtaDiamond: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 9,
-    color: '#7a5c20',
+    color: 'var(--gold)',
     flexShrink: 0,
   },
   retroCtaLabel: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 11,
-    color: '#7a5c20',
+    color: 'var(--gold)',
     letterSpacing: '0.08em',
     flex: 1,
   },
@@ -644,9 +644,9 @@ const styles: Record<string, React.CSSProperties> = {
     animation: 'devBlink 1s ease-in-out infinite',
   },
   retroCtaArrow: {
-    fontFamily: "'DM Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 12,
-    color: '#7a5c20',
+    color: 'var(--gold)',
     opacity: 0.6,
     flexShrink: 0,
   },
