@@ -12,33 +12,33 @@ export default function BottomNav({ activeTab, onTabChange }: Props) {
     <div style={styles.nav}>
       <div style={styles.blur} />
 
-      {/* 현상소 (홈) */}
+      {/* 현상소 — 하루 현상 (채팅) */}
       <button
-        style={{ ...styles.navItem, ...(activeTab === 'roll' ? styles.navItemActive : {}) }}
-        onClick={() => onTabChange('roll')}
+        style={{ ...styles.navItem, ...(activeTab === 'chat' ? styles.navItemActive : {}) }}
+        onClick={() => onTabChange('chat')}
         aria-label="현상소"
       >
         <div style={styles.navIcon}>
-          <svg viewBox="0 0 20 20" style={activeTab === 'roll' ? iconActiveStyle : iconStyle}>
+          <svg viewBox="0 0 20 20" style={activeTab === 'chat' ? iconActiveStyle : iconStyle}>
             <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
           </svg>
         </div>
-        <span style={{ ...styles.navLabel, ...(activeTab === 'roll' ? styles.navLabelActive : {}) }}>현상소</span>
+        <span style={{ ...styles.navLabel, ...(activeTab === 'chat' ? styles.navLabelActive : {}) }}>현상소</span>
       </button>
 
-      {/* 필름롤 — 현재는 현상소와 동일하게 roll 탭 */}
+      {/* 필름롤 — 현상된 프레임 목록 */}
       <button
-        style={styles.navItem}
+        style={{ ...styles.navItem, ...(activeTab === 'roll' ? styles.navItemActive : {}) }}
         onClick={() => onTabChange('roll')}
         aria-label="필름롤"
       >
         <div style={styles.navIcon}>
-          <svg viewBox="0 0 20 20" style={iconStyle}>
+          <svg viewBox="0 0 20 20" style={activeTab === 'roll' ? iconActiveStyle : iconStyle}>
             <rect x="3" y="4" width="14" height="13" rx="2" />
             <path d="M7 4V2M13 4V2M3 8h14" />
           </svg>
         </div>
-        <span style={styles.navLabel}>필름롤</span>
+        <span style={{ ...styles.navLabel, ...(activeTab === 'roll' ? styles.navLabelActive : {}) }}>필름롤</span>
       </button>
 
       {/* FAB — 현상 */}
