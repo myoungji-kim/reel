@@ -178,9 +178,9 @@ const styles: Record<string, React.CSSProperties> = {
   },
   fabCircle: {
     position: 'absolute',
-    top: -18,
-    width: 46,
-    height: 46,
+    top: -22,
+    width: 52,
+    height: 52,
     borderRadius: '50%',
     background: '#2a2620',
     display: 'flex',
@@ -189,7 +189,7 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 2px 10px rgba(42,38,32,0.22)',
   },
   fabLabel: {
-    marginTop: 20,
+    marginTop: 34,
     fontFamily: "'Noto Sans KR', sans-serif",
     fontSize: 9,
     color: '#9a9080',
