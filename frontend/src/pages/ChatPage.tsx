@@ -23,7 +23,7 @@ interface Props {
   onBack?: () => void
 }
 
-export default function ChatPage({ onBack }: Props) {
+export default function ChatPage({ onBack: _onBack }: Props) {
   const {
     messages, isTyping, userMsgCount, developed, newMsgSinceDevelop,
     sendMessage, retryMessage, resetNewMsgSinceDevelop, sessionId,

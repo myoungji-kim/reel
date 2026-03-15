@@ -8,6 +8,7 @@ interface Props {
   frame: Frame
   onClick: () => void
   skeleton?: boolean
+  isHighlighted?: boolean
 }
 
 const PERF_COUNT = 3
@@ -23,7 +24,7 @@ function Perfs({ right = false }: { right?: boolean }) {
   )
 }
 
-export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
+export default function FilmFrame({ frame, onClick, skeleton = false, isHighlighted = false }: Props) {
   if (skeleton) {
     return (
       <div style={{ ...styles.frame, cursor: 'default' }}>
@@ -99,7 +100,12 @@ export default function FilmFrame({ frame, onClick, skeleton = false }: Props) {
       onTouchStart={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'scale(0.985)' }}
       onTouchEnd={(e) => { (e.currentTarget as HTMLDivElement).style.transform = '' }}
     >
-      <div style={{ ...styles.outer, ...(isRetro ? styles.outerRetro : {}), ...(frame.isBookmarked ? styles.outerBookmarked : {}) }}>
+      <div style={{
+        ...styles.outer,
+        ...(isRetro ? styles.outerRetro : {}),
+        ...(frame.isBookmarked ? styles.outerBookmarked : {}),
+        ...(isHighlighted ? styles.outerHighlighted : {}),
+      }}>
         {/* 감정 컬러바 */}
         <div style={{ ...styles.emotionBar, background: getMoodBarColor(frame.mood) }} />
         <Perfs />
@@ -328,6 +334,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
   outerRetro: {
     border: '1.5px solid rgba(74, 112, 64, 0.6)',
+  },
+  outerHighlighted: {
+    outline: '2px solid var(--gold)',
+    outlineOffset: -1,
   },
   titleRetro: {
     fontFamily: "'Noto Serif KR', serif",
