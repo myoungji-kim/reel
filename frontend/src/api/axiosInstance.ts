@@ -42,6 +42,14 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
+    // 탈퇴/삭제된 유저 — JWT는 유효하지만 DB에 유저가 없는 경우 강제 로그아웃
+    if (error.response?.status === 404 &&
+        error.response?.data?.message === '사용자를 찾을 수 없습니다.') {
+      useAuthStore.getState().clearAuth()
+      window.location.replace('/')
+      return Promise.reject(error)
+    }
+
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error)
     }
