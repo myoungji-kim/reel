@@ -1,6 +1,5 @@
 import type React from 'react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getProfile, withdrawAccount } from '../api/profileApi'
 import { logout } from '../api/authApi'
@@ -117,7 +116,6 @@ function IconSvg({ d, stroke = '#7a6e5e' }: { d: string; stroke?: string }) {
 // ─── ProfilePage ───────────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
-  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { setArchivedOpen, setRollTitleOpen, setPendingRollNum } = useUIStore()
   const clearAuth = useAuthStore((s) => s.clearAuth)
@@ -139,7 +137,7 @@ export default function ProfilePage() {
     } finally {
       clearAuth()
       queryClient.clear()
-      navigate('/', { replace: true })
+      window.location.replace('/')
     }
   }
 
@@ -149,8 +147,8 @@ export default function ProfilePage() {
       await withdrawAccount()
       clearAuth()
       queryClient.clear()
-      showToast('정상적으로 탈퇴 처리가 완료되었습니다.')
-      navigate('/', { replace: true })
+      localStorage.setItem('reel_flash', '정상적으로 탈퇴 처리가 완료되었습니다.')
+      window.location.replace('/')
     } catch {
       showToast('탈퇴 처리에 실패했어요.', 'error')
       setIsConfirmingDelete(false)

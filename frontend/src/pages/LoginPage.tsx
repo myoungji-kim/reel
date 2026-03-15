@@ -1,6 +1,19 @@
+import { useEffect } from 'react'
+import { useToast } from '../hooks/useToast'
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL as string
 
 export default function LoginPage() {
+  const { showToast } = useToast()
+
+  useEffect(() => {
+    const flash = localStorage.getItem('reel_flash')
+    if (flash) {
+      localStorage.removeItem('reel_flash')
+      showToast(flash)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleLogin = (provider: 'google' | 'kakao') => {
     window.location.href = `${API_BASE}/api/auth/login/${provider}`
   }
