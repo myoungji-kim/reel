@@ -7,7 +7,9 @@ import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
 import ArchivedSheet from '../components/overlays/ArchivedSheet'
 import RollTitleSheet from '../components/overlays/RollTitleSheet'
 import { useUIStore } from '../stores/uiStore'
+import { useFrameStore } from '../stores/frameStore'
 import { getRolls } from '../api/rollApi'
+import { getFrames } from '../api/frameApi'
 
 export default function HomePage() {
   const {
@@ -17,6 +19,7 @@ export default function HomePage() {
     isRollTitleOpen, setRollTitleOpen,
     pendingRollNum, setPendingRollNum,
   } = useUIStore()
+  const { setFrames } = useFrameStore()
 
   const { data: rolls = [] } = useQuery({
     queryKey: ['rolls'],
@@ -37,6 +40,7 @@ export default function HomePage() {
         onSaved={() => {
           setQuickNoteOpen(false)
           setActiveTab('roll')
+          getFrames(0, 200).then(({ data }) => setFrames(data.data.content))
         }}
       />
       <ArchivedSheet
