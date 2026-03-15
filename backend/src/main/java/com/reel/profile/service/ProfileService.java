@@ -1,5 +1,6 @@
 package com.reel.profile.service;
 
+import com.reel.auth.jwt.JwtTokenProvider;
 import com.reel.common.exception.ErrorCode;
 import com.reel.common.exception.ReelException;
 import com.reel.frame.entity.Frame;
@@ -34,6 +35,7 @@ public class ProfileService {
     private final RollRepository rollRepository;
     private final ChatMessageRepository chatMessageRepository;
     private final ChatSessionRepository chatSessionRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public ProfileResponse getProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -119,7 +121,9 @@ public class ProfileService {
     }
 
     @Transactional
-    public void withdraw(Long userId) {
+    public void withdraw(Long userId, String refreshToken) {
+        // Redis Refresh Token 먼저 삭제 (루프 방지)
+        jwtTokenProvider.deleteRefreshToken(refreshToken);
         // JPQL 벌크 DELETE로 FK 의존 순서 명시적 제어
         // frame_photos → frames → chat_messages → chat_sessions → rolls → user
         framePhotoRepository.deleteAllByUserId(userId);

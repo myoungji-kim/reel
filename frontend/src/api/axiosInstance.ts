@@ -43,9 +43,11 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config
 
     // 탈퇴/삭제된 유저 — JWT는 유효하지만 DB에 유저가 없는 경우 강제 로그아웃
+    // refreshAxios로 logout 호출해 서버 쿠키까지 만료시켜야 무한루프 방지
     if (error.response?.status === 404 &&
         error.response?.data?.message === '사용자를 찾을 수 없습니다.') {
       useAuthStore.getState().clearAuth()
+      await refreshAxios.post('/api/auth/logout').catch(() => {})
       window.location.replace('/')
       return Promise.reject(error)
     }
