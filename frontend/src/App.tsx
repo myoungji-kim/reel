@@ -20,11 +20,11 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   const [initializing, setInitializing] = useState(true)
   const setAuth = useAuthStore((s) => s.setAuth)
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated())
+  const accessToken = useAuthStore((s) => s.accessToken)
 
   useEffect(() => {
     // localStorage에 유효한 토큰이 있으면 refresh 호출 생략
-    if (isAuthenticated) {
+    if (accessToken) {
       setInitializing(false)
       return
     }
