@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type Tab = 'chat' | 'roll'
+type Tab = 'chat' | 'roll' | 'favorites'
 
 interface UIStore {
   activeTab: Tab

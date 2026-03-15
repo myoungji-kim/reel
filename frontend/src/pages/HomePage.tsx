@@ -4,6 +4,7 @@ import FilmBar from '../components/layout/FilmBar'
 import BottomNav from '../components/layout/BottomNav'
 import ChatPage from './ChatPage'
 import RollPage from './RollPage'
+import FavoritesPage from './FavoritesPage'
 import QuickNoteSheet from '../components/overlays/QuickNoteSheet'
 import ArchivedSheet from '../components/overlays/ArchivedSheet'
 import RollTitleSheet from '../components/overlays/RollTitleSheet'
@@ -34,7 +35,7 @@ export default function HomePage() {
     <div style={styles.container}>
       <TopBar />
       <FilmBar />
-      {activeTab === 'chat' ? <ChatPage /> : <RollPage />}
+      {activeTab === 'chat' ? <ChatPage /> : activeTab === 'favorites' ? <FavoritesPage /> : <RollPage />}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
       <QuickNoteSheet
         isOpen={isQuickNoteOpen}

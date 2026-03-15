@@ -1,6 +1,6 @@
 import type React from 'react'
 
-type Tab = 'chat' | 'roll'
+type Tab = 'chat' | 'roll' | 'favorites'
 
 interface Props {
   activeTab: Tab
@@ -57,14 +57,18 @@ export default function BottomNav({ activeTab, onTabChange }: Props) {
         <span style={styles.fabLabel}>현상</span>
       </button>
 
-      {/* 즐겨찾기 — placeholder */}
-      <button style={styles.navItem} aria-label="즐겨찾기">
+      {/* 즐겨찾기 */}
+      <button
+        style={{ ...styles.navItem, ...(activeTab === 'favorites' ? styles.navItemActive : {}) }}
+        onClick={() => onTabChange('favorites')}
+        aria-label="즐겨찾기"
+      >
         <div style={styles.navIcon}>
-          <svg viewBox="0 0 20 20" style={iconStyle}>
+          <svg viewBox="0 0 20 20" style={activeTab === 'favorites' ? iconActiveStyle : iconStyle}>
             <path d="M5 3h10a1 1 0 011 1v13l-6-3-6 3V4a1 1 0 011-1z" />
           </svg>
         </div>
-        <span style={styles.navLabel}>즐겨찾기</span>
+        <span style={{ ...styles.navLabel, ...(activeTab === 'favorites' ? styles.navLabelActive : {}) }}>즐겨찾기</span>
       </button>
 
       {/* 나 — placeholder */}
