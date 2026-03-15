@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useChat } from '../hooks/useChat'
@@ -5,7 +6,6 @@ import { useToast } from '../hooks/useToast'
 import MessageBubble from '../components/chat/MessageBubble'
 import TypingIndicator from '../components/chat/TypingIndicator'
 import ChatInput from '../components/chat/ChatInput'
-import DevelopBanner from '../components/chat/DevelopBanner'
 import RedevelopBanner from '../components/chat/RedevelopBanner'
 import OnThisDayBanner from '../components/chat/OnThisDayBanner'
 import StreakBadge from '../components/chat/StreakBadge'
@@ -31,6 +31,8 @@ export default function ChatPage({ onBack: _onBack }: Props) {
   const { isDevelopingOpen, setDevelopingOpen, isPreviewOpen, setPreviewOpen, setActiveTab, setQuickNoteOpen, setRollTitleOpen, setPendingRollNum } = useUIStore()
   const { preview, setPreview, updateFrame } = useFrameStore()
   const resetChat = useChatStore((s) => s.reset)
+  const suggestCooldownUntil = useChatStore((s) => s.suggestCooldownUntil)
+  const dismissSuggest = useChatStore((s) => s.dismissSuggest)
   const navigate = useNavigate()
   const { showToast } = useToast()
   const queryClient = useQueryClient()
@@ -40,6 +42,20 @@ export default function ChatPage({ onBack: _onBack }: Props) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, isTyping])
+
+  // suggest 표시 여부 계산
+  const latestAiWithSuggest = [...messages].reverse().find(
+    (m) => m.role === 'AI' && m.suggestText
+  )
+  const showSuggest = !developed
+    && latestAiWithSuggest != null
+    && userMsgCount >= 4
+    && userMsgCount >= suggestCooldownUntil
+
+  // "더 얘기할게요" 클릭 — 현재 카운트 + 2 후 재제안
+  const handleMore = () => {
+    dismissSuggest(userMsgCount)
+  }
 
   // 현상 시작
   const handleDevelop = async () => {
@@ -163,21 +179,33 @@ export default function ChatPage({ onBack: _onBack }: Props) {
                 />
               ))}
               {isTyping && <TypingIndicator />}
+
+              {/* AI 제안 말풍선 — 4턴 이상 + cooldown 통과 시 */}
+              {showSuggest && latestAiWithSuggest?.suggestText && (
+                <SuggestBubble
+                  text={latestAiWithSuggest.suggestText}
+                  onDevelop={handleDevelop}
+                  onMore={handleMore}
+                />
+              )}
             </>
           )}
           <div ref={bottomRef} />
         </div>
 
-        {/* 현상 배너 */}
-        {!developed && userMsgCount >= 3 && sessionId !== null && (
-          <DevelopBanner onDevelop={handleDevelop} />
-        )}
+        {/* 재현상 배너 (developed 후 추가 대화 시) */}
         {developed && newMsgSinceDevelop >= 1 && sessionId !== null && (
           <RedevelopBanner onRedevelop={handleDevelop} />
         )}
 
         {/* 입력창 */}
-        <ChatInput onSend={sendMessage} disabled={isTyping} />
+        <ChatInput
+          onSend={sendMessage}
+          disabled={isTyping}
+          onDevelop={handleDevelop}
+          suggestActive={showSuggest}
+          stage={suggestCooldownUntil > 0 || showSuggest ? 2 : 1}
+        />
       </div>
 
       {/* 현상 오버레이 */}
@@ -194,6 +222,122 @@ export default function ChatPage({ onBack: _onBack }: Props) {
     </>
   )
 }
+
+// ── AI 제안 말풍선 ──────────────────────────────────────────────────────────────
+
+function SuggestBubble({
+  text,
+  onDevelop,
+  onMore,
+}: {
+  text: string
+  onDevelop: () => void
+  onMore: () => void
+}) {
+  return (
+    <div style={sb.wrap}>
+      {/* AI 아바타 */}
+      <div style={sb.avatar}><div style={sb.avatarRing} /></div>
+      <div>
+        <div style={sb.bubble}>
+          <p style={sb.summary}>{text}</p>
+          <div style={sb.btns}>
+            <button style={sb.btnDevelop} onClick={onDevelop}>
+              <span style={sb.diamond}>◆</span>
+              현상하기
+            </button>
+            <button style={sb.btnMore} onClick={onMore}>
+              더 얘기할게요
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const sb: Record<string, React.CSSProperties> = {
+  wrap: {
+    display: 'flex',
+    gap: 8,
+    maxWidth: '85%',
+    alignSelf: 'flex-start',
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#2a2620',
+    marginTop: 2,
+  },
+  avatarRing: {
+    width: 14,
+    height: 14,
+    borderRadius: '50%',
+    border: '1.5px solid #c8a96e',
+  },
+  bubble: {
+    padding: '12px 12px 10px',
+    borderRadius: '2px 12px 12px 12px',
+    background: '#fdf8ee',
+    border: '1px solid rgba(200,169,110,0.4)',
+    display: 'inline-block',
+  },
+  summary: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 13,
+    fontWeight: 400,
+    color: '#3a3020',
+    lineHeight: 1.65,
+    marginBottom: 10,
+  },
+  btns: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  btnDevelop: {
+    fontFamily: "'DM Mono', 'Noto Sans KR', monospace",
+    fontSize: 11,
+    fontWeight: 500,
+    color: '#ede8e2',
+    background: '#2a2620',
+    border: 'none',
+    borderRadius: 8,
+    padding: '7px 14px',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 5,
+    letterSpacing: '0.02em',
+    lineHeight: 1,
+    WebkitTapHighlightColor: 'transparent',
+  },
+  diamond: {
+    color: '#c8a96e',
+    fontSize: 10,
+  },
+  btnMore: {
+    fontFamily: "'Noto Sans KR', sans-serif",
+    fontSize: 11,
+    color: '#7a6e5e',
+    background: 'transparent',
+    border: 'none',
+    padding: '7px 0',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+    textUnderlineOffset: '2px',
+    textDecorationColor: 'rgba(122,110,94,0.35)',
+    lineHeight: 1,
+    WebkitTapHighlightColor: 'transparent',
+  },
+}
+
+// ── Page Styles ────────────────────────────────────────────────────────────────
 
 const styles: Record<string, React.CSSProperties> = {
   view: {

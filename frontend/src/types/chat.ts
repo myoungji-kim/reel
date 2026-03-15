@@ -20,6 +20,7 @@ export interface ChatMessage {
   content: string
   createdAt: string
   failed?: boolean
+  suggestText?: string
 }
 
 export interface ChatSession {

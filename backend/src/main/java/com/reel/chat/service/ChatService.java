@@ -87,9 +87,20 @@ public class ChatService {
         List<ChatMessage> history = messageRepository.findBySessionIdOrderByCreatedAtAsc(session.getId());
         String aiText = anthropicClient.chat(history);
 
-        // AI 응답 저장
-        ChatMessage aiMessage = messageRepository.save(ChatMessage.of(session, MessageRole.AI, aiText));
-        return ChatMessageResponse.from(aiMessage);
+        // ---SUGGEST--- 구분자 파싱: DB에는 본문만, 응답에 suggestText 포함
+        String mainText = aiText;
+        String suggestText = null;
+        int sepIdx = aiText.indexOf("---SUGGEST---");
+        if (sepIdx >= 0) {
+            mainText = aiText.substring(0, sepIdx).strip();
+            suggestText = aiText.substring(sepIdx + "---SUGGEST---".length()).strip();
+        }
+
+        // AI 응답 저장 (본문만)
+        ChatMessage aiMessage = messageRepository.save(ChatMessage.of(session, MessageRole.AI, mainText));
+        return suggestText != null
+                ? ChatMessageResponse.withSuggest(aiMessage, suggestText)
+                : ChatMessageResponse.from(aiMessage);
     }
 
     private ChatSession getSessionForUser(Long userId, Long sessionId) {

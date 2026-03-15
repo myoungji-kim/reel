@@ -8,6 +8,7 @@ interface ChatStore {
   isTyping: boolean
   developed: boolean
   newMsgSinceDevelop: number
+  suggestCooldownUntil: number  // suggest는 userMsgCount >= 이 값일 때만 표시
 
   setSession: (sessionId: number, messages: ChatMessage[], developed: boolean) => void
   addMessage: (message: ChatMessage) => void
@@ -17,6 +18,7 @@ interface ChatStore {
   incrementCount: () => void
   incrementNewMsgSinceDevelop: () => void
   resetNewMsgSinceDevelop: () => void
+  dismissSuggest: (currentCount: number) => void
   reset: () => void
 }
 
@@ -27,6 +29,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   isTyping: false,
   developed: false,
   newMsgSinceDevelop: 0,
+  suggestCooldownUntil: 0,
 
   setSession: (sessionId, messages, developed) =>
     set({
@@ -59,6 +62,9 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   resetNewMsgSinceDevelop: () => set({ newMsgSinceDevelop: 0 }),
 
+  // "더 얘기할게요" 클릭 시 — 현재 카운트 + 2 이후에만 다시 suggest 표시
+  dismissSuggest: (currentCount) => set({ suggestCooldownUntil: currentCount + 2 }),
+
   reset: () =>
     set({
       sessionId: null,
@@ -67,5 +73,6 @@ export const useChatStore = create<ChatStore>((set) => ({
       isTyping: false,
       developed: false,
       newMsgSinceDevelop: 0,
+      suggestCooldownUntil: 0,
     }),
 }))

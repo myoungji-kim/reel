@@ -43,8 +43,23 @@ public class AnthropicClient {
             대화 맥락이 충분히 쌓였어. 더 파고드는 질문보다 공감과 따뜻한 마무리에 집중해줘.
             """;
 
+    private static final String SUGGEST_HINT = """
+
+            [현상 제안 지침]
+            지금까지 나눈 대화를 바탕으로, 일반 응답 뒤에 줄바꿈 후 반드시 아래 형식을 추가해줘:
+
+            ---SUGGEST---
+            [오늘 대화 내용을 1~2문장으로 따뜻하게 요약]. 일기 한 장으로 남겨볼까요?
+
+            주의:
+            - ---SUGGEST--- 는 반드시 단독 줄에 작성할 것
+            - 요약은 1~2문장, 따뜻한 한국어로
+            - 마지막 문장은 반드시 "일기 한 장으로 남겨볼까요?" 로 끝낼 것
+            """;
+
     private static final int CONTEXT_MSG_THRESHOLD  = 5;
     private static final int CONTEXT_CHAR_THRESHOLD = 300;
+    private static final int SUGGEST_MSG_THRESHOLD  = 4;
 
     private final WebClient webClient;
     private final AnthropicProperties properties;
@@ -66,10 +81,11 @@ public class AnthropicClient {
                 .sum();
         boolean contextSufficient = userMsgCount >= CONTEXT_MSG_THRESHOLD
                 || userCharCount >= CONTEXT_CHAR_THRESHOLD;
+        boolean shouldSuggest = userMsgCount >= SUGGEST_MSG_THRESHOLD;
 
-        String systemPrompt = contextSufficient
-                ? CHAT_SYSTEM_PROMPT + CONTEXT_SUFFICIENT_HINT
-                : CHAT_SYSTEM_PROMPT;
+        String systemPrompt = CHAT_SYSTEM_PROMPT;
+        if (contextSufficient) systemPrompt += CONTEXT_SUFFICIENT_HINT;
+        if (shouldSuggest)     systemPrompt += SUGGEST_HINT;
 
         List<Message> messages = new ArrayList<>();
         messages.add(new Message("system", systemPrompt));
