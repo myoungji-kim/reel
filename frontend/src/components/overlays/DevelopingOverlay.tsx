@@ -78,7 +78,7 @@ const styles: Record<string, React.CSSProperties> = {
     animation: 'devFlash 0.5s ease-in-out infinite',
   },
   devText: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 12,
     color: 'var(--amber)',
     letterSpacing: '0.1em',

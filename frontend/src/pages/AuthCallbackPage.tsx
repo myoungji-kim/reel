@@ -29,7 +29,7 @@ export default function AuthCallbackPage() {
     >
       <p
         style={{
-          fontFamily: 'Space Mono, monospace',
+          fontFamily: 'var(--font-mono)',
           fontSize: '12px',
           color: 'var(--amber)',
           letterSpacing: '0.1em',

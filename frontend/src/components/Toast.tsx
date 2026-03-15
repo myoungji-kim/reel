@@ -68,7 +68,7 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1,
   },
   message: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 11,
     color: 'var(--text-secondary)',
     letterSpacing: '0.04em',
@@ -81,7 +81,7 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--amber)',
     fontSize: 10,
     cursor: 'pointer',
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     padding: '0 0 0 8px',
     flexShrink: 0,
     letterSpacing: '0.04em',

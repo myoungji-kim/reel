@@ -70,13 +70,13 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'left',
   },
   diamond: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 9,
     color: '#c8a96e',
     flexShrink: 0,
   },
   label: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 11,
     color: '#c8a96e',
     letterSpacing: '0.08em',
@@ -86,7 +86,7 @@ const styles: Record<string, React.CSSProperties> = {
     animation: 'devBlink 1s ease-in-out infinite',
   },
   arrow: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 12,
     color: '#c8a96e',
     opacity: 0.6,

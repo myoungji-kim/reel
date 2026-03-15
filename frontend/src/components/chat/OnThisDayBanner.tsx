@@ -85,7 +85,7 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   label: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 10,
     color: 'var(--cream-muted)',
     letterSpacing: '0.04em',

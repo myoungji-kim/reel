@@ -32,7 +32,7 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   text: {
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 11,
     letterSpacing: '0.06em',
   },

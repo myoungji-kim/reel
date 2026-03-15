@@ -47,7 +47,7 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     background: 'var(--bg-card)',
     color: 'var(--cream-muted)',
-    fontFamily: "'Space Mono', monospace",
+    fontFamily: "var(--font-mono)",
     fontSize: 10,
     letterSpacing: '0.05em',
     borderRadius: 20,
